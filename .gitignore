@@ -39,3 +39,5 @@ venv/
 
 # Misc
 *.local
+
+du-event-board-env/

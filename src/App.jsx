@@ -4,10 +4,41 @@ import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import events from "./data/events.json";
 
+function parseISODate(dateString) {
+  if (!dateString) return null;
+  const [year, month, day] = dateString.split("-").map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+}
+
+function startOfDay(date) {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+}
+
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+
+  const [dateFilterType, setDateFilterType] = useState("all");
+  const [customDate, setCustomDate] = useState("");
+  const [rangeStart, setRangeStart] = useState("");
+  const [rangeEnd, setRangeEnd] = useState("");
+
+  const handleDateFilterTypeChange = (nextType) => {
+    setDateFilterType(nextType);
+
+    if (nextType !== "customDate") {
+      setCustomDate("");
+    }
+
+    if (nextType !== "customRange") {
+      setRangeStart("");
+      setRangeEnd("");
+    }
+  };
 
   const regions = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.region))];
@@ -21,7 +52,28 @@ export default function App() {
 
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
+
+    const today = startOfDay(new Date());
+
+    const weekStart = new Date(today);
+    const dayIndex = (today.getDay() + 6) % 7;
+    weekStart.setDate(today.getDate() - dayIndex);
+
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+    const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    monthEnd.setHours(0, 0, 0, 0);
+
+    const selectedCustomDate = parseISODate(customDate);
+    const selectedRangeStart = parseISODate(rangeStart);
+    const selectedRangeEnd = parseISODate(rangeEnd);
+
     return events.filter((event) => {
+      const eventDate = parseISODate(event.date);
+      if (!eventDate) return false;
+
       // Text search: title, description, tags
       const matchesSearch =
         !term ||
@@ -37,9 +89,51 @@ export default function App() {
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
 
-      return matchesSearch && matchesRegion && matchesCategory;
+      // Date filter
+      let matchesDate = true;
+
+      switch (dateFilterType) {
+        case "upcoming":
+          matchesDate = eventDate >= today;
+          break;
+        case "thisWeek":
+          matchesDate = eventDate >= weekStart && eventDate <= weekEnd;
+          break;
+        case "thisMonth":
+          matchesDate = eventDate >= monthStart && eventDate <= monthEnd;
+          break;
+        case "customDate":
+          matchesDate = !selectedCustomDate || eventDate.getTime() === selectedCustomDate.getTime();
+          break;
+        case "customRange":
+          if (selectedRangeStart && selectedRangeEnd && selectedRangeStart > selectedRangeEnd) {
+            matchesDate = false;
+            break;
+          }
+
+          if (selectedRangeStart && eventDate < selectedRangeStart) {
+            matchesDate = false;
+          }
+
+          if (selectedRangeEnd && eventDate > selectedRangeEnd) {
+            matchesDate = false;
+          }
+          break;
+        default:
+          matchesDate = true;
+      }
+
+      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
     });
-  }, [searchTerm, selectedRegion, selectedCategory]);
+  }, [
+    searchTerm,
+    selectedRegion,
+    selectedCategory,
+    dateFilterType,
+    customDate,
+    rangeStart,
+    rangeEnd,
+  ]);
 
   return (
     <>
@@ -51,6 +145,14 @@ export default function App() {
         onRegionChange={setSelectedRegion}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        dateFilterType={dateFilterType}
+        onDateFilterTypeChange={handleDateFilterTypeChange}
+        customDate={customDate}
+        onCustomDateChange={setCustomDate}
+        rangeStart={rangeStart}
+        onRangeStartChange={setRangeStart}
+        rangeEnd={rangeEnd}
+        onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
       />
