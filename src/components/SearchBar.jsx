@@ -72,6 +72,7 @@ export default function SearchBar({
               className="search__select"
               value={dateFilterType}
               onChange={(e) => onDateFilterTypeChange(e.target.value)}
+              aria-label="Date filter"
             >
               <option value="all">All Dates</option>
               <option value="upcoming">Upcoming</option>
