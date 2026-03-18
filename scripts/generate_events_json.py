@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Generate events.json from events.yaml.
-
-Reads the YAML event data file and produces a JSON file
-that the React frontend consumes.
+title: Generate events.json from events.yaml.
+summary: |-
+  Reads the YAML event data file and produces a JSON file
+  that the React frontend consumes.
 """
 
 import json
@@ -31,7 +31,16 @@ OUTPUT_FILE = PROJECT_ROOT / "src" / "data" / "events.json"
 
 
 def validate_event(event: dict[str, Any], index: int) -> list[str]:
-    """Validate a single event entry."""
+    """
+    title: Validate a single event entry.
+    parameters:
+      event:
+        type: dict[str, Any]
+      index:
+        type: int
+    returns:
+      type: list[str]
+    """
     errors = []
 
     for field in REQUIRED_FIELDS:
@@ -60,7 +69,9 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
 
 
 def main() -> None:
-    """Read YAML, validate, and generate JSON."""
+    """
+    title: Read YAML, validate, and generate JSON.
+    """
     if not INPUT_FILE.exists():
         print(f"Error: Input file not found: {INPUT_FILE}", file=sys.stderr)
         sys.exit(1)

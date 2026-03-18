@@ -43,6 +43,16 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: douki
+        name: douki
+        entry: douki sync
+        language: system
+        pass_filenames: true
+        require_serial: yes
+        files: "./"
+        types:
+          - python
+
       - id: vulture
         name: vulture
         entry: vulture --min-confidence 80
