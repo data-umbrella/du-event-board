@@ -8,6 +8,7 @@ that the React frontend consumes.
 
 import json
 import sys
+from typing import Any
 from datetime import datetime
 from pathlib import Path
 
@@ -29,7 +30,7 @@ INPUT_FILE = PROJECT_ROOT / "data" / "events.yaml"
 OUTPUT_FILE = PROJECT_ROOT / "src" / "data" / "events.json"
 
 
-def validate_event(event, index):
+def validate_event(event: dict[str, Any], index: int) -> list[str]:
     """Validate a single event entry."""
     errors = []
 
@@ -58,7 +59,7 @@ def validate_event(event, index):
     return errors
 
 
-def main():
+def main() -> None:
     """Read YAML, validate, and generate JSON."""
     if not INPUT_FILE.exists():
         print(f"Error: Input file not found: {INPUT_FILE}", file=sys.stderr)
