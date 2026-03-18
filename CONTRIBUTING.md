@@ -72,18 +72,26 @@ npm run dev
 Edit `data/events.yaml` and add a new entry following the existing format:
 
 ```yaml
-- id: "9"
-  title: "Your Event Name"
-  description: "A brief description of the event."
-  date: "2026-05-01"
-  time: "18:00"
-  location: "Venue Name, City"
-  region: "City Name"
-  category: "Technology"
-  url: "https://example.com/your-event"
-  tags:
-    - tag1
-    - tag2
+events:
+  - id: "9"
+    title: "Your Event Name"
+    description: "A brief description of the event."
+    date: "2026-05-01"
+    time: "18:00"
+    location: "Venue Name, City"
+    region: "City Name"
+    category: "Technology"
+    url: "https://example.com/your-event"
+    tags:
+      - tag1
+      - tag2
+
+    # Optional (used for richer filters / views)
+    event_type: "online"          # online | in_person | hybrid
+    cost: "free"                  # free | paid
+    start_date: "2026-05-01"      # YYYY-MM-DD
+    end_date: "2026-05-01"        # YYYY-MM-DD
+    org_logo: "https://example.com/logo.png"
 ```
 
 Then run `npm run generate` to update the JSON, and open a Pull Request. CI
