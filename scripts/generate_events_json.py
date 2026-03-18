@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
 title: Generate events.json from events.yaml.
-summary: |-
-  Reads the YAML event data file and produces a JSON file
-  that the React frontend consumes.
 """
 
 from __future__ import annotations
@@ -30,14 +27,32 @@ REQUIRED_FIELDS = [
     "tags",
 ]
 
-OPTIONAL_ENUM_FIELDS: dict[str, set[str]] = {
-    # Future-facing fields used by richer filters and views.
-    "event_type": {"online", "in_person", "hybrid"},
-    "cost": {"free", "paid"},
+EVENT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": REQUIRED_FIELDS,
+    "properties": {
+        # Base fields
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "description": {"type": "string"},
+        "date": {"type": "string", "format": "date"},
+        "time": {"type": "string", "format": "time"},
+        "location": {"type": "string"},
+        "region": {"type": "string"},
+        "category": {"type": "string"},
+        "url": {"type": "string", "format": "url"},
+        "tags": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        # Optional fields for richer filters/views
+        "event_type": {
+            "type": "string",
+            "enum": ["online", "in_person", "hybrid"],
+        },
+        "cost": {"type": "string", "enum": ["free", "paid"]},
+        "start_date": {"type": "string", "format": "date"},
+        "end_date": {"type": "string", "format": "date"},
+        "org_logo": {"type": "string", "format": "url"},
+    },
 }
-
-OPTIONAL_DATE_FIELDS = {"start_date", "end_date"}
-OPTIONAL_URL_FIELDS = {"org_logo"}
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
@@ -115,9 +130,35 @@ def validate_event(
                 f"{label}: Invalid time format '{event['time']}' (expected HH:MM)"
             )
 
-    # Validate tags
-    if "tags" in event and event.get("tags") is not None:
-        tags = event["tags"]
+    # Validate types/enums/formats based on EVENT_SCHEMA (schema-json approach)
+    props = EVENT_SCHEMA["properties"]
+
+    def _validate_format(field: str, value: Any) -> None:
+        schema = props.get(field, {})
+        fmt = schema.get("format")
+        if fmt == "date":
+            try:
+                datetime.strptime(str(value), "%Y-%m-%d")
+            except ValueError:
+                errors.append(
+                    f"{label}: Invalid {field} '{value}' (expected YYYY-MM-DD)"
+                )
+        elif fmt == "time":
+            try:
+                datetime.strptime(str(value), "%H:%M")
+            except ValueError:
+                errors.append(
+                    f"{label}: Invalid {field} '{value}' (expected HH:MM)"
+                )
+        elif fmt == "url":
+            if not _is_http_url(str(value)):
+                errors.append(
+                    f"{label}: Invalid {field} '{value}' (expected http(s) URL)"
+                )
+
+    # tags
+    if "tags" in props and "tags" in event:
+        tags = event.get("tags")
         if (
             not isinstance(tags, list)
             or not tags
@@ -127,43 +168,43 @@ def validate_event(
                 f"{label}: 'tags' must be a non-empty list of strings"
             )
 
-    # Validate URL fields
-    if event.get("url"):
-        if not _is_http_url(str(event["url"])):
-            errors.append(
-                f"{label}: Invalid url '{event['url']}' (expected http(s) URL)"
-            )
+    # url + optional org_logo
+    if "url" in event:
+        _validate_format("url", event["url"])
+    if "org_logo" in event and event.get("org_logo"):
+        _validate_format("org_logo", event["org_logo"])
 
-    for k in OPTIONAL_URL_FIELDS:
-        if k in event and event.get(k):
-            if not _is_http_url(str(event[k])):
-                errors.append(
-                    f"{label}: Invalid {k} '{event[k]}' (expected http(s) URL)"
-                )
-
-    # Validate optional enum fields
-    for k, allowed in OPTIONAL_ENUM_FIELDS.items():
-        if k in event and event.get(k):
-            value = str(event[k]).strip()
+    # enums
+    for enum_field in ("event_type", "cost"):
+        if enum_field in event and event.get(enum_field):
+            allowed = props[enum_field].get("enum", [])
+            value = str(event[enum_field]).strip()
             if value not in allowed:
                 errors.append(
-                    f"{label}: Invalid {k} '{value}' (allowed: {', '.join(sorted(allowed))})"
+                    f"{label}: Invalid {enum_field} '{value}' (allowed: {', '.join(allowed)})"
                 )
 
-    # Validate optional date fields
-    parsed_dates: dict[str, datetime] = {}
-    for k in OPTIONAL_DATE_FIELDS:
-        if k in event and event.get(k):
-            try:
-                parsed_dates[k] = datetime.strptime(str(event[k]), "%Y-%m-%d")
-            except ValueError:
-                errors.append(
-                    f"{label}: Invalid {k} '{event[k]}' (expected YYYY-MM-DD)"
-                )
-
-    if "start_date" in parsed_dates and "end_date" in parsed_dates:
-        if parsed_dates["end_date"] < parsed_dates["start_date"]:
-            errors.append(f"{label}: end_date must be >= start_date")
+    # start_date / end_date
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    if event.get("start_date"):
+        try:
+            start_date = datetime.strptime(
+                str(event["start_date"]), "%Y-%m-%d"
+            )
+        except ValueError:
+            errors.append(
+                f"{label}: Invalid start_date '{event['start_date']}' (expected YYYY-MM-DD)"
+            )
+    if event.get("end_date"):
+        try:
+            end_date = datetime.strptime(str(event["end_date"]), "%Y-%m-%d")
+        except ValueError:
+            errors.append(
+                f"{label}: Invalid end_date '{event['end_date']}' (expected YYYY-MM-DD)"
+            )
+    if start_date and end_date and end_date < start_date:
+        errors.append(f"{label}: end_date must be >= start_date")
 
     return errors
 
