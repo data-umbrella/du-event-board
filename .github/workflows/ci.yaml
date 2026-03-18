@@ -47,7 +47,7 @@ jobs:
         run: npm ci
 
       - name: Run pre-commit
-        run: pre-commit run --all-files
+        run: pre-commit run --all-files --verbose
 
   lint-and-test:
     runs-on: ubuntu-latest
