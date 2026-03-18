@@ -33,11 +33,13 @@ REQUIRED_FIELDS = [
     "tags",
 ]
 
-# Schema-like definition (mirrors JSON Schema shapes; validated in code below).
+# Schema-like dict (JSON-Schema-shaped); validated in code below — same idea as
+# douki's schema-driven validation, without requiring jsonschema at runtime.
 EVENT_SCHEMA: dict[str, Any] = {
     "type": "object",
     "required": REQUIRED_FIELDS,
     "properties": {
+        # Base fields
         "id": {"type": "string"},
         "title": {"type": "string"},
         "description": {"type": "string"},
@@ -48,6 +50,7 @@ EVENT_SCHEMA: dict[str, Any] = {
         "category": {"type": "string"},
         "url": {"type": "string", "format": "url"},
         "tags": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        # Optional fields for richer filters/views
         "event_type": {
             "type": "string",
             "enum": ["online", "in_person", "hybrid"],
@@ -57,11 +60,6 @@ EVENT_SCHEMA: dict[str, Any] = {
         "end_date": {"type": "string", "format": "date"},
         "org_logo": {"type": "string", "format": "url"},
     },
-}
-
-OPTIONAL_ENUM_FIELDS: dict[str, set[str]] = {
-    "event_type": {"online", "in_person", "hybrid"},
-    "cost": {"free", "paid"},
 }
 
 OPTIONAL_DATE_FIELDS = {"start_date", "end_date"}
@@ -189,7 +187,7 @@ def validate_event(
       type: list[str]
     """
     errors: list[str] = []
-    props: dict[str, Any] = EVENT_SCHEMA.get("properties", {})
+    props: dict[str, Any] = EVENT_SCHEMA["properties"]
 
     label = f"Event #{index}"
     if event.get("id"):
@@ -251,8 +249,9 @@ def validate_event(
                     f"{label}: Invalid {field} '{value}' (expected http(s) URL)"
                 )
 
-    if "tags" in event and event.get("tags") is not None:
-        tags = event["tags"]
+    # tags (required field; structure from schema)
+    if "tags" in props and "tags" in event:
+        tags = event.get("tags")
         tag_schema = props.get("tags", {})
         min_items = tag_schema.get("minItems", 1)
         if (
@@ -264,19 +263,21 @@ def validate_event(
                 f"{label}: 'tags' must be a non-empty list of strings"
             )
 
-    if event.get("url"):
+    if "url" in event:
         _validate_format("url", event["url"])
 
     for k in OPTIONAL_URL_FIELDS:
         if k in event and event.get(k):
             _validate_format(k, event[k])
 
-    for k, allowed in OPTIONAL_ENUM_FIELDS.items():
-        if k in event and event.get(k):
-            value = str(event[k]).strip()
+    for enum_field in ("event_type", "cost"):
+        if enum_field in event and event.get(enum_field):
+            allowed = props[enum_field].get("enum", [])
+            value = str(event[enum_field]).strip()
             if value not in allowed:
                 errors.append(
-                    f"{label}: Invalid {k} '{value}' (allowed: {', '.join(sorted(allowed))})"
+                    f"{label}: Invalid {enum_field} '{value}' "
+                    f"(allowed: {', '.join(allowed)})"
                 )
 
     parsed_dates: dict[str, datetime] = {}
