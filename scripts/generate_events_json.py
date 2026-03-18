@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
-Generate events.json from events.yaml.
-
-Reads the YAML event data file and produces a JSON file that the React
-frontend consumes.
+title: Generate events.json from events.yaml.
 """
 
 from __future__ import annotations
@@ -46,7 +43,14 @@ OUTPUT_FILE = PROJECT_ROOT / "src" / "data" / "events.json"
 
 
 def _is_http_url(value: str) -> bool:
-    """Return True if value looks like an http(s) URL."""
+    """
+    title: Return True if value looks like an http(s) URL.
+    parameters:
+      value:
+        type: str
+    returns:
+      type: bool
+    """
     try:
         p = urlparse(value)
         return p.scheme in {"http", "https"} and bool(p.netloc)
@@ -54,8 +58,21 @@ def _is_http_url(value: str) -> bool:
         return False
 
 
-def validate_event(event: dict[str, Any], index: int, seen_ids: set[str]) -> list[str]:
-    """Validate a single event entry and return list of errors."""
+def validate_event(
+    event: dict[str, Any], index: int, seen_ids: set[str]
+) -> list[str]:
+    """
+    title: Validate a single event entry.
+    parameters:
+      event:
+        type: dict[str, Any]
+      index:
+        type: int
+      seen_ids:
+        type: set[str]
+    returns:
+      type: list[str]
+    """
     errors: list[str] = []
 
     label = f"Event #{index}"
@@ -98,20 +115,28 @@ def validate_event(event: dict[str, Any], index: int, seen_ids: set[str]) -> lis
     # Validate tags
     if "tags" in event and event.get("tags") is not None:
         tags = event["tags"]
-        if not isinstance(tags, list) or not tags or not all(
-            isinstance(t, str) and t.strip() for t in tags
+        if (
+            not isinstance(tags, list)
+            or not tags
+            or not all(isinstance(t, str) and t.strip() for t in tags)
         ):
-            errors.append(f"{label}: 'tags' must be a non-empty list of strings")
+            errors.append(
+                f"{label}: 'tags' must be a non-empty list of strings"
+            )
 
     # Validate URL fields
     if event.get("url"):
         if not _is_http_url(str(event["url"])):
-            errors.append(f"{label}: Invalid url '{event['url']}' (expected http(s) URL)")
+            errors.append(
+                f"{label}: Invalid url '{event['url']}' (expected http(s) URL)"
+            )
 
     for k in OPTIONAL_URL_FIELDS:
         if k in event and event.get(k):
             if not _is_http_url(str(event[k])):
-                errors.append(f"{label}: Invalid {k} '{event[k]}' (expected http(s) URL)")
+                errors.append(
+                    f"{label}: Invalid {k} '{event[k]}' (expected http(s) URL)"
+                )
 
     # Validate optional enum fields
     for k, allowed in OPTIONAL_ENUM_FIELDS.items():
@@ -129,7 +154,9 @@ def validate_event(event: dict[str, Any], index: int, seen_ids: set[str]) -> lis
             try:
                 parsed_dates[k] = datetime.strptime(str(event[k]), "%Y-%m-%d")
             except ValueError:
-                errors.append(f"{label}: Invalid {k} '{event[k]}' (expected YYYY-MM-DD)")
+                errors.append(
+                    f"{label}: Invalid {k} '{event[k]}' (expected YYYY-MM-DD)"
+                )
 
     if "start_date" in parsed_dates and "end_date" in parsed_dates:
         if parsed_dates["end_date"] < parsed_dates["start_date"]:
@@ -139,7 +166,9 @@ def validate_event(event: dict[str, Any], index: int, seen_ids: set[str]) -> lis
 
 
 def main() -> None:
-    """Read YAML, validate, and generate JSON."""
+    """
+    title: Read YAML, validate, and generate JSON.
+    """
     if not INPUT_FILE.exists():
         print(f"Error: Input file not found: {INPUT_FILE}", file=sys.stderr)
         sys.exit(1)
@@ -160,7 +189,9 @@ def main() -> None:
     seen_ids: set[str] = set()
     for i, event in enumerate(events, start=1):
         if not isinstance(event, dict):
-            all_errors.append(f"Event #{i}: Expected object, got {type(event).__name__}")
+            all_errors.append(
+                f"Event #{i}: Expected object, got {type(event).__name__}"
+            )
             continue
         all_errors.extend(validate_event(event, i, seen_ids))
 
@@ -182,4 +213,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
