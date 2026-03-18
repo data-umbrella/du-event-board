@@ -14,7 +14,10 @@ function formatDateForIcs(date, time) {
   }
 
   const [hours = "00", minutes = "00"] = time.split(":");
-  return `${compactDate}T${hours.padStart(2, "0")}${minutes.padStart(2, "0")}00`;
+  return `${compactDate}T${hours.padStart(2, "0")}${minutes.padStart(
+    2,
+    "0",
+  )}00`;
 }
 
 function formatDateTimeForIcs(date) {

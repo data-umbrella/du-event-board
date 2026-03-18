@@ -254,9 +254,9 @@ describe("App", () => {
 
     expect(screen.getByText("1 saved event")).toBeInTheDocument();
     expect(screen.getAllByText("Python Meetup - Porto Alegre").length).toBe(2);
-    expect(JSON.parse(window.localStorage.getItem(PLANNER_STORAGE_KEY))).toEqual([
-      "1",
-    ]);
+    expect(
+      JSON.parse(window.localStorage.getItem(PLANNER_STORAGE_KEY)),
+    ).toEqual(["1"]);
   });
 
   it("restores saved events from localStorage", () => {
