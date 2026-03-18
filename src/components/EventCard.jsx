@@ -1,4 +1,4 @@
-export default function EventCard({ event }) {
+export default function EventCard({ event, isSaved = false, onToggleSave }) {
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
@@ -11,7 +11,22 @@ export default function EventCard({ event }) {
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
-      <span className="event-card__category">{event.category}</span>
+      <div className="event-card__header">
+        <span className="event-card__category">{event.category}</span>
+        <button
+          type="button"
+          className={`event-card__save-button ${
+            isSaved ? "event-card__save-button--saved" : ""
+          }`}
+          onClick={() => onToggleSave?.(event.id)}
+          aria-label={`${isSaved ? "Remove" : "Save"} ${event.title} ${
+            isSaved ? "from" : "to"
+          } planner`}
+          aria-pressed={isSaved}
+        >
+          {isSaved ? "Saved" : "Save"}
+        </button>
+      </div>
       <h2 className="event-card__title">{event.title}</h2>
       <p className="event-card__description">{event.description}</p>
 

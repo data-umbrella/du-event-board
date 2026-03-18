@@ -1,8 +1,11 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
+import PlannerPanel from "./components/PlannerPanel";
 import events from "./data/events.json";
+
+const PLANNER_STORAGE_KEY = "du-event-board:planner";
 
 function parseISODate(dateString) {
   if (!dateString) return null;
@@ -17,6 +20,83 @@ function startOfDay(date) {
   return normalized;
 }
 
+function loadSavedEventIds() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(PLANNER_STORAGE_KEY);
+    if (!rawValue) {
+      return [];
+    }
+
+    const parsedValue = JSON.parse(rawValue);
+    return Array.isArray(parsedValue)
+      ? parsedValue.filter((value) => typeof value === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function escapeIcsText(value = "") {
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/\n/g, "\\n")
+    .replace(/,/g, "\\,")
+    .replace(/;/g, "\\;");
+}
+
+function formatDateForIcs(date, time) {
+  const compactDate = date.replaceAll("-", "");
+
+  if (!time) {
+    return `${compactDate}`;
+  }
+
+  const [hours = "00", minutes = "00"] = time.split(":");
+  return `${compactDate}T${hours.padStart(2, "0")}${minutes.padStart(2, "0")}00`;
+}
+
+function createIcsContent(savedEvents) {
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//DU Event Board//My Event Planner//EN",
+    "CALSCALE:GREGORIAN",
+  ];
+
+  savedEvents.forEach((event) => {
+    const startDate = new Date(`${event.date}T${event.time || "00:00"}:00`);
+    const endDate = new Date(startDate);
+    endDate.setHours(endDate.getHours() + 1);
+
+    lines.push("BEGIN:VEVENT");
+    lines.push(`UID:${event.id}@du-event-board`);
+    lines.push(`DTSTAMP:${formatDateForIcs(event.date, event.time)}`);
+    lines.push(`DTSTART:${formatDateForIcs(event.date, event.time)}`);
+    lines.push(
+      `DTEND:${formatDateForIcs(
+        event.date,
+        `${String(endDate.getHours()).padStart(2, "0")}:${String(
+          endDate.getMinutes(),
+        ).padStart(2, "0")}`,
+      )}`,
+    );
+    lines.push(`SUMMARY:${escapeIcsText(event.title)}`);
+    lines.push(`DESCRIPTION:${escapeIcsText(event.description)}`);
+    lines.push(`LOCATION:${escapeIcsText(event.location)}`);
+    if (event.url) {
+      lines.push(`URL:${escapeIcsText(event.url)}`);
+    }
+    lines.push("END:VEVENT");
+  });
+
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
@@ -26,6 +106,7 @@ export default function App() {
   const [customDate, setCustomDate] = useState("");
   const [rangeStart, setRangeStart] = useState("");
   const [rangeEnd, setRangeEnd] = useState("");
+  const [savedEventIds, setSavedEventIds] = useState(loadSavedEventIds);
 
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
@@ -49,6 +130,63 @@ export default function App() {
     const unique = [...new Set(events.map((e) => e.category))];
     return unique.sort();
   }, []);
+
+  const savedEvents = useMemo(() => {
+    const savedIds = new Set(savedEventIds);
+
+    return events
+      .filter((event) => savedIds.has(event.id))
+      .sort((left, right) => {
+        if (left.date === right.date) {
+          return left.time.localeCompare(right.time);
+        }
+
+        return left.date.localeCompare(right.date);
+      });
+  }, [savedEventIds]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(
+      PLANNER_STORAGE_KEY,
+      JSON.stringify(savedEventIds),
+    );
+  }, [savedEventIds]);
+
+  const toggleSavedEvent = (eventId) => {
+    setSavedEventIds((currentIds) =>
+      currentIds.includes(eventId)
+        ? currentIds.filter((id) => id !== eventId)
+        : [...currentIds, eventId],
+    );
+  };
+
+  const clearPlanner = () => {
+    setSavedEventIds([]);
+  };
+
+  const exportPlanner = () => {
+    if (savedEvents.length === 0 || typeof window === "undefined") {
+      return;
+    }
+
+    const calendarContent = createIcsContent(savedEvents);
+    const calendarFile = new Blob([calendarContent], {
+      type: "text/calendar;charset=utf-8",
+    });
+    const downloadUrl = window.URL.createObjectURL(calendarFile);
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = "du-event-planner.ics";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  };
 
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
@@ -163,6 +301,12 @@ export default function App() {
         categories={categories}
       />
       <main className="main" id="main-content">
+        <PlannerPanel
+          savedEvents={savedEvents}
+          onRemoveEvent={toggleSavedEvent}
+          onClearPlanner={clearPlanner}
+          onExportPlanner={exportPlanner}
+        />
         <p className="main__results-info">
           Showing{" "}
           <span className="main__results-count">{filteredEvents.length}</span>{" "}
@@ -171,7 +315,12 @@ export default function App() {
         <div className="events-grid" id="events-grid">
           {filteredEvents.length > 0 ? (
             filteredEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard
+                key={event.id}
+                event={event}
+                isSaved={savedEventIds.includes(event.id)}
+                onToggleSave={toggleSavedEvent}
+              />
             ))
           ) : (
             <div className="empty-state" id="empty-state">
