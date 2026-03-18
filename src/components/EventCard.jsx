@@ -1,7 +1,4 @@
-import { getEventStatus } from "../utils/eventHelpers";
-
 export default function EventCard({ event }) {
-  const status = getEventStatus(event.date);
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
@@ -12,25 +9,34 @@ export default function EventCard({ event }) {
     },
   );
 
-  const statusMap = {
-    live: "status-badge--live",
-    upcoming: "status-badge--upcoming",
-    ended: "status-badge--ended",
+  const formatTimeFromUTC = (utcString) => {
+    try {
+      const utcDate = new Date(utcString);
+      const timeStr = utcDate.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      const tzName = new Intl.DateTimeFormat("en-US", {
+        timeZoneName: "short",
+      })
+        .formatToParts(utcDate)
+        .find((part) => part.type === "timeZoneName")?.value;
+
+      return `${timeStr} (${tzName || ""})`.trim(); // ← CHANGE: Added brackets
+    } catch (e) {
+      // Fallback to original time if conversion fails
+      return event.time;
+    }
   };
+
+  const displayTime = event.startsAtUtc
+    ? formatTimeFromUTC(event.startsAtUtc)
+    : event.time;
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
-      <div className="event-card__header">
-        <span className="event-card__category">{event.category}</span>
-
-        {status !== "none" && (
-          <div className={`status-badge ${statusMap[status]}`}>
-            {status === "live" && <span className="live-dot" />}
-            {status === "live" ? "Live Now" : status}
-          </div>
-        )}
-      </div>
-
+      <span className="event-card__category">{event.category}</span>
       <h2 className="event-card__title">{event.title}</h2>
       <p className="event-card__description">{event.description}</p>
 
@@ -41,7 +47,8 @@ export default function EventCard({ event }) {
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">🕐</span>
-          <span>{event.time}</span>
+          <span>{displayTime}</span>
+          {/* ← CHANGE: Use displayTime instead of event.time */}
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📍</span>
