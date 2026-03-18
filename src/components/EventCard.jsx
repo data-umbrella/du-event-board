@@ -23,7 +23,7 @@ export default function EventCard({ event }) {
         .formatToParts(utcDate)
         .find((part) => part.type === "timeZoneName")?.value;
 
-      return `${timeStr} (${tzName || ""})`.trim(); // ← CHANGE: Added brackets
+      return `${timeStr} (${tzName || ""})`.trim();
     } catch (e) {
       // Fallback to original time if conversion fails
       return event.time;
