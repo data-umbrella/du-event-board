@@ -11,10 +11,12 @@ trim_trailing_whitespace = true
 [*.{js,jsx,ts,tsx,html,css,scss,json,yml,yaml,xml,toml}]
 indent_style = space
 indent_size = 2
+max_line_length = 79
 
 [*.py]
 indent_style = space
 indent_size = 4
+max_line_length = 79
 
 [*.md]
 trim_trailing_whitespace = false

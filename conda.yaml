@@ -9,3 +9,8 @@ dependencies:
   - pip
   - pip:
       - pre-commit
+      - ruff
+      - mypy
+      - bandit
+      - vulture
+      - types-PyYAML

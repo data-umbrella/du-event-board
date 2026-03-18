@@ -103,10 +103,16 @@ export default function App() {
           matchesDate = eventDate >= monthStart && eventDate <= monthEnd;
           break;
         case "customDate":
-          matchesDate = !selectedCustomDate || eventDate.getTime() === selectedCustomDate.getTime();
+          matchesDate =
+            !selectedCustomDate ||
+            eventDate.getTime() === selectedCustomDate.getTime();
           break;
         case "customRange":
-          if (selectedRangeStart && selectedRangeEnd && selectedRangeStart > selectedRangeEnd) {
+          if (
+            selectedRangeStart &&
+            selectedRangeEnd &&
+            selectedRangeStart > selectedRangeEnd
+          ) {
             matchesDate = false;
             break;
           }

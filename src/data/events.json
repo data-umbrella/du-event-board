@@ -9,11 +9,7 @@
     "region": "Porto Alegre",
     "category": "Technology",
     "url": "https://example.com/python-poa",
-    "tags": [
-      "python",
-      "programming",
-      "community"
-    ]
+    "tags": ["python", "programming", "community"]
   },
   {
     "id": "2",
@@ -25,11 +21,7 @@
     "region": "São Paulo",
     "category": "Technology",
     "url": "https://example.com/react-sp",
-    "tags": [
-      "react",
-      "javascript",
-      "frontend"
-    ]
+    "tags": ["react", "javascript", "frontend"]
   },
   {
     "id": "3",
@@ -41,11 +33,7 @@
     "region": "Curitiba",
     "category": "Technology",
     "url": "https://example.com/oss-friday-cwb",
-    "tags": [
-      "open-source",
-      "community",
-      "programming"
-    ]
+    "tags": ["open-source", "community", "programming"]
   },
   {
     "id": "4",
@@ -57,11 +45,7 @@
     "region": "Rio de Janeiro",
     "category": "Education",
     "url": "https://example.com/ds-bootcamp-rj",
-    "tags": [
-      "data-science",
-      "machine-learning",
-      "python"
-    ]
+    "tags": ["data-science", "machine-learning", "python"]
   },
   {
     "id": "5",
@@ -73,11 +57,7 @@
     "region": "Belo Horizonte",
     "category": "Technology",
     "url": "https://example.com/devops-bh",
-    "tags": [
-      "devops",
-      "docker",
-      "kubernetes"
-    ]
+    "tags": ["devops", "docker", "kubernetes"]
   },
   {
     "id": "6",
@@ -89,11 +69,7 @@
     "region": "Porto Alegre",
     "category": "Design",
     "url": "https://example.com/ux-workshop-poa",
-    "tags": [
-      "design",
-      "ux",
-      "figma"
-    ]
+    "tags": ["design", "ux", "figma"]
   },
   {
     "id": "7",
@@ -105,11 +81,7 @@
     "region": "São Paulo",
     "category": "Technology",
     "url": "https://example.com/rust-intro-sp",
-    "tags": [
-      "rust",
-      "programming",
-      "systems"
-    ]
+    "tags": ["rust", "programming", "systems"]
   },
   {
     "id": "8",
@@ -121,10 +93,6 @@
     "region": "Florianópolis",
     "category": "Community",
     "url": "https://example.com/hackathon-floripa",
-    "tags": [
-      "hackathon",
-      "community",
-      "innovation"
-    ]
+    "tags": ["hackathon", "community", "innovation"]
   }
 ]

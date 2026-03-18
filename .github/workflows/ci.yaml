@@ -23,6 +23,32 @@ jobs:
           remote_branch: origin/main
           pr_sha: ${{ github.event.pull_request.head.sha }}
 
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    concurrency:
+      group: ci-pre-commit-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Conda environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: conda.yaml
+          cache-environment: true
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run pre-commit
+        run: pre-commit run --all-files
+
   lint-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10

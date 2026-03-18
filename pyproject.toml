@@ -1,0 +1,6 @@
+[tool.ruff]
+line-length = 79
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true

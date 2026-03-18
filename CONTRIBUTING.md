@@ -86,5 +86,5 @@ Edit `data/events.yaml` and add a new entry following the existing format:
     - tag2
 ```
 
-Then run `npm run generate` to update the JSON, and open a Pull Request. CI will
-validate the YAML and run tests automatically.
+Then run `npm run generate` to update the JSON, and open a Pull Request. CI
+will validate the YAML and run tests automatically.

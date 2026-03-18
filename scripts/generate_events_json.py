@@ -13,7 +13,16 @@ from pathlib import Path
 
 import yaml
 
-REQUIRED_FIELDS = ["id", "title", "description", "date", "time", "location", "region", "category"]
+REQUIRED_FIELDS = [
+    "id",
+    "title",
+    "description",
+    "date",
+    "time",
+    "location",
+    "region",
+    "category",
+]
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 INPUT_FILE = PROJECT_ROOT / "data" / "events.yaml"
@@ -33,14 +42,18 @@ def validate_event(event, index):
         try:
             datetime.strptime(event["date"], "%Y-%m-%d")
         except ValueError:
-            errors.append(f"Event #{index}: Invalid date format '{event['date']}' (expected YYYY-MM-DD)")
+            errors.append(
+                f"Event #{index}: Invalid date format '{event['date']}' (expected YYYY-MM-DD)"
+            )
 
     # Validate time format
     if "time" in event:
         try:
             datetime.strptime(event["time"], "%H:%M")
         except ValueError:
-            errors.append(f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)")
+            errors.append(
+                f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
+            )
 
     return errors
 

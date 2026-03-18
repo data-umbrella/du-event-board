@@ -16,3 +16,57 @@ repos:
     rev: "v3.1.0"
     hooks:
       - id: prettier
+
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff-format
+        entry: ruff format
+        files: "scripts/"
+        language: system
+        pass_filenames: true
+        types:
+          - python
+
+      - id: ruff-linter
+        name: ruff-linter
+        entry: ruff check
+        language: system
+        files: "scripts/"
+        pass_filenames: true
+        types:
+          - python
+
+      - id: mypy
+        name: mypy
+        entry: mypy scripts/
+        language: system
+        pass_filenames: false
+
+      - id: vulture
+        name: vulture
+        entry: vulture --min-confidence 80
+        language: system
+        files: "scripts/"
+        description: Find unused Python code.
+        pass_filenames: true
+        types:
+          - python
+
+      - id: eslint
+        name: eslint
+        entry: npx eslint
+        language: system
+        pass_filenames: true
+        types_or:
+          - javascript
+          - jsx
+
+      - id: vitest
+        name: vitest
+        entry: npx vitest run
+        language: system
+        pass_filenames: false
+        types_or:
+          - javascript
+          - jsx
