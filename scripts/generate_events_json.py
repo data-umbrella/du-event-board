@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
 title: Generate events.json from events.yaml.
+summary: |-
+  Reads the YAML event data file and produces a JSON file
+  that the React frontend consumes.
 """
 
 from __future__ import annotations
