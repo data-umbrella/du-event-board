@@ -4,8 +4,8 @@ import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import PlannerPanel from "./components/PlannerPanel";
 import events from "./data/events.json";
-
-const PLANNER_STORAGE_KEY = "du-event-board:planner";
+import { createIcsContent } from "./lib/ics";
+import { PLANNER_STORAGE_KEY } from "./lib/planner";
 
 function parseISODate(dateString) {
   if (!dateString) return null;
@@ -38,63 +38,6 @@ function loadSavedEventIds() {
   } catch {
     return [];
   }
-}
-
-function escapeIcsText(value = "") {
-  return value
-    .replace(/\\/g, "\\\\")
-    .replace(/\n/g, "\\n")
-    .replace(/,/g, "\\,")
-    .replace(/;/g, "\\;");
-}
-
-function formatDateForIcs(date, time) {
-  const compactDate = date.replaceAll("-", "");
-
-  if (!time) {
-    return `${compactDate}`;
-  }
-
-  const [hours = "00", minutes = "00"] = time.split(":");
-  return `${compactDate}T${hours.padStart(2, "0")}${minutes.padStart(2, "0")}00`;
-}
-
-function createIcsContent(savedEvents) {
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//DU Event Board//My Event Planner//EN",
-    "CALSCALE:GREGORIAN",
-  ];
-
-  savedEvents.forEach((event) => {
-    const startDate = new Date(`${event.date}T${event.time || "00:00"}:00`);
-    const endDate = new Date(startDate);
-    endDate.setHours(endDate.getHours() + 1);
-
-    lines.push("BEGIN:VEVENT");
-    lines.push(`UID:${event.id}@du-event-board`);
-    lines.push(`DTSTAMP:${formatDateForIcs(event.date, event.time)}`);
-    lines.push(`DTSTART:${formatDateForIcs(event.date, event.time)}`);
-    lines.push(
-      `DTEND:${formatDateForIcs(
-        event.date,
-        `${String(endDate.getHours()).padStart(2, "0")}:${String(
-          endDate.getMinutes(),
-        ).padStart(2, "0")}`,
-      )}`,
-    );
-    lines.push(`SUMMARY:${escapeIcsText(event.title)}`);
-    lines.push(`DESCRIPTION:${escapeIcsText(event.description)}`);
-    lines.push(`LOCATION:${escapeIcsText(event.location)}`);
-    if (event.url) {
-      lines.push(`URL:${escapeIcsText(event.url)}`);
-    }
-    lines.push("END:VEVENT");
-  });
-
-  lines.push("END:VCALENDAR");
-  return lines.join("\r\n");
 }
 
 export default function App() {

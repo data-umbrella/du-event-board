@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "../App";
+import { createIcsContent } from "../lib/ics";
+import { PLANNER_STORAGE_KEY } from "../lib/planner";
 
 describe("App", () => {
   let createObjectURLMock;
@@ -9,7 +11,7 @@ describe("App", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 3, 15, 12, 0, 0)); // Apr 15, 2026 (local)
-    window.localStorage.clear();
+    window.localStorage.removeItem(PLANNER_STORAGE_KEY);
 
     createObjectURLMock = vi.fn(() => "blob:planner-file");
     revokeObjectURLMock = vi.fn();
@@ -252,13 +254,13 @@ describe("App", () => {
 
     expect(screen.getByText("1 saved event")).toBeInTheDocument();
     expect(screen.getAllByText("Python Meetup - Porto Alegre").length).toBe(2);
-    expect(
-      JSON.parse(window.localStorage.getItem("du-event-board:planner")),
-    ).toEqual(["1"]);
+    expect(JSON.parse(window.localStorage.getItem(PLANNER_STORAGE_KEY))).toEqual([
+      "1",
+    ]);
   });
 
   it("restores saved events from localStorage", () => {
-    window.localStorage.setItem("du-event-board:planner", JSON.stringify(["2"]));
+    window.localStorage.setItem(PLANNER_STORAGE_KEY, JSON.stringify(["2"]));
 
     render(<App />);
 
@@ -278,5 +280,39 @@ describe("App", () => {
 
     expect(createObjectURLMock).toHaveBeenCalledTimes(1);
     expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:planner-file");
+  });
+
+  it("creates ICS payload with summary, dtstart, and dtend for same-day events", () => {
+    const calendarPayload = createIcsContent([
+      {
+        id: "day-event",
+        title: "Python Meetup - Porto Alegre",
+        description: "Monthly Python meetup.",
+        date: "2026-03-15",
+        time: "19:00",
+        location: "TechHub",
+      },
+    ]);
+
+    expect(calendarPayload).toContain("SUMMARY:Python Meetup - Porto Alegre");
+    expect(calendarPayload).toContain("DTSTART:20260315T190000");
+    expect(calendarPayload).toContain("DTEND:20260315T200000");
+  });
+
+  it("creates ICS events with DTEND on next day when an event crosses midnight", () => {
+    const calendarPayload = createIcsContent([
+      {
+        id: "night-event",
+        title: "Late Night Coding Session",
+        description: "Coding until after midnight.",
+        date: "2026-04-10",
+        time: "23:30",
+        location: "Online",
+      },
+    ]);
+
+    expect(calendarPayload).toContain("SUMMARY:Late Night Coding Session");
+    expect(calendarPayload).toContain("DTSTART:20260410T233000");
+    expect(calendarPayload).toContain("DTEND:20260411T003000");
   });
 });
