@@ -98,12 +98,10 @@ export default function App() {
           matchesDate = eventDate >= today;
           break;
         case "thisWeek":
-          matchesDate =
-            eventDate >= weekStart && eventDate <= weekEnd;
+          matchesDate = eventDate >= weekStart && eventDate <= weekEnd;
           break;
         case "thisMonth":
-          matchesDate =
-            eventDate >= monthStart && eventDate <= monthEnd;
+          matchesDate = eventDate >= monthStart && eventDate <= monthEnd;
           break;
         case "customDate":
           matchesDate =

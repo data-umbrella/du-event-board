@@ -89,7 +89,9 @@ def convert_to_utc(event: dict[str, Any], index: int) -> tuple[str, str]:
         time_str = event["time"]
         tz_str = event["timezone"]
 
-        local_dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+        local_dt = datetime.strptime(
+            f"{date_str} {time_str}", "%Y-%m-%d %H:%M"
+        )
 
         tz = ZoneInfo(tz_str)
         local_aware = local_dt.replace(tzinfo=tz)
