@@ -87,10 +87,10 @@ events:
       - tag2
 
     # Optional (used for richer filters / views)
-    event_type: "online"          # online | in_person | hybrid
-    cost: "free"                  # free | paid
-    start_date: "2026-05-01"      # YYYY-MM-DD
-    end_date: "2026-05-01"        # YYYY-MM-DD
+    event_type: "online" # online | in_person | hybrid
+    cost: "free" # free | paid
+    start_date: "2026-05-01" # YYYY-MM-DD
+    end_date: "2026-05-01" # YYYY-MM-DD
     org_logo: "https://example.com/logo.png"
 ```
 
