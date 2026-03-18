@@ -96,6 +96,7 @@ def main():
     # Write JSON output
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(events, f, indent=2, ensure_ascii=False)
+        f.write("\n")
 
     print(f"Generated: {OUTPUT_FILE}")
     print(f"Total events: {len(events)}")
