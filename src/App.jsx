@@ -108,6 +108,7 @@ export default function App() {
     const selectedRangeEnd = parseISODate(rangeEnd);
 
     return events.filter((event) => {
+      // Use original event.date for filtering (local date)
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 
@@ -134,10 +135,12 @@ export default function App() {
           matchesDate = eventDate >= today;
           break;
         case "thisWeek":
-          matchesDate = eventDate >= weekStart && eventDate <= weekEnd;
+          matchesDate =
+            eventDate >= weekStart && eventDate <= weekEnd;
           break;
         case "thisMonth":
-          matchesDate = eventDate >= monthStart && eventDate <= monthEnd;
+          matchesDate =
+            eventDate >= monthStart && eventDate <= monthEnd;
           break;
         case "customDate":
           matchesDate =
