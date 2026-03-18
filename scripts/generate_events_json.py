@@ -82,7 +82,14 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
 def convert_to_utc(event: dict[str, Any], index: int) -> tuple[str, str]:
     """
     title: Convert local date/time to UTC ISO string.
-    returns: tuple of (startsAtUtc, error_message) or ("", error_message)
+    parameters:
+      event:
+        type: dict[str, Any]
+      index:
+        type: int
+    returns:
+      type: tuple[str, str]
+      description: tuple of (startsAtUtc, error_message) or ("", error_message)
     """
     try:
         date_str = event["date"]
