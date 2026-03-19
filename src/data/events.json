@@ -126,5 +126,23 @@
       "community",
       "innovation"
     ]
+  },
+  {
+    "id": "9",
+    "title": "GSoC 2026 Prep Bootcamp: From Beginner to Contributor",
+    "description": "A hands-on bootcamp designed for engineering students to kickstart their open-source journey, build real GitHub contributions, and prepare strong GSoC proposals with mentorship guidance.",
+    "date": "2026-05-01",
+    "time": "18:00",
+    "location": "VJTI Campus, Matunga, Mumbai",
+    "region": "Mumbai",
+    "category": "Technology",
+    "url": "https://example.com/gsoc-bootcamp",
+    "tags": [
+      "GSoC",
+      "OpenSource",
+      "Python",
+      "MachineLearning",
+      "GitHub"
+    ]
   }
 ]
