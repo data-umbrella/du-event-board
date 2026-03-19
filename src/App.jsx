@@ -71,6 +71,7 @@ export default function App() {
     const selectedRangeEnd = parseISODate(rangeEnd);
 
     return events.filter((event) => {
+      // Use original event.date for filtering (local date)
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 

@@ -3,7 +3,7 @@
 title: Generate events.json from events.yaml.
 summary: |-
   Reads the YAML event data file and produces a JSON file
-  that the React frontend consumes.
+  that the React frontend consumes. Converts local times to UTC.
 """
 
 import json
@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 
 import yaml
+from zoneinfo import ZoneInfo
 
 REQUIRED_FIELDS = [
     "id",
@@ -20,6 +21,7 @@ REQUIRED_FIELDS = [
     "description",
     "date",
     "time",
+    "timezone",
     "location",
     "region",
     "category",
@@ -65,7 +67,47 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
             )
 
+    # Validate timezone
+    if "timezone" in event:
+        try:
+            ZoneInfo(event["timezone"])
+        except Exception:
+            errors.append(
+                f"Event #{index}: Invalid timezone '{event['timezone']}' (expected IANA format like 'America/Sao_Paulo')"
+            )
+
     return errors
+
+
+def convert_to_utc(event: dict[str, Any], index: int) -> tuple[str, str]:
+    """
+    title: Convert local date/time to UTC ISO string.
+    parameters:
+      event:
+        type: dict[str, Any]
+      index:
+        type: int
+    returns:
+      type: tuple[str, str]
+      description: tuple of (startsAtUtc, error_message) or ("", error_message)
+    """
+    try:
+        date_str = event["date"]
+        time_str = event["time"]
+        tz_str = event["timezone"]
+
+        local_dt = datetime.strptime(
+            f"{date_str} {time_str}", "%Y-%m-%d %H:%M"
+        )
+
+        tz = ZoneInfo(tz_str)
+        local_aware = local_dt.replace(tzinfo=tz)
+
+        utc_dt = local_aware.astimezone(ZoneInfo("UTC"))
+
+        return utc_dt.isoformat().replace("+00:00", "Z"), ""
+    except Exception as e:
+        return "", f"Event #{index}: Failed to convert time to UTC: {str(e)}"
 
 
 def main() -> None:
@@ -102,16 +144,34 @@ def main() -> None:
 
     print("All events validated successfully")
 
+    # Convert to UTC and generate output
+    output_events = []
+    conversion_errors = []
+    for i, event in enumerate(events, start=1):
+        utc_str, error = convert_to_utc(event, i)
+        if error:
+            conversion_errors.append(error)
+        else:
+            event_copy = event.copy()
+            event_copy["startsAtUtc"] = utc_str
+            output_events.append(event_copy)
+
+    if conversion_errors:
+        print("Conversion errors:", file=sys.stderr)
+        for error in conversion_errors:
+            print(f"  - {error}", file=sys.stderr)
+        sys.exit(1)
+
     # Ensure output directory exists
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     # Write JSON output
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(events, f, indent=2, ensure_ascii=False)
+        json.dump(output_events, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
     print(f"Generated: {OUTPUT_FILE}")
-    print(f"Total events: {len(events)}")
+    print(f"Total events: {len(output_events)}")
 
 
 if __name__ == "__main__":

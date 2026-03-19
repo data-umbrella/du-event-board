@@ -9,6 +9,31 @@ export default function EventCard({ event }) {
     },
   );
 
+  const formatTimeFromUTC = (utcString) => {
+    try {
+      const utcDate = new Date(utcString);
+      const timeStr = utcDate.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      const tzName = new Intl.DateTimeFormat("en-US", {
+        timeZoneName: "short",
+      })
+        .formatToParts(utcDate)
+        .find((part) => part.type === "timeZoneName")?.value;
+
+      return `${timeStr} (${tzName || ""})`.trim();
+    } catch (e) {
+      // Fallback to original time if conversion fails
+      return event.time;
+    }
+  };
+
+  const displayTime = event.startsAtUtc
+    ? formatTimeFromUTC(event.startsAtUtc)
+    : event.time;
+
   return (
     <article className="event-card" id={`event-${event.id}`}>
       <span className="event-card__category">{event.category}</span>
@@ -22,7 +47,8 @@ export default function EventCard({ event }) {
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">🕐</span>
-          <span>{event.time}</span>
+          <span>{displayTime}</span>
+          {/* ← CHANGE: Use displayTime instead of event.time */}
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📍</span>

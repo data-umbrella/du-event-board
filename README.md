@@ -26,6 +26,7 @@ Edit `data/events.yaml` and add a new entry:
   description: "A brief description of the event."
   date: "2026-05-01"
   time: "18:00"
+  timezone: "America/Sao_Paulo"
   location: "Venue Name, City"
   region: "City Name"
   category: "Technology"
