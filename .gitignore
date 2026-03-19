@@ -39,3 +39,4 @@ venv/
 
 # Misc
 *.local
+*.sh

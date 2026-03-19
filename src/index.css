@@ -334,6 +334,159 @@ body {
 }
 
 /* ===================================
+   Planner
+   =================================== */
+.planner {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(124, 92, 252, 0.08)
+    ),
+    var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.planner__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.planner__eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.planner__title {
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.planner__description {
+  max-width: 48rem;
+  color: var(--text-secondary);
+}
+
+.planner__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.planner__action,
+.planner__remove,
+.event-card__save-button {
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.planner__action {
+  padding: 0.75rem 1rem;
+}
+
+.planner__action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.planner__action--primary {
+  background: var(--gradient-accent);
+  color: #ffffff;
+}
+
+.planner__action--primary:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+
+.planner__action--secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.planner__action--secondary:not(:disabled):hover,
+.planner__remove:hover {
+  border-color: var(--border-accent);
+  background: rgba(124, 92, 252, 0.08);
+}
+
+.planner__count {
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+}
+
+.planner__list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.planner__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+}
+
+.planner__item-content {
+  min-width: 0;
+}
+
+.planner__item-title {
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.planner__item-meta {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.planner__remove {
+  padding: 0.65rem 0.95rem;
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.planner__empty {
+  padding: 1.25rem;
+  text-align: center;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-md);
+}
+
+.planner__empty-title {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.planner__empty-description {
+  color: var(--text-muted);
+}
+
+/* ===================================
    Event Grid
    =================================== */
 .events-grid {
@@ -354,6 +507,14 @@ body {
   position: relative;
   overflow: hidden;
   cursor: default;
+}
+
+.event-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .event-card::before {
@@ -389,7 +550,26 @@ body {
   background: rgba(192, 132, 252, 0.1);
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
+}
+
+.event-card__save-button {
+  padding: 0.55rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.event-card__save-button:hover {
+  border-color: var(--border-accent);
+  background: rgba(124, 92, 252, 0.12);
+}
+
+.event-card__save-button--saved {
+  background: rgba(124, 92, 252, 0.18);
+  color: #ffffff;
+  border-color: rgba(124, 92, 252, 0.35);
 }
 
 .event-card__title {
@@ -526,6 +706,25 @@ body {
   border-top: 1px solid var(--border-subtle);
   color: var(--text-muted);
   font-size: 0.8rem;
+}
+
+@media (max-width: 720px) {
+  .planner__item,
+  .event-card__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .planner__actions {
+    width: 100%;
+  }
+
+  .planner__action,
+  .planner__remove,
+  .event-card__save-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .footer a {
