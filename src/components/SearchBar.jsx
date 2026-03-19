@@ -128,7 +128,7 @@ export default function SearchBar({
               />
             </div>
           )}
-          
+
           {hasActiveFilters && (
             <button
               className="search__clear-btn"
