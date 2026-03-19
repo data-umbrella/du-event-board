@@ -1,18 +1,28 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "required": ["id", "title", "description", "date", "time", "location", "region", "category", "url"],
+  "required": [
+    "id",
+    "title",
+    "description",
+    "date",
+    "time",
+    "location",
+    "region",
+    "category",
+    "url"
+  ],
   "properties": {
-    "id":          { "type": "string" },
-    "title":       { "type": "string" },
+    "id": { "type": "string" },
+    "title": { "type": "string" },
     "description": { "type": "string" },
-    "date":        { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
-    "time":        { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
-    "location":    { "type": "string" },
-    "region":      { "type": "string" },
-    "category":    { "type": "string" },
-    "url":         { "type": "string", "pattern": "^https?://" },
-    "tags":        { "type": "array", "items": { "type": "string" } }
+    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "time": { "type": "string", "pattern": "^\\d{2}:\\d{2}$" },
+    "location": { "type": "string" },
+    "region": { "type": "string" },
+    "category": { "type": "string" },
+    "url": { "type": "string", "pattern": "^https?://" },
+    "tags": { "type": "array", "items": { "type": "string" } }
   },
   "additionalProperties": true
 }

@@ -94,8 +94,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install PyYAML
-        run: pip install pyyaml
+      - name: Install dependencies
+        run: pip install pyyaml jsonschema types-jsonschema
 
       - name: Validate event metadata schema
         run: python scripts/validate_events.py
