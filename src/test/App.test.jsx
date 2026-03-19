@@ -43,7 +43,7 @@ describe("App", () => {
     render(<App />);
     const resultsInfo = screen.getByText(/Showing/);
     expect(resultsInfo).toBeInTheDocument();
-    expect(resultsInfo.textContent).toContain("8");
+    expect(resultsInfo.textContent).toContain("9");
     expect(resultsInfo.textContent).toContain("events");
   });
 
