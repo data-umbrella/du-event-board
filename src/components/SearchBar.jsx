@@ -5,6 +5,8 @@ export default function SearchBar({
   onRegionChange,
   selectedCategory,
   onCategoryChange,
+  selectedFormat,
+  onFormatChange,
   dateFilterType,
   onDateFilterTypeChange,
   customDate,
@@ -15,6 +17,7 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  formats
 }) {
   return (
     <div className="search" id="search">
@@ -63,28 +66,43 @@ export default function SearchBar({
               ))}
             </select>
           </div>
-        </div>
 
-        <div className="search__row search__row--date">
-          <div
-            className={
-              "search__select-wrapper search__select-wrapper--date-type"
-            }
-          >
-            <select
-              id="date-filter-select"
-              className="search__select"
-              value={dateFilterType}
-              onChange={(e) => onDateFilterTypeChange(e.target.value)}
-              aria-label="Date filter"
+          <div className="search__row search__row--filters">
+            <div className="search__select-wrapper">
+              <select
+                id="format-select"
+                className="search__select"
+                value={selectedFormat}
+                onChange={(e) => onFormatChange(e.target.value)}
+              >
+                <option value="">All Formats</option>
+                {formats.map((format) => (
+                  <option key={format} value={format.toLowerCase()}>
+                    {format}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div
+              className={
+                "search__select-wrapper search__select-wrapper--date-type"
+              }
             >
-              <option value="all">All Dates</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="thisWeek">This Week</option>
-              <option value="thisMonth">This Month</option>
-              <option value="customDate">Custom Date</option>
-              <option value="customRange">Custom Range</option>
-            </select>
+              <select
+                id="date-filter-select"
+                className="search__select"
+                value={dateFilterType}
+                onChange={(e) => onDateFilterTypeChange(e.target.value)}
+                aria-label="Date filter"
+              >
+                <option value="all">All Dates</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="thisWeek">This Week</option>
+                <option value="thisMonth">This Month</option>
+                <option value="customDate">Custom Date</option>
+                <option value="customRange">Custom Range</option>
+              </select>
+            </div>
           </div>
 
           {dateFilterType === "customDate" && (
