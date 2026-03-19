@@ -72,12 +72,12 @@ export default function App() {
   };
 
   const regions = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.region))];
+    const unique = [...new Set(events.map((e) => e.region).filter(Boolean))];
     return unique.sort();
   }, []);
 
   const categories = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.category))];
+    const unique = [...new Set(events.map((e) => e.category).filter(Boolean))];
     return unique.sort();
   }, []);
 
@@ -172,6 +172,16 @@ export default function App() {
     rangeEnd,
   ]);
 
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedRegion("");
+    setSelectedCategory("");
+    setDateFilterType("all");
+    setCustomDate("");
+    setRangeStart("");
+    setRangeEnd("");
+  };
+
   return (
     <>
       <Header theme={theme} onToggleTheme={toggleTheme} />
@@ -192,6 +202,7 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        onClearFilters={handleClearFilters}
       />
       <main className="main" id="main-content">
         <div
