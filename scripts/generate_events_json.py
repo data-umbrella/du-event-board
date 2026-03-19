@@ -49,6 +49,8 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
 
     # Validate date format
     if "date" in event:
+        if not isinstance(event["date"], str):
+            event["date"] = str(event["date"])
         try:
             datetime.strptime(event["date"], "%Y-%m-%d")
         except ValueError:
@@ -58,6 +60,8 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
 
     # Validate time format
     if "time" in event:
+        if not isinstance(event["time"], str):
+            event["time"] = str(event["time"])
         try:
             datetime.strptime(event["time"], "%H:%M")
         except ValueError:
