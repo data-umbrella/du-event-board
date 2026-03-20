@@ -1,0 +1,9 @@
+This PR introduces a cost field to events and enhances the UI to clearly indicate whether an event is free, paid, or donation-based. It also adds filtering functionality on the events listing page.
+
+This improves usability by allowing users to quickly identify and filter events based on cost.
+
+Motivation
+
+Currently, users cannot determine whether an event is free or paid without opening individual event pages. This creates friction, especially for:
+
+Students looking for free events
