@@ -27,6 +27,10 @@ export default function App() {
   const [rangeStart, setRangeStart] = useState("");
   const [rangeEnd, setRangeEnd] = useState("");
 
+  const [selectedStatus, setSelectedStatus] = useState("all");
+
+  // const status = (event?.status || "scheduled").toString().toLowerCase();
+
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
 
@@ -40,15 +44,25 @@ export default function App() {
     }
   };
 
+  const eventsWithStatus = events.map((event) => ({
+    ...event,
+    status: (event.status || "scheduled").toLowerCase(),
+  }));
+
   const regions = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.region))];
+    const unique = [...new Set(eventsWithStatus.map((e) => e.region))];
     return unique.sort();
-  }, []);
+  }, [eventsWithStatus]);
 
   const categories = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.category))];
+    const unique = [...new Set(eventsWithStatus.map((e) => e.category))];
     return unique.sort();
-  }, []);
+  }, [eventsWithStatus]);
+
+  const statuses = useMemo(() => {
+    const unique = [...new Set(eventsWithStatus.map((e) => e.status))];
+    return unique.sort();
+  }, [eventsWithStatus]);
 
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
@@ -70,7 +84,7 @@ export default function App() {
     const selectedRangeStart = parseISODate(rangeStart);
     const selectedRangeEnd = parseISODate(rangeEnd);
 
-    return events.filter((event) => {
+    return eventsWithStatus.filter((event) => {
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 
@@ -91,6 +105,12 @@ export default function App() {
 
       // Date filter
       let matchesDate = true;
+
+      const status = (event.status || "scheduled").toLowerCase();
+
+      // Status filter
+      const matchesStatus =
+        selectedStatus === "all" ? true : status === selectedStatus;
 
       switch (dateFilterType) {
         case "upcoming":
@@ -129,12 +149,20 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesStatus &&
+        matchesDate
+      );
     });
   }, [
+    eventsWithStatus,
     searchTerm,
     selectedRegion,
     selectedCategory,
+    selectedStatus,
     dateFilterType,
     customDate,
     rangeStart,
@@ -161,6 +189,9 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        statuses={statuses}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
       />
       <main className="main" id="main-content">
         <p className="main__results-info">

@@ -28,6 +28,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 INPUT_FILE = PROJECT_ROOT / "data" / "events.yaml"
 OUTPUT_FILE = PROJECT_ROOT / "src" / "data" / "events.json"
+VALID_STATUSES = {"scheduled", "cancelled", "postponed", "removed"}
 
 
 def validate_event(event: dict[str, Any], index: int) -> list[str]:
@@ -65,6 +66,12 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
             )
 
+    status = event.get("status", "").strip().lower()
+    if status not in VALID_STATUSES:
+        errors.append(
+            f"Event #{index}: Invalid status '{event.get('status')}' (must be one of {VALID_STATUSES})"
+        )
+
     return errors
 
 
@@ -87,6 +94,12 @@ def main() -> None:
 
     events = data["events"]
     print(f"Found {len(events)} events")
+
+    for event in events:
+        if "status" not in event or not event["status"]:
+            event["status"] = "scheduled"
+        else:
+            event["status"] = event["status"].strip().lower()
 
     # Validate all events
     all_errors = []
