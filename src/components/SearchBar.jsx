@@ -25,7 +25,11 @@ export default function SearchBar({
     <div className="search" id="search">
       <div className="search__container">
         <div className="search__row search__row--view">
-          <div className="search__view-toggle" role="group" aria-label="View mode">
+          <div
+            className="search__view-toggle"
+            role="group"
+            aria-label="View mode"
+          >
             <button
               type="button"
               className={
@@ -160,7 +164,11 @@ export default function SearchBar({
         {tags.length > 0 && (
           <div className="search__row search__row--tags">
             <span className="search__tags-label">Tags:</span>
-            <div className="search__tags" role="group" aria-label="Tag filters">
+            <div
+              className="search__tags"
+              role="group"
+              aria-label="Tag filters"
+            >
               <button
                 type="button"
                 className={

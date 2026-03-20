@@ -197,7 +197,9 @@ export default function App() {
           event{filteredEvents.length !== 1 ? "s" : ""}
         </p>
         <div
-          className={viewMode === "list" ? "events-grid events-list" : "events-grid"}
+          className={
+            viewMode === "list" ? "events-grid events-list" : "events-grid"
+          }
           id="events-grid"
         >
           {filteredEvents.length > 0 ? (
