@@ -21,6 +21,8 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedTag, setSelectedTag] = useState("");
+  const [viewMode, setViewMode] = useState("grid");
 
   const [dateFilterType, setDateFilterType] = useState("all");
   const [customDate, setCustomDate] = useState("");
@@ -48,6 +50,16 @@ export default function App() {
   const categories = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.category))];
     return unique.sort();
+  }, []);
+
+  const tags = useMemo(() => {
+    const unique = new Set();
+    events.forEach((event) => {
+      if (Array.isArray(event.tags)) {
+        event.tags.forEach((tag) => unique.add(tag));
+      }
+    });
+    return [...unique].sort((a, b) => a.localeCompare(b));
   }, []);
 
   const filteredEvents = useMemo(() => {
@@ -89,6 +101,10 @@ export default function App() {
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
 
+      const matchesTag =
+        !selectedTag ||
+        (event.tags && event.tags.some((tag) => tag === selectedTag));
+
       // Date filter
       let matchesDate = true;
 
@@ -129,12 +145,19 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesTag &&
+        matchesDate
+      );
     });
   }, [
     searchTerm,
     selectedRegion,
     selectedCategory,
+    selectedTag,
     dateFilterType,
     customDate,
     rangeStart,
@@ -161,6 +184,11 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        tags={tags}
+        selectedTag={selectedTag}
+        onTagChange={setSelectedTag}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
       />
       <main className="main" id="main-content">
         <p className="main__results-info">
@@ -168,10 +196,15 @@ export default function App() {
           <span className="main__results-count">{filteredEvents.length}</span>{" "}
           event{filteredEvents.length !== 1 ? "s" : ""}
         </p>
-        <div className="events-grid" id="events-grid">
+        <div
+          className={
+            viewMode === "list" ? "events-grid events-list" : "events-grid"
+          }
+          id="events-grid"
+        >
           {filteredEvents.length > 0 ? (
             filteredEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} event={event} viewMode={viewMode} />
             ))
           ) : (
             <div className="empty-state" id="empty-state">

@@ -1,4 +1,4 @@
-export default function EventCard({ event }) {
+export default function EventCard({ event, viewMode = "grid" }) {
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
@@ -10,7 +10,12 @@ export default function EventCard({ event }) {
   );
 
   return (
-    <article className="event-card" id={`event-${event.id}`}>
+    <article
+      className={
+        viewMode === "list" ? "event-card event-card--list" : "event-card"
+      }
+      id={`event-${event.id}`}
+    >
       <span className="event-card__category">{event.category}</span>
       <h2 className="event-card__title">{event.title}</h2>
       <p className="event-card__description">{event.description}</p>

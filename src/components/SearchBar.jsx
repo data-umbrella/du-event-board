@@ -15,10 +15,48 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  viewMode,
+  onViewModeChange,
+  tags,
+  selectedTag,
+  onTagChange,
 }) {
   return (
     <div className="search" id="search">
       <div className="search__container">
+        <div className="search__row search__row--view">
+          <div
+            className="search__view-toggle"
+            role="group"
+            aria-label="View mode"
+          >
+            <button
+              type="button"
+              className={
+                viewMode === "grid"
+                  ? "search__view-btn search__view-btn--active"
+                  : "search__view-btn"
+              }
+              onClick={() => onViewModeChange("grid")}
+              aria-pressed={viewMode === "grid"}
+            >
+              Grid view
+            </button>
+            <button
+              type="button"
+              className={
+                viewMode === "list"
+                  ? "search__view-btn search__view-btn--active"
+                  : "search__view-btn"
+              }
+              onClick={() => onViewModeChange("list")}
+              aria-pressed={viewMode === "list"}
+            >
+              List view
+            </button>
+          </div>
+        </div>
+
         <div className="search__row search__row--primary">
           <div className="search__input-wrapper">
             <span className="search__icon">🔍</span>
@@ -122,6 +160,43 @@ export default function SearchBar({
             </div>
           )}
         </div>
+
+        {tags.length > 0 && (
+          <div className="search__row search__row--tags">
+            <span className="search__tags-label">Tags:</span>
+            <div
+              className="search__tags"
+              role="group"
+              aria-label="Tag filters"
+            >
+              <button
+                type="button"
+                className={
+                  selectedTag === ""
+                    ? "search__tag-chip search__tag-chip--active"
+                    : "search__tag-chip"
+                }
+                onClick={() => onTagChange("")}
+              >
+                All
+              </button>
+              {tags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  className={
+                    selectedTag === tag
+                      ? "search__tag-chip search__tag-chip--active"
+                      : "search__tag-chip"
+                  }
+                  onClick={() => onTagChange(tag)}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
