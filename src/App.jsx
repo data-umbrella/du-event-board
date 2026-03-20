@@ -21,6 +21,7 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedFormat, setSelectedFormat] = useState("");
 
   const [dateFilterType, setDateFilterType] = useState("all");
   const [customDate, setCustomDate] = useState("");
@@ -47,6 +48,11 @@ export default function App() {
 
   const categories = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.category))];
+    return unique.sort();
+  }, []);
+
+  const formats = useMemo(() => {
+    const unique = [...new Set(events.map((e) => e.format))];
     return unique.sort();
   }, []);
 
@@ -89,6 +95,10 @@ export default function App() {
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
 
+      // Format filter
+      const matchesFormat =
+        !selectedFormat || event.format.toLowerCase() === selectedFormat;
+
       // Date filter
       let matchesDate = true;
 
@@ -129,12 +139,19 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesFormat &&
+        matchesDate
+      );
     });
   }, [
     searchTerm,
     selectedRegion,
     selectedCategory,
+    selectedFormat,
     dateFilterType,
     customDate,
     rangeStart,
@@ -151,6 +168,8 @@ export default function App() {
         onRegionChange={setSelectedRegion}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        selectedFormat={selectedFormat}
+        onFormatChange={setSelectedFormat}
         dateFilterType={dateFilterType}
         onDateFilterTypeChange={handleDateFilterTypeChange}
         customDate={customDate}
@@ -161,6 +180,7 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        formats={formats}
       />
       <main className="main" id="main-content">
         <p className="main__results-info">

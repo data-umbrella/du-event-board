@@ -21,6 +21,7 @@ REQUIRED_FIELDS = [
     "date",
     "time",
     "location",
+    "format",
     "region",
     "category",
 ]
