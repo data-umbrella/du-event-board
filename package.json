@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "generate": "python scripts/generate_events_json.py",
-    "prebuild": "python3 scripts/generate_events_json.py"
+    "prebuild": "python3 scripts/generate_events_json.py || python scripts/generate_events_json.py || py -3 scripts/generate_events_json.py"
   },
   "dependencies": {
     "react": "^18.3.1",
