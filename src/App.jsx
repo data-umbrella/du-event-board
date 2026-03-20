@@ -110,9 +110,7 @@ export default function App() {
 
       // Status filter
       const matchesStatus =
-        selectedStatus === "all"
-          ? true
-          : status === selectedStatus;
+        selectedStatus === "all" ? true : status === selectedStatus;
 
       switch (dateFilterType) {
         case "upcoming":

@@ -17,7 +17,7 @@ export default function SearchBar({
   categories,
   statuses,
   selectedStatus,
-  onStatusChange
+  onStatusChange,
 }) {
   return (
     <div className="search" id="search">

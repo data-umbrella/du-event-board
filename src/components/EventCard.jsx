@@ -11,12 +11,13 @@ export default function EventCard({ event }) {
 
   const status = (event.status || "scheduled").toLowerCase();
 
-  const statusLabel = {
-    scheduled: "Scheduled",
-    cancelled: "Cancelled",
-    postponed: "Postponed",
-    removed: "Removed",
-  }[status] ?? "Scheduled";
+  const statusLabel =
+    {
+      scheduled: "Scheduled",
+      cancelled: "Cancelled",
+      postponed: "Postponed",
+      removed: "Removed",
+    }[status] ?? "Scheduled";
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
