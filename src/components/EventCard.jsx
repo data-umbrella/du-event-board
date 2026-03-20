@@ -9,6 +9,15 @@ export default function EventCard({ event }) {
     },
   );
 
+  const status = (event.status || "scheduled").toLowerCase();
+
+  const statusLabel = {
+    scheduled: "Scheduled",
+    cancelled: "Cancelled",
+    postponed: "Postponed",
+    removed: "Removed",
+  }[status] ?? "Scheduled";
+
   return (
     <article className="event-card" id={`event-${event.id}`}>
       <span className="event-card__category">{event.category}</span>
@@ -27,6 +36,12 @@ export default function EventCard({ event }) {
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📍</span>
           <span>{event.location}</span>
+        </div>
+        <div className="event-card__meta-item">
+          <span className="event-card__meta-icon">⌛</span>
+          <span className={`event-card__status event-card__status--${status}`}>
+            {statusLabel}
+          </span>
         </div>
       </div>
 

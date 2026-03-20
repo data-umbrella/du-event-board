@@ -6,6 +6,7 @@ events:
     time: "19:00"
     location: "TechHub Coworking, Rua da República 433, Porto Alegre"
     region: "Porto Alegre"
+    status: "scheduled"
     category: "Technology"
     url: "https://example.com/python-poa"
     tags:
@@ -34,6 +35,7 @@ events:
     time: "18:30"
     location: "Espaço Digital, Rua XV de Novembro 700, Curitiba"
     region: "Curitiba"
+    status: "removed"
     category: "Technology"
     url: "https://example.com/oss-friday-cwb"
     tags:
@@ -48,6 +50,7 @@ events:
     time: "09:00"
     location: "Lab Analytics, Rua Visconde de Pirajá 330, Rio de Janeiro"
     region: "Rio de Janeiro"
+    status: "scheduled"
     category: "Education"
     url: "https://example.com/ds-bootcamp-rj"
     tags:
@@ -62,6 +65,7 @@ events:
     time: "19:00"
     location: "MG Tech Center, Av. Afonso Pena 1500, Belo Horizonte"
     region: "Belo Horizonte"
+    status: "postponed"
     category: "Technology"
     url: "https://example.com/devops-bh"
     tags:
@@ -76,6 +80,7 @@ events:
     time: "10:00"
     location: "Design Lab POA, Rua Mostardeiro 120, Porto Alegre"
     region: "Porto Alegre"
+    status: "postponed"
     category: "Design"
     url: "https://example.com/ux-workshop-poa"
     tags:
@@ -90,6 +95,7 @@ events:
     time: "18:00"
     location: "Hacker House SP, Rua Augusta 2690, São Paulo"
     region: "São Paulo"
+    status: "cancelled"
     category: "Technology"
     url: "https://example.com/rust-intro-sp"
     tags:
@@ -104,6 +110,7 @@ events:
     time: "08:00"
     location: "ACATE, Rodovia SC-401 600, Florianópolis"
     region: "Florianópolis"
+    status: "scheduled"
     category: "Community"
     url: "https://example.com/hackathon-floripa"
     tags:

@@ -15,6 +15,9 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  statuses,
+  selectedStatus,
+  onStatusChange
 }) {
   return (
     <div className="search" id="search">
@@ -65,7 +68,22 @@ export default function SearchBar({
           </div>
         </div>
 
-        <div className="search__row search__row--date">
+        <div className="search__row search__row--filters">
+          <div className="search__select-wrapper">
+            <select
+              id="status-select"
+              className="search__select"
+              value={selectedStatus}
+              onChange={(e) => onStatusChange(e.target.value)}
+            >
+              <option value="all">All Statuses</option>
+              {statuses.map((status) => (
+                <option key={status} value={status}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
           <div
             className={
               "search__select-wrapper search__select-wrapper--date-type"

@@ -488,6 +488,32 @@ body {
   transform: translateX(3px);
 }
 
+.event-card--cancelled { 
+  opacity: .9; border-left: 4px solid #b82020; 
+}
+
+.event-card--postponed { 
+  opacity: .95; border-left: 4px solid #c87400; 
+}
+.event-card--removed { 
+  opacity: .7; border-left: 4px solid #6b7280; 
+}
+
+.event-card__status--cancelled { 
+  /* background:#ffe6e6; color:#b82020;  */
+  color:#b82020; 
+}
+
+.event-card__status--postponed { 
+  /* background:#fff4e5; color:#c87400;  */
+  color:#c87400; 
+}
+
+.event-card__status--removed { 
+  /* background:#f3f4f6; color:#6b7280;  */
+  color:#6b7280; 
+}
+
 /* ===================================
    Empty State
    =================================== */
