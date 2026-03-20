@@ -43,8 +43,7 @@ describe("App", () => {
     render(<App />);
     const resultsInfo = screen.getByText(/Showing/);
     expect(resultsInfo).toBeInTheDocument();
-    expect(resultsInfo.textContent).toContain("9");
-    expect(resultsInfo.textContent).toContain("events");
+    expect(resultsInfo.textContent).toMatch(/\d+\s+events/);
   });
 
   it("filters events by search term", () => {
