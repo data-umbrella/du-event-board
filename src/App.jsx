@@ -4,7 +4,6 @@ import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import events from "./data/events.json";
 
-
 function parseISODate(dateString) {
   if (!dateString) return null;
   const [year, month, day] = dateString.split("-").map(Number);
@@ -21,18 +20,19 @@ function startOfDay(date) {
 export default function App() {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
 
-useEffect(() => {
-  if (theme === "light") {
-    document.body.classList.add("light-theme");
-  } else {
-    document.body.classList.remove("light-theme");
-  }
-  
-  // This line "records" the choice in the browser
-  localStorage.setItem("theme", theme);
-}, [theme]);
+  useEffect(() => {
+    if (theme === "light") {
+      document.body.classList.add("light-theme");
+    } else {
+      document.body.classList.remove("light-theme");
+    }
 
-const toggleTheme = () => setTheme(prev => prev === "dark" ? "light" : "dark");
+    // This line "records" the choice in the browser
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () =>
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
