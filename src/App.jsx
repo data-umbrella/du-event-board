@@ -18,7 +18,12 @@ function startOfDay(date) {
 }
 
 export default function App() {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+  const [theme, setTheme] = useState(() => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return localStorage.getItem("theme") || "light";
+  }
+  return "light";
+});
 
   useEffect(() => {
     if (theme === "light") {
