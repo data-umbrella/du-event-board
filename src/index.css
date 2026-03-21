@@ -1,10 +1,3 @@
-/* ===================================
-   DU Event Board — Design System
-   Dark-mode glassmorphism with
-   indigo/purple gradients
-   =================================== */
-
-/* CSS Custom Properties */
 :root {
   --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     sans-serif;
@@ -486,6 +479,46 @@ body {
 
 .event-card__link:hover .event-card__link-arrow {
   transform: translateX(3px);
+}
+
+/* Actions row — holds "Add to Calendar" + "Learn more" side by side */
+.event-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* "Add to Calendar" button */
+.event-card__calendar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  color: var(--accent-secondary);
+  background: rgba(192, 132, 252, 0.08);
+  border: 1px solid rgba(192, 132, 252, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.event-card__calendar-btn:hover {
+  background: rgba(192, 132, 252, 0.15);
+  border-color: rgba(192, 132, 252, 0.3);
+  transform: translateY(-1px);
+}
+
+.event-card__calendar-btn:active {
+  transform: translateY(0);
+}
+
+.event-card__calendar-icon {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 /* ===================================
