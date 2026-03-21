@@ -61,6 +61,68 @@
   --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.light-theme {
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(0, 0, 0, 0.02);
+  --bg-card-hover: rgba(0, 0, 0, 0.05);
+  --bg-input: #edf2f7;
+  --bg-input-focus: #e2e8f0;
+
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+
+  --accent-primary: #6366f1; /* Slightly deeper indigo for contrast */
+  --accent-secondary: #8b5cf6;
+  
+  --gradient-hero: linear-gradient(135deg, #e2e8f0 0%, #edf2f7 100%);
+  --border-subtle: rgba(0, 0, 0, 0.1);
+  --border-accent: rgba(99, 102, 241, 0.4);
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all var(--transition-base);
+  z-index: 100;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-input-focus);
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle__icon {
+  font-size: 1rem;
+}
+
+/* On small screens, hide the text and just show the emoji to save space */
+@media (max-width: 480px) {
+  .theme-toggle__text {
+    display: none;
+  }
+  .theme-toggle {
+    padding: 0.6rem;
+    right: 1rem;
+  }
+}
+
 /* Reset & Base */
 *,
 *::before,
@@ -130,6 +192,50 @@ body {
     transparent 60%
   );
   pointer-events: none;
+}
+
+/* Container for Logo + Text */
+.header__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centers the whole brand block */
+  gap: 1rem;               /* Space between image and text */
+  margin-bottom: 0.5rem;
+}
+
+/* Style the logo image */
+.header__logo-img {
+  width: 50px;             /* Adjust size as needed */
+  height: 50px;
+  object-fit: contain;
+  border-radius: 8px;      /* Optional: rounds the logo corners */
+}
+
+/* Reset the logo text styles if you had background gradients before */
+.header__logo {
+  font-size: 2.5rem;
+  margin: 0;
+  color: var(--text-primary);
+  background: none;
+  -webkit-text-fill-color: initial;
+}
+
+/* Adjust the header padding now that it's a simple logo layout */
+.header {
+  padding: 3rem 1rem;
+  background: var(--bg-secondary); /* Or keep your existing background */
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Mobile fix: Stack them if the screen is too small */
+@media (max-width: 480px) {
+  .header__brand {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .header__logo {
+    font-size: 1.8rem;
+  }
 }
 
 .header__content {
