@@ -309,6 +309,33 @@ body {
   background: var(--bg-secondary);
   color: var(--text-primary);
 }
+.search__clear-filters {
+  display: flex;
+  align-items: center;
+}
+
+.search__clear-button {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  background: rgba(139, 92, 246, 0.12);
+  color: #d8b4fe;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.search__clear-button:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(167, 139, 250, 0.55);
+}
+
+.search__clear-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 
 /* ===================================
    Main Content

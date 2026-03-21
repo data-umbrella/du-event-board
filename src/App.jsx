@@ -27,6 +27,16 @@ export default function App() {
   const [rangeStart, setRangeStart] = useState("");
   const [rangeEnd, setRangeEnd] = useState("");
 
+  const handleClearFilters = () => {//Clear filter
+  setSearchTerm("");
+  setSelectedRegion("");
+  setSelectedCategory("");
+  setDateFilterType("all");
+  setCustomDate("");
+  setRangeStart("");
+  setRangeEnd("");
+};
+
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
 
@@ -161,6 +171,7 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        onClearFilters={handleClearFilters}
       />
       <main className="main" id="main-content">
         <p className="main__results-info">
