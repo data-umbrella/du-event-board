@@ -1,3 +1,5 @@
+import { downloadICS } from "../utils/icsGenerator";
+
 export default function EventCard({ event }) {
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
@@ -40,17 +42,29 @@ export default function EventCard({ event }) {
         </div>
       )}
 
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div className="event-card__actions">
+        <button
+          className="event-card__calendar-btn"
+          onClick={() => downloadICS(event)}
+          aria-label={`Add ${event.title} to calendar`}
+          type="button"
         >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
-      )}
+          <span className="event-card__calendar-icon">📆</span>
+          Add to Calendar
+        </button>
+
+        {event.url && (
+          <a
+            href={event.url}
+            className="event-card__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+            <span className="event-card__link-arrow">→</span>
+          </a>
+        )}
+      </div>
     </article>
   );
 }
