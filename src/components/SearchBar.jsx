@@ -66,7 +66,9 @@ export default function SearchBar({
               ))}
             </select>
           </div>
+        </div>
 
+        <div className="search__row search__row--filter">
           <div className="search__select-wrapper">
             <select
               id="language-select"
@@ -82,9 +84,6 @@ export default function SearchBar({
               ))}
             </select>
           </div>
-        </div>
-
-        <div className="search__row search__row--date">
           <div
             className={
               "search__select-wrapper search__select-wrapper--date-type"
