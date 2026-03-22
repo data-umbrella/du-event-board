@@ -54,6 +54,9 @@ events:
       - data-science
       - machine-learning
       - python
+    speakers:
+      - "Reshama Shaikh"
+      - "Andreas Müller"
 
   - id: "5"
     title: "DevOps Meetup - Belo Horizonte"

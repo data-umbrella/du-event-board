@@ -13,7 +13,8 @@
       "python",
       "programming",
       "community"
-    ]
+    ],
+    "speakers": []
   },
   {
     "id": "2",
@@ -29,7 +30,8 @@
       "react",
       "javascript",
       "frontend"
-    ]
+    ],
+    "speakers": []
   },
   {
     "id": "3",
@@ -45,7 +47,8 @@
       "open-source",
       "community",
       "programming"
-    ]
+    ],
+    "speakers": []
   },
   {
     "id": "4",
@@ -61,6 +64,10 @@
       "data-science",
       "machine-learning",
       "python"
+    ],
+    "speakers": [
+      "Reshama Shaikh",
+      "Andreas Müller"
     ]
   },
   {
@@ -77,7 +84,8 @@
       "devops",
       "docker",
       "kubernetes"
-    ]
+    ],
+    "speakers": []
   },
   {
     "id": "6",
@@ -93,7 +101,8 @@
       "design",
       "ux",
       "figma"
-    ]
+    ],
+    "speakers": []
   },
   {
     "id": "7",
@@ -109,7 +118,8 @@
       "rust",
       "programming",
       "systems"
-    ]
+    ],
+    "speakers": []
   },
   {
     "id": "8",
@@ -125,6 +135,7 @@
       "hackathon",
       "community",
       "innovation"
-    ]
+    ],
+    "speakers": []
   }
 ]

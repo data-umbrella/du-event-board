@@ -105,6 +105,10 @@ def main() -> None:
     # Ensure output directory exists
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
+    for event in events:
+        if "speakers" not in event or event["speakers"] is None:
+            event["speakers"] = []
+
     # Write JSON output
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(events, f, indent=2, ensure_ascii=False)

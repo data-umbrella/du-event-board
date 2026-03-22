@@ -80,7 +80,11 @@ export default function App() {
         event.title.toLowerCase().includes(term) ||
         event.description.toLowerCase().includes(term) ||
         (event.tags &&
-          event.tags.some((tag) => tag.toLowerCase().includes(term)));
+          event.tags.some((tag) => tag.toLowerCase().includes(term))) ||
+        (event.speakers &&
+          event.speakers.some((speaker) =>
+            speaker.toLowerCase().includes(term),
+          ));
 
       // Region filter
       const matchesRegion = !selectedRegion || event.region === selectedRegion;

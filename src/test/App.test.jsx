@@ -66,6 +66,22 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("filters events by speaker name", () => {
+    render(<App />);
+    const searchInput = screen.getByPlaceholderText(
+      "Search events by name, description, or tags...",
+    );
+
+    fireEvent.change(searchInput, { target: { value: "Reshama Shaikh" } });
+
+    expect(
+      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Python Meetup - Porto Alegre"),
+    ).not.toBeInTheDocument();
+  });
+
   it("filters events by region", () => {
     render(<App />);
     const regionSelect = screen.getByDisplayValue("All Regions");

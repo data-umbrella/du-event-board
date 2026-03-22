@@ -13,6 +13,12 @@ export default function EventCard({ event }) {
     <article className="event-card" id={`event-${event.id}`}>
       <span className="event-card__category">{event.category}</span>
       <h2 className="event-card__title">{event.title}</h2>
+      {event.speakers && event.speakers.length > 0 && (
+        <p className="event-card__speakers">
+          <span className="event-card__meta-icon">🎤 </span>
+          {event.speakers.join(", ")}
+        </p>
+      )}
       <p className="event-card__description">{event.description}</p>
 
       <div className="event-card__meta">
