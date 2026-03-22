@@ -33,6 +33,7 @@ describe("App", () => {
 
   it("renders event cards", () => {
     render(<App />);
+    setDateFilter("all"); 
     expect(
       screen.getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
@@ -41,6 +42,7 @@ describe("App", () => {
 
   it("shows the total events count", () => {
     render(<App />);
+    setDateFilter("all");
     const resultsInfo = screen.getByText(/Showing/);
     expect(resultsInfo).toBeInTheDocument();
     expect(resultsInfo.textContent).toContain("8");
@@ -49,6 +51,7 @@ describe("App", () => {
 
   it("filters events by search term", () => {
     render(<App />);
+    setDateFilter("all"); 
     const searchInput = screen.getByPlaceholderText(
       "Search events by name, description, or tags...",
     );
@@ -68,6 +71,7 @@ describe("App", () => {
 
   it("filters events by region", () => {
     render(<App />);
+    setDateFilter("all"); 
     const regionSelect = screen.getByDisplayValue("All Regions");
 
     fireEvent.change(regionSelect, { target: { value: "Porto Alegre" } });
@@ -85,6 +89,7 @@ describe("App", () => {
 
   it("filters events by category", () => {
     render(<App />);
+    setDateFilter("all"); 
     const categorySelect = screen.getByDisplayValue("All Categories");
 
     fireEvent.change(categorySelect, { target: { value: "Education" } });
