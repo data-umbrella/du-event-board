@@ -70,7 +70,9 @@ export default function EventCard({ event }) {
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">🕐</span>
-          <span>{formatEventTime(event.date, event.time, event.timezone)}</span>
+          <span>
+            {formatEventTime(event.date, event.time, event.timezone)}
+          </span>
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📍</span>
