@@ -22,7 +22,7 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const [dateFilterType, setDateFilterType] = useState("all");
+  const [dateFilterType, setDateFilterType] = useState("upcoming");
   const [customDate, setCustomDate] = useState("");
   const [rangeStart, setRangeStart] = useState("");
   const [rangeEnd, setRangeEnd] = useState("");
