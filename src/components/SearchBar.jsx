@@ -5,6 +5,8 @@ export default function SearchBar({
   onRegionChange,
   selectedCategory,
   onCategoryChange,
+  selectedLanguage,
+  onLanguageChange,
   dateFilterType,
   onDateFilterTypeChange,
   customDate,
@@ -15,6 +17,7 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  languages
 }) {
   return (
     <div className="search" id="search">
@@ -59,6 +62,22 @@ export default function SearchBar({
               {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="search__select-wrapper">
+            <select
+              id="language-select"
+              className="search__select"
+              value={selectedLanguage}
+              onChange={(e) => onLanguageChange(e.target.value)}
+            >
+              <option value="">All Languages</option>
+              {languages.map((language) => (
+                <option key={language} value={language}>
+                  {language}
                 </option>
               ))}
             </select>

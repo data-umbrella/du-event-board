@@ -8,6 +8,7 @@
     "location": "TechHub Coworking, Rua da República 433, Porto Alegre",
     "region": "Porto Alegre",
     "category": "Technology",
+    "language": "Portuguese",
     "url": "https://example.com/python-poa",
     "tags": [
       "python",
@@ -24,6 +25,7 @@
     "location": "InovaBR Hub, Av. Paulista 1578, São Paulo",
     "region": "São Paulo",
     "category": "Technology",
+    "language": "Portuguese",
     "url": "https://example.com/react-sp",
     "tags": [
       "react",
@@ -40,6 +42,7 @@
     "location": "Espaço Digital, Rua XV de Novembro 700, Curitiba",
     "region": "Curitiba",
     "category": "Technology",
+    "language": "English",
     "url": "https://example.com/oss-friday-cwb",
     "tags": [
       "open-source",
@@ -56,6 +59,7 @@
     "location": "Lab Analytics, Rua Visconde de Pirajá 330, Rio de Janeiro",
     "region": "Rio de Janeiro",
     "category": "Education",
+    "language": "Portuguese",
     "url": "https://example.com/ds-bootcamp-rj",
     "tags": [
       "data-science",
@@ -72,6 +76,7 @@
     "location": "MG Tech Center, Av. Afonso Pena 1500, Belo Horizonte",
     "region": "Belo Horizonte",
     "category": "Technology",
+    "language": "English",
     "url": "https://example.com/devops-bh",
     "tags": [
       "devops",
@@ -88,6 +93,7 @@
     "location": "Design Lab POA, Rua Mostardeiro 120, Porto Alegre",
     "region": "Porto Alegre",
     "category": "Design",
+    "language": "Portuguese",
     "url": "https://example.com/ux-workshop-poa",
     "tags": [
       "design",
@@ -104,6 +110,7 @@
     "location": "Hacker House SP, Rua Augusta 2690, São Paulo",
     "region": "São Paulo",
     "category": "Technology",
+    "language": "English",
     "url": "https://example.com/rust-intro-sp",
     "tags": [
       "rust",
@@ -120,6 +127,7 @@
     "location": "ACATE, Rodovia SC-401 600, Florianópolis",
     "region": "Florianópolis",
     "category": "Community",
+    "language": "Portuguese",
     "url": "https://example.com/hackathon-floripa",
     "tags": [
       "hackathon",

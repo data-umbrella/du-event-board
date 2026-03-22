@@ -28,6 +28,12 @@ export default function EventCard({ event }) {
           <span className="event-card__meta-icon">📍</span>
           <span>{event.location}</span>
         </div>
+        {event.language && (
+          <div className="event-card__meta-item">
+            <span className="event-card__meta-icon">🌐</span>
+            <span>{event.language}</span>
+          </div>
+        )}
       </div>
 
       {event.tags && event.tags.length > 0 && (

@@ -97,6 +97,29 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("filters events by language", () => {
+    render(<App />);
+    setDateFilter("all");
+    const languageSelect = screen.getByDisplayValue("All Languages");
+    fireEvent.change(languageSelect, { target: { value: "English" } });
+
+    expect(
+      screen.getByText("Open Source Friday - Curitiba"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("DevOps Meetup - Belo Horizonte"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Rust Programming Intro - São Paulo"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Python Meetup - Porto Alegre"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Community Hackathon - Florianópolis"),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows empty state when no events match", () => {
     render(<App />);
     const searchInput = screen.getByPlaceholderText(

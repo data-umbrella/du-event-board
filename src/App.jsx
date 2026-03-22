@@ -21,6 +21,7 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("");
 
   const [dateFilterType, setDateFilterType] = useState("all");
   const [customDate, setCustomDate] = useState("");
@@ -47,6 +48,11 @@ export default function App() {
 
   const categories = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.category))];
+    return unique.sort();
+  }, []);
+
+  const languages = useMemo(() => {
+    const unique = [...new Set(events.map((e) => e.language).filter(Boolean))];
     return unique.sort();
   }, []);
 
@@ -89,6 +95,10 @@ export default function App() {
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
 
+      // Language filter
+      const matchesLanguage =
+        !selectedLanguage || event.language === selectedLanguage;
+
       // Date filter
       let matchesDate = true;
 
@@ -129,12 +139,13 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return matchesSearch && matchesRegion && matchesCategory && matchesLanguage && matchesDate;
     });
   }, [
     searchTerm,
     selectedRegion,
     selectedCategory,
+    selectedLanguage,
     dateFilterType,
     customDate,
     rangeStart,
@@ -151,6 +162,8 @@ export default function App() {
         onRegionChange={setSelectedRegion}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        selectedLanguage={selectedLanguage}
+        onLanguageChange={setSelectedLanguage}
         dateFilterType={dateFilterType}
         onDateFilterTypeChange={handleDateFilterTypeChange}
         customDate={customDate}
@@ -161,6 +174,7 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        languages={languages}
       />
       <main className="main" id="main-content">
         <p className="main__results-info">

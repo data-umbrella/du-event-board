@@ -102,6 +102,10 @@ def main() -> None:
 
     print("All events validated successfully")
 
+    # Normalize optional fields
+    for event in events:
+        event.setdefault("language", None)
+
     # Ensure output directory exists
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
