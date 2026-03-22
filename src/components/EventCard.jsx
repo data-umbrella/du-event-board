@@ -1,3 +1,51 @@
+function formatEventTime(date, time, timezone) {
+  if (!date || !time) {
+    return "TBD";
+  }
+
+  if (!timezone) {
+    return time; // backward compatible
+  }
+
+  // Use event datetime in the event timezone
+  const eventDatetimeIso = `${date}T${time}:00`;
+
+  // Interpret the same instant in event timezone
+  const eventDate = new Date(eventDatetimeIso);
+
+  // fallback for invalid Date
+  if (Number.isNaN(eventDate.valueOf())) {
+    return time;
+  }
+
+  const eventFormatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const localFormatter = new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const eventTime = eventFormatter.format(eventDate);
+  const localTime = localFormatter.format(eventDate);
+
+  const timezoneName = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    timeZoneName: "short",
+  })
+    .formatToParts(eventDate)
+    .find((part) => part.type === "timeZoneName")?.value;
+
+  return timezoneName
+    ? `${localTime} (${eventTime} ${timezoneName})`
+    : `${localTime} (${eventTime} ${timezone})`;
+}
+
 export default function EventCard({ event }) {
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
@@ -22,7 +70,7 @@ export default function EventCard({ event }) {
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">🕐</span>
-          <span>{event.time}</span>
+          <span>{formatEventTime(event.date, event.time, event.timezone)}</span>
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📍</span>

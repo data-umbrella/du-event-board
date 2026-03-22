@@ -20,6 +20,7 @@ REQUIRED_FIELDS = [
     "description",
     "date",
     "time",
+    "timezone",
     "location",
     "region",
     "category",
