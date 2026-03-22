@@ -139,7 +139,13 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesLanguage && matchesDate;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesLanguage &&
+        matchesDate
+      );
     });
   }, [
     searchTerm,

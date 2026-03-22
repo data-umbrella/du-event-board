@@ -17,7 +17,7 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
-  languages
+  languages,
 }) {
   return (
     <div className="search" id="search">
