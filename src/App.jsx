@@ -175,13 +175,17 @@ export default function App() {
       <main className="main" id="main-content">
         <div className="view-toggle">
           <button
-            className={`view-toggle__btn${viewMode === "list" ? " view-toggle__btn--active" : ""}`}
+            className={`view-toggle__btn${
+              viewMode === "list" ? " view-toggle__btn--active" : ""
+            }`}
             onClick={() => setViewMode("list")}
           >
             ☰ List
           </button>
           <button
-            className={`view-toggle__btn${viewMode === "calendar" ? " view-toggle__btn--active" : ""}`}
+            className={`view-toggle__btn${
+              viewMode === "calendar" ? " view-toggle__btn--active" : ""
+            }`}
             onClick={() => setViewMode("calendar")}
           >
             📅 Calendar
