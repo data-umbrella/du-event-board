@@ -23,13 +23,19 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
   const [viewMode, setViewMode] = useUrlState("view", "list");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      return localStorage.getItem("theme") || "dark";
+    }
+    return "dark";
+  });
 
   useEffect(() => {
     if (theme === "light") {
