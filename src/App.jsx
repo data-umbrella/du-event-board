@@ -39,7 +39,9 @@ export default function App() {
     }
 
     // This line "records" the choice in the browser
-    localStorage.setItem("theme", theme);
+    if (typeof localStorage !== "undefined" && localStorage.setItem) {
+      localStorage.setItem("theme", theme);
+    }
   }, [theme]);
 
   const toggleTheme = () =>
