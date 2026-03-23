@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import events from "./data/events.json";
+import { useUrlState } from "./hooks/useUrlState";
 
 function parseISODate(dateString) {
   if (!dateString) return null;
@@ -18,14 +19,14 @@ function startOfDay(date) {
 }
 
 export default function App() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchTerm, setSearchTerm] = useUrlState("search", "");
+  const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
+  const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
 
-  const [dateFilterType, setDateFilterType] = useState("all");
-  const [customDate, setCustomDate] = useState("");
-  const [rangeStart, setRangeStart] = useState("");
-  const [rangeEnd, setRangeEnd] = useState("");
+  const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
+  const [customDate, setCustomDate] = useUrlState("customDate", "");
+  const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
+  const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
 
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
