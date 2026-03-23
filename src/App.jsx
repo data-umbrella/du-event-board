@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import events from "./data/events.json";
+import CalendarView from "./components/CalendarView";
 
 function parseISODate(dateString) {
   if (!dateString) return null;
@@ -26,6 +27,9 @@ export default function App() {
   const [customDate, setCustomDate] = useState("");
   const [rangeStart, setRangeStart] = useState("");
   const [rangeEnd, setRangeEnd] = useState("");
+
+  const [viewMode, setViewMode] = useState("list");
+  const [calendarDate, setCalendarDate] = useState("");
 
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
@@ -125,6 +129,11 @@ export default function App() {
             matchesDate = false;
           }
           break;
+        case "calendarDate":
+          matchesDate =
+            !calendarDate ||
+            eventDate.getTime() === parseISODate(calendarDate)?.getTime();
+          break;
         default:
           matchesDate = true;
       }
@@ -139,6 +148,7 @@ export default function App() {
     customDate,
     rangeStart,
     rangeEnd,
+    calendarDate,
   ]);
 
   return (
@@ -163,7 +173,37 @@ export default function App() {
         categories={categories}
       />
       <main className="main" id="main-content">
+        <div className="view-toggle">
+          <button
+            className={`view-toggle__btn${
+              viewMode === "list" ? " view-toggle__btn--active" : ""
+            }`}
+            onClick={() => setViewMode("list")}
+          >
+            ☰ List
+          </button>
+          <button
+            className={`view-toggle__btn${
+              viewMode === "calendar" ? " view-toggle__btn--active" : ""
+            }`}
+            onClick={() => setViewMode("calendar")}
+          >
+            📅 Calendar
+          </button>
+        </div>
+
+        {viewMode === "calendar" && (
+          <CalendarView
+            events={events}
+            onDateSelect={setCalendarDate}
+            selectedDate={calendarDate}
+          />
+        )}
+
         <p className="main__results-info">
+          {calendarDate && viewMode === "calendar" && (
+            <span>Showing events on {calendarDate} — </span>
+          )}
           Showing{" "}
           <span className="main__results-count">{filteredEvents.length}</span>{" "}
           event{filteredEvents.length !== 1 ? "s" : ""}
