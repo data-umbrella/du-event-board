@@ -1,4 +1,9 @@
+import { useBookmarks } from "../hooks/useBookmarks";
+
 export default function EventCard({ event }) {
+  const { toggleBookmark, isBookmarked } = useBookmarks();
+  const saved = isBookmarked(event.id);
+
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
@@ -10,7 +15,23 @@ export default function EventCard({ event }) {
   );
 
   return (
-    <article className="event-card" id={`event-${event.id}`}>
+    <article
+      className="event-card"
+      id={`event-${event.id}`}
+      style={{ position: "relative" }}
+    >
+      {/* New Bookmark Button */}
+      <button
+        className={`event-card__bookmark ${saved ? "is-active" : ""}`}
+        aria-label={saved ? "Remove from bookmarks" : "Add to bookmarks"}
+        onClick={(e) => {
+          e.stopPropagation(); // Prevents clicking the heart from triggering card clicks
+          toggleBookmark(event.id);
+        }}
+      >
+        <span className="event-card__heart-icon">&hearts;</span>
+      </button>
+
       <span className="event-card__category">{event.category}</span>
       <h2 className="event-card__title">{event.title}</h2>
       <p className="event-card__description">{event.description}</p>

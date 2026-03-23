@@ -263,6 +263,53 @@ body {
   letter-spacing: 0.01em;
 }
 
+/* Container for the buttons at the top */
+.header__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  width: 100%;
+}
+
+/* The New Saved Button Styling */
+.header__saved-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.1); /* Light red tint */
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header__saved-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Style when you are viewing the Saved list */
+.header__saved-btn.is-active {
+  background: #374151; /* Dark gray */
+  color: white;
+  border-color: #1f2937;
+}
+
+/* Hide text on very small mobile screens if needed */
+@media (max-width: 480px) {
+  .header__saved-text {
+    display: none;
+  }
+  .header__saved-btn {
+    padding: 8px;
+  }
+}
+
 /* ===================================
    Search Bar
    =================================== */
@@ -592,6 +639,81 @@ body {
 
 .event-card__link:hover .event-card__link-arrow {
   transform: translateX(3px);
+}
+
+/* The circular button container */
+.event-card__bookmark {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Glassmorphism Effect */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(
+    4px
+  ); /* Blurs the card background slightly behind the button */
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+
+  /* Smooth Shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The Heart Character */
+.event-card__heart-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: transparent;
+  /* Thin, professional outline */
+  -webkit-text-stroke: 1.2px #64748b;
+  transition: all 0.3s ease;
+}
+
+/* Hover State */
+.event-card__bookmark:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Saved State (Active) --- */
+.event-card__bookmark.is-active {
+  background: #fff; /* Solid white when active to pop */
+  border-color: #fecdd3;
+}
+
+.event-card__bookmark.is-active .event-card__heart-icon {
+  color: #ff4d4d; /* Bright, clean red */
+  -webkit-text-stroke: 1px #ff4d4d;
+  /* Adds a tiny glow to the heart when saved */
+  filter: drop-shadow(0 0 2px rgba(255, 77, 77, 0.3));
+}
+/* Saved Events Section Styling */
+.saved-events__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.saved-events__title {
+  font-size: 1.8rem;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+}
+
+.saved-events__subtitle {
+  color: #718096;
+  font-size: 1rem;
 }
 
 /* ===================================
