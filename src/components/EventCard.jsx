@@ -1,4 +1,14 @@
+import { useState } from "react";
+
 export default function EventCard({ event }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleShare() {
+    navigator.clipboard.writeText(event.url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
@@ -40,17 +50,28 @@ export default function EventCard({ event }) {
         </div>
       )}
 
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
-      )}
+      <div className="event-card__actions">
+        {event.url && (
+          <a
+            href={event.url}
+            className="event-card__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+            <span className="event-card__link-arrow">→</span>
+          </a>
+        )}
+        {event.url && (
+          <button
+            className={`event-card__share-btn${copied ? " event-card__share-btn--copied" : ""}`}
+            onClick={handleShare}
+            aria-label="Copy event link"
+          >
+            {copied ? "✓ Copied!" : "🔗 Share"}
+          </button>
+        )}
+      </div>
     </article>
   );
 }
