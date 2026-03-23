@@ -10,8 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "vitest run",
-    "generate": "python3 scripts/generate_events_json.py",
-    "prebuild": "pip install pyyaml && python3 scripts/generate_events_json.py"
+    "generate": "python scripts/generate_events_json.py",
+    "prebuild": "python3 scripts/generate_events_json.py"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",
