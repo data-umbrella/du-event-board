@@ -24,6 +24,7 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
   const [viewMode, setViewMode] = useState("list");
+  const [selectedTag, setSelectedTag] = useState("");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
@@ -51,6 +52,16 @@ export default function App() {
   const categories = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.category))];
     return unique.sort();
+  }, []);
+
+  const tags = useMemo(() => {
+    const unique = new Set();
+    events.forEach((event) => {
+      if (Array.isArray(event.tags)) {
+        event.tags.forEach((tag) => unique.add(tag));
+      }
+    });
+    return [...unique].sort((a, b) => a.localeCompare(b));
   }, []);
 
   const filteredEvents = useMemo(() => {
@@ -92,6 +103,10 @@ export default function App() {
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
 
+      const matchesTag =
+        !selectedTag ||
+        (event.tags && event.tags.some((tag) => tag === selectedTag));
+
       // Date filter
       let matchesDate = true;
 
@@ -132,12 +147,19 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesTag &&
+        matchesDate
+      );
     });
   }, [
     searchTerm,
     selectedRegion,
     selectedCategory,
+    selectedTag,
     dateFilterType,
     customDate,
     rangeStart,
@@ -164,6 +186,9 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        tags={tags}
+        selectedTag={selectedTag}
+        onTagChange={setSelectedTag}
       />
       <main className="main" id="main-content">
         <div
@@ -199,6 +224,7 @@ export default function App() {
           >
             <button
               onClick={() => setViewMode("list")}
+              aria-pressed={viewMode === "list"}
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "8px",
@@ -235,10 +261,11 @@ export default function App() {
                 <line x1="3" y1="12" x2="3.01" y2="12"></line>
                 <line x1="3" y1="18" x2="3.01" y2="18"></line>
               </svg>
-              List
+              List view
             </button>
             <button
               onClick={() => setViewMode("map")}
+              aria-pressed={viewMode === "map"}
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "8px",
@@ -270,16 +297,16 @@ export default function App() {
                 <line x1="9" y1="3" x2="9" y2="21"></line>
                 <line x1="15" y1="3" x2="15" y2="21"></line>
               </svg>
-              Map
+              Map view
             </button>
           </div>
         </div>
 
         {viewMode === "list" ? (
-          <div className="events-grid" id="events-grid">
+          <div className="events-grid events-list" id="events-grid">
             {filteredEvents.length > 0 ? (
               filteredEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
+                <EventCard key={event.id} event={event} viewMode="list" />
               ))
             ) : (
               <div className="empty-state" id="empty-state">

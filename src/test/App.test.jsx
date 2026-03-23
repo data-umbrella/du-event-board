@@ -219,4 +219,34 @@ describe("App", () => {
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
   });
+
+  it("filters events by selected tag chip", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "#python" }));
+
+    expect(
+      screen.getByText("Python Meetup - Porto Alegre"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("React Workshop - São Paulo"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("switches to list view", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "List view" }));
+
+    expect(screen.getByRole("button", { name: "List view" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(
+      document
+        .getElementById("events-grid")
+        ?.classList.contains("events-list"),
+    ).toBe(true);
+  });
 });

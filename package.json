@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "generate": "python scripts/generate_events_json.py",
-    "prebuild": "python3 scripts/generate_events_json.py"
+    "prebuild": "python3 scripts/generate_events_json.py || python scripts/generate_events_json.py || py -3 scripts/generate_events_json.py || echo \"Skipping events generation; using committed src/data/events.json\""
   },
   "dependencies": {
     "framer-motion": "^12.38.0",

@@ -15,6 +15,9 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  tags,
+  selectedTag,
+  onTagChange,
 }) {
   return (
     <div className="search" id="search">
@@ -122,6 +125,43 @@ export default function SearchBar({
             </div>
           )}
         </div>
+
+        {tags.length > 0 && (
+          <div className="search__row search__row--tags">
+            <span className="search__tags-label">Tags:</span>
+            <div
+              className="search__tags"
+              role="group"
+              aria-label="Tag filters"
+            >
+              <button
+                type="button"
+                className={
+                  selectedTag === ""
+                    ? "search__tag-chip search__tag-chip--active"
+                    : "search__tag-chip"
+                }
+                onClick={() => onTagChange("")}
+              >
+                All
+              </button>
+              {tags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  className={
+                    selectedTag === tag
+                      ? "search__tag-chip search__tag-chip--active"
+                      : "search__tag-chip"
+                  }
+                  onClick={() => onTagChange(tag)}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
