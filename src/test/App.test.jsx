@@ -244,7 +244,9 @@ describe("App", () => {
       "true",
     );
     expect(
-      document.getElementById("events-grid")?.classList.contains("events-list"),
+      document
+        .getElementById("events-grid")
+        ?.classList.contains("events-list"),
     ).toBe(true);
   });
 });
