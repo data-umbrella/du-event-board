@@ -15,7 +15,7 @@ from typing import Any
 from datetime import datetime
 from pathlib import Path
 
-import yaml
+import yaml  # type: ignore
 
 REQUIRED_FIELDS = [
     "id",
@@ -35,7 +35,8 @@ CACHE_FILE = PROJECT_ROOT / "data" / ".geocode_cache.json"
 
 _geocode_cache = None
 
-def get_cache():
+
+def get_cache() -> dict[str, Any]:
     global _geocode_cache
     if _geocode_cache is None:
         if CACHE_FILE.exists():
@@ -45,11 +46,11 @@ def get_cache():
             _geocode_cache = {}
     return _geocode_cache
 
-def save_cache():
+
+def save_cache() -> None:
     if _geocode_cache is not None:
         with open(CACHE_FILE, "w") as f:
             json.dump(_geocode_cache, f, indent=2)
-
 
 
 def geocode_location(location_str: str) -> tuple[float, float] | None:
@@ -58,26 +59,31 @@ def geocode_location(location_str: str) -> tuple[float, float] | None:
     """
     if not location_str or location_str.lower() == "online":
         return None
-        
+
     cache = get_cache()
     if location_str in cache:
-        return cache[location_str]
-        
+        return (cache[location_str][0], cache[location_str][1])
+
     print(f"  [Network] Fetching coordinates for '{location_str}'...")
     query = urllib.parse.quote(location_str)
     url = f"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1"
-    
-    req = urllib.request.Request(url, headers={'User-Agent': 'DU-Event-Board-App/1.0'})
+
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "DU-Event-Board-App/1.0"}
+    )
     try:
         time.sleep(1.1)  # Respect OpenStreetMap Nominatim usage policy
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode())
             if data and len(data) > 0:
-                coords = [float(data[0]['lat']), float(data[0]['lon'])]
+                coords = (float(data[0]["lat"]), float(data[0]["lon"]))
                 cache[location_str] = coords
                 return coords
     except Exception as e:
-        print(f"Warning: Geocoding failed for '{location_str}': {e}", file=sys.stderr)
+        print(
+            f"Warning: Geocoding failed for '{location_str}': {e}",
+            file=sys.stderr,
+        )
     return None
 
 
@@ -144,14 +150,23 @@ def main() -> None:
     for i, event in enumerate(events, start=1):
         errors = validate_event(event, i)
         all_errors.extend(errors)
-        
+
         # Geocode if we have a location and no coordinates
         if not all_errors and "lat" not in event:
             coords = None
-            if "location" in event and event["location"] and event["location"].lower() != "online":
+            if (
+                "location" in event
+                and event["location"]
+                and event["location"].lower() != "online"
+            ):
                 coords = geocode_location(event["location"])
-                
-            if not coords and "region" in event and event["region"] and event["region"].lower() != "online":
+
+            if (
+                not coords
+                and "region" in event
+                and event["region"]
+                and event["region"].lower() != "online"
+            ):
                 coords = geocode_location(event["region"])
 
             if coords:
@@ -164,7 +179,7 @@ def main() -> None:
         sys.exit(1)
 
     print("All events validated successfully")
-    
+
     save_cache()
 
     # Ensure output directory exists
