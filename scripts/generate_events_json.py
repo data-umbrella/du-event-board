@@ -37,6 +37,7 @@ _geocode_cache = None
 
 
 def get_cache() -> dict[str, Any]:
+    """Retrieve the geocode cache dictionary from disk."""
     global _geocode_cache
     if _geocode_cache is None:
         if CACHE_FILE.exists():
@@ -48,6 +49,7 @@ def get_cache() -> dict[str, Any]:
 
 
 def save_cache() -> None:
+    """Save the geocode cache dictionary back to disk."""
     if _geocode_cache is not None:
         with open(CACHE_FILE, "w") as f:
             json.dump(_geocode_cache, f, indent=2)
