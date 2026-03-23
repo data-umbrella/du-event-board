@@ -64,7 +64,9 @@ export default function EventCard({ event }) {
         )}
         {event.url && (
           <button
-            className={`event-card__share-btn${copied ? " event-card__share-btn--copied" : ""}`}
+            className={`event-card__share-btn${
+              copied ? " event-card__share-btn--copied" : ""
+            }`}
             onClick={handleShare}
             aria-label="Copy event link"
           >
