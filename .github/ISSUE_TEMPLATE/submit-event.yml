@@ -1,0 +1,211 @@
+name: "Submit an Event"
+description: "Submit a new event to be added to the Data Umbrella Event Board"
+title: "[Event]: "
+labels: ["event-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 📅 Submit a New Event
+        Thank you for contributing an event to the Data Umbrella Event Board!
+        Please fill in as many fields as possible. Required fields are marked with *.
+
+        **How it works:**
+        1. Fill out this form and submit the issue
+        2. A maintainer will review your submission
+        3. If approved, they will apply the `add-event` label and close the issue
+        4. Automation will validate and automatically add your event to the board 🎉
+
+  # ─── Core Info ────────────────────────────────────────────────────────────────
+
+  - type: input
+    id: title
+    attributes:
+      label: "Event Title *"
+      description: "Full name of the event"
+      placeholder: "e.g. Python Meetup - Porto Alegre"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Event Description *"
+      description: "Brief description of the event (1-3 sentences)"
+      placeholder: "e.g. Monthly Python community meetup featuring talks on web development, data science, and automation. Open to all skill levels."
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: "Event URL *"
+      description: "Link to the event registration or info page"
+      placeholder: "https://example.com/my-event"
+    validations:
+      required: true
+
+  # ─── Date & Time ──────────────────────────────────────────────────────────────
+
+  - type: input
+    id: date
+    attributes:
+      label: "Event Date *"
+      description: "Date of the event in YYYY-MM-DD format"
+      placeholder: "2026-03-15"
+    validations:
+      required: true
+
+  - type: input
+    id: time
+    attributes:
+      label: "Event Time"
+      description: "Start time in HH:MM (24-hour) format"
+      placeholder: "19:00"
+    validations:
+      required: false
+
+  - type: input
+    id: timezone
+    attributes:
+      label: "Timezone"
+      description: "IANA timezone name for the event time"
+      placeholder: "e.g. America/Sao_Paulo, Asia/Kolkata, Europe/London"
+    validations:
+      required: false
+
+  # ─── Location ─────────────────────────────────────────────────────────────────
+
+  - type: input
+    id: location
+    attributes:
+      label: "Location"
+      description: "Venue name and address (leave blank if fully online)"
+      placeholder: "e.g. TechHub Coworking, Rua da República 433, Porto Alegre"
+    validations:
+      required: false
+
+  - type: input
+    id: region
+    attributes:
+      label: "City / Region *"
+      description: "City or region where the event takes place (use 'Online' if virtual)"
+      placeholder: "e.g. Porto Alegre"
+    validations:
+      required: true
+
+  - type: input
+    id: country
+    attributes:
+      label: "Country *"
+      description: "Country where the event takes place"
+      placeholder: "e.g. Brazil"
+    validations:
+      required: true
+
+  # ─── Classification ───────────────────────────────────────────────────────────
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "Category *"
+      description: "Primary category of the event"
+      options:
+        - Technology
+        - Data Science
+        - Machine Learning
+        - Community
+        - Workshop
+        - Conference
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: format
+    attributes:
+      label: "Event Format *"
+      description: "How will the event be held?"
+      options:
+        - in-person
+        - online
+        - hybrid
+    validations:
+      required: true
+
+  - type: dropdown
+    id: status
+    attributes:
+      label: "Event Status"
+      description: "Current status of the event"
+      options:
+        - scheduled
+        - cancelled
+        - postponed
+        - tentative
+    validations:
+      required: false
+
+  - type: dropdown
+    id: cost
+    attributes:
+      label: "Cost"
+      description: "Is the event free or paid?"
+      options:
+        - free
+        - paid
+        - donation-based
+    validations:
+      required: false
+
+  # ─── People & Language ────────────────────────────────────────────────────────
+
+  - type: input
+    id: speaker
+    attributes:
+      label: "Speaker(s)"
+      description: "Name(s) of speaker(s), comma-separated"
+      placeholder: "e.g. Jane Doe, John Smith"
+    validations:
+      required: false
+
+  - type: input
+    id: language
+    attributes:
+      label: "Language"
+      description: "Language the event will be conducted in"
+      placeholder: "e.g. English, Portuguese, Spanish"
+    validations:
+      required: false
+
+  # ─── Tags & Extras ────────────────────────────────────────────────────────────
+
+  - type: input
+    id: tags
+    attributes:
+      label: "Tags"
+      description: "Comma-separated tags relevant to the event (lowercase)"
+      placeholder: "e.g. python, data-science, community"
+    validations:
+      required: false
+
+  - type: input
+    id: logo_url
+    attributes:
+      label: "Organization Logo URL"
+      description: "URL to the organizing group's logo image (optional)"
+      placeholder: "https://example.com/logo.png"
+    validations:
+      required: false
+
+  # ─── Confirmation ─────────────────────────────────────────────────────────────
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: "Confirmation *"
+      options:
+        - label: "I confirm this event is real, publicly accessible, and relevant to the Data Umbrella community."
+          required: true
+        - label: "I understand a maintainer will review this before it is published."
+          required: true

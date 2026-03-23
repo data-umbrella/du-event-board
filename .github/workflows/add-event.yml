@@ -1,0 +1,281 @@
+name: Add Event from Issue
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  add-event:
+    # Only run when issue is closed AND has the 'add-event' label
+    if: |
+      github.event.issue.state == 'closed' &&
+      contains(github.event.issue.labels.*.name, 'add-event')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      # ── 1. Checkout repo ────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── 2. Set up Python ────────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      # ── 3. Parse + Validate + Append ────────────────────────────────────────
+      - name: Parse, validate and append event
+        id: parse
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          python3 - <<'EOF'
+          import os
+          import re
+          import sys
+          import yaml
+          from datetime import datetime
+
+          issue_body   = os.environ["ISSUE_BODY"]
+          issue_number = os.environ["ISSUE_NUMBER"]
+
+          # ── Helper: extract a field value from the GitHub issue form body ──
+          def extract_field(body, field_label):
+              pattern = rf"### {re.escape(field_label)}\s*\n+(.+?)(?=\n###|\Z)"
+              match = re.search(pattern, body, re.DOTALL)
+              if match:
+                  value = match.group(1).strip()
+                  if value in ("_No response_", ""):
+                      return ""
+                  return value
+              return ""
+
+          # ── Parse all fields ─────────────────────────────────────────────────
+          title       = extract_field(issue_body, "Event Title *")
+          description = extract_field(issue_body, "Event Description *")
+          url         = extract_field(issue_body, "Event URL *")
+          date        = extract_field(issue_body, "Event Date *")
+          time        = extract_field(issue_body, "Event Time")        or ""
+          timezone    = extract_field(issue_body, "Timezone")          or ""
+          location    = extract_field(issue_body, "Location")          or ""
+          region      = extract_field(issue_body, "City / Region *")
+          country     = extract_field(issue_body, "Country *")
+          category    = extract_field(issue_body, "Category *")
+          fmt         = extract_field(issue_body, "Event Format *")
+          status      = extract_field(issue_body, "Event Status")      or "scheduled"
+          cost        = extract_field(issue_body, "Cost")              or "free"
+          speaker     = extract_field(issue_body, "Speaker(s)")        or ""
+          language    = extract_field(issue_body, "Language")          or "English"
+          tags_raw    = extract_field(issue_body, "Tags")              or ""
+          logo_url    = extract_field(issue_body, "Organization Logo URL") or ""
+
+          # ── Validation ───────────────────────────────────────────────────────
+          errors = []
+
+          # Required fields
+          if not title:
+              errors.append("❌ **Event Title** is required.")
+          if not description:
+              errors.append("❌ **Event Description** is required.")
+          if not url:
+              errors.append("❌ **Event URL** is required.")
+          if not date:
+              errors.append("❌ **Event Date** is required.")
+          if not region:
+              errors.append("❌ **City / Region** is required.")
+          if not country:
+              errors.append("❌ **Country** is required.")
+          if not category:
+              errors.append("❌ **Category** is required.")
+          if not fmt:
+              errors.append("❌ **Event Format** is required.")
+
+          # Date format: must be YYYY-MM-DD
+          if date:
+              try:
+                  parsed_date = datetime.strptime(date, "%Y-%m-%d")
+              except ValueError:
+                  errors.append(f"❌ **Event Date** `{date}` is not valid. Use YYYY-MM-DD format (e.g. 2026-06-15).")
+
+          # URL format: must start with http:// or https://
+          if url and not re.match(r"^https?://", url):
+              errors.append(f"❌ **Event URL** `{url}` is not valid. It must start with `https://` or `http://`.")
+
+          # Time format: must be HH:MM if provided
+          if time and not re.match(r"^\d{2}:\d{2}$", time):
+              errors.append(f"❌ **Event Time** `{time}` is not valid. Use HH:MM format (e.g. 19:00).")
+
+          # logo_url format if provided
+          if logo_url and not re.match(r"^https?://", logo_url):
+              errors.append(f"❌ **Organization Logo URL** `{logo_url}` is not valid. It must start with `https://` or `http://`.")
+
+          # ── If validation failed, write errors to output and exit ────────────
+          if errors:
+              error_list = "\n".join(errors)
+              with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+                  out.write("validation_passed=false\n")
+                  # Escape newlines for GitHub Actions output
+                  escaped = error_list.replace("\n", "%0A")
+                  out.write(f"validation_errors={escaped}\n")
+              print("Validation failed:")
+              print(error_list)
+              sys.exit(0)  # Exit 0 so the step doesn't fail — we handle it in next step
+
+          # ── Parse tags into list ─────────────────────────────────────────────
+          tags = [t.strip().lower() for t in tags_raw.split(",") if t.strip()] if tags_raw else []
+
+          # ── Load existing events.yaml ────────────────────────────────────────
+          with open("events.yaml", "r") as f:
+              data = yaml.safe_load(f) or {}
+
+          events = data.get("events", [])
+
+          # ── Generate next numeric string ID ─────────────────────────────────
+          existing_ids = []
+          for e in events:
+              try:
+                  existing_ids.append(int(e.get("id", 0)))
+              except (ValueError, TypeError):
+                  pass
+          next_id = str(max(existing_ids, default=0) + 1)
+
+          # ── Build new event entry ────────────────────────────────────────────
+          new_event = {
+              "id":          next_id,
+              "title":       title,
+              "description": description,
+              "date":        date,
+              "url":         url,
+              "region":      region,
+              "country":     country,
+              "category":    category,
+              "format":      fmt,
+              "status":      status,
+              "cost":        cost,
+              "language":    language,
+          }
+
+          # Only include optional fields if they have values
+          if time:      new_event["time"]      = time
+          if timezone:  new_event["timezone"]  = timezone
+          if location:  new_event["location"]  = location
+          if speaker:   new_event["speaker"]   = speaker
+          if logo_url:  new_event["logo_url"]  = logo_url
+          if tags:      new_event["tags"]      = tags
+
+          # ── Append and write back ────────────────────────────────────────────
+          events.append(new_event)
+          data["events"] = events
+
+          with open("events.yaml", "w") as f:
+              yaml.dump(data, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
+
+          print(f"✅ Appended event ID {next_id}: {title}")
+
+          # ── Write outputs for next steps ─────────────────────────────────────
+          safe_title = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:50]
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write("validation_passed=true\n")
+              out.write(f"event_id={next_id}\n")
+              out.write(f"event_title={title}\n")
+              out.write(f"branch_name=add-event/{issue_number}-{safe_title}\n")
+          EOF
+
+      # ── 4. Post error comment and stop if validation failed ──────────────────
+      - name: Comment validation errors on issue
+        if: steps.parse.outputs.validation_passed == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ERRORS: ${{ steps.parse.outputs.validation_errors }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" \
+            --body "🤖 **Automated Validation Failed**
+
+          The event submission could not be processed due to the following errors:
+
+          $ERRORS
+
+          **What to do:**
+          Please open a new issue with the corrected information. A maintainer will review and re-approve it.
+
+          Sorry for the inconvenience! 🙏"
+
+      - name: Stop if validation failed
+        if: steps.parse.outputs.validation_passed == 'false'
+        run: |
+          echo "Validation failed. Stopping workflow."
+          exit 1
+
+      # ── 5. Create branch, commit, push ──────────────────────────────────────
+      - name: Create branch and commit
+        env:
+          BRANCH_NAME: ${{ steps.parse.outputs.branch_name }}
+          EVENT_TITLE: ${{ steps.parse.outputs.event_title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout -b "$BRANCH_NAME"
+          git add events.yaml
+          git commit -m "feat: add event \"$EVENT_TITLE\" (closes #$ISSUE_NUMBER)"
+          git push origin "$BRANCH_NAME"
+
+      # ── 6. Open PR and enable auto-merge ────────────────────────────────────
+      - name: Open PR with auto-merge enabled
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ steps.parse.outputs.branch_name }}
+          EVENT_TITLE: ${{ steps.parse.outputs.event_title }}
+          EVENT_ID: ${{ steps.parse.outputs.event_id }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "$BRANCH_NAME" \
+            --title "feat: add event \"$EVENT_TITLE\"" \
+            --body "## 🤖 Automated Event Submission
+
+          This PR was automatically generated from issue #$ISSUE_NUMBER.
+
+          | Field | Value |
+          |---|---|
+          | **Event ID** | \`$EVENT_ID\` |
+          | **Event Title** | $EVENT_TITLE |
+          | **Source Issue** | #$ISSUE_NUMBER |
+
+          > ✅ Validation passed. Auto-merge is enabled — this PR will merge automatically once all checks pass.
+
+          Closes #$ISSUE_NUMBER" \
+            --label "event-submission")
+
+          echo "PR created: $PR_URL"
+
+          # Enable auto-merge (squash merge)
+          gh pr merge "$PR_URL" --auto --squash
+
+      # ── 7. Comment on issue confirming success ───────────────────────────────
+      - name: Comment success on issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          EVENT_TITLE: ${{ steps.parse.outputs.event_title }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" \
+            --body "🤖 **Automation triggered successfully!**
+
+          ✅ **$EVENT_TITLE** has passed validation and a PR has been automatically created.
+          Auto-merge is enabled — your event will appear on the board once all checks pass. 🎉
+
+          Thank you for your contribution to Data Umbrella!"
