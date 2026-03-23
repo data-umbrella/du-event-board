@@ -6,8 +6,8 @@
 
 /* CSS Custom Properties */
 :root {
-  --font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    sans-serif;
+  --font-family:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Color Palette */
   --bg-primary: #0a0a1a;
@@ -59,6 +59,68 @@
   --transition-fast: 0.15s ease;
   --transition-base: 0.25s ease;
   --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.light-theme {
+  --bg-primary: #f5f7fa;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(0, 0, 0, 0.02);
+  --bg-card-hover: rgba(0, 0, 0, 0.05);
+  --bg-input: #edf2f7;
+  --bg-input-focus: #e2e8f0;
+
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+
+  --accent-primary: #6366f1; /* Slightly deeper indigo for contrast */
+  --accent-secondary: #8b5cf6;
+
+  --gradient-hero: linear-gradient(135deg, #e2e8f0 0%, #edf2f7 100%);
+  --border-subtle: rgba(0, 0, 0, 0.1);
+  --border-accent: rgba(99, 102, 241, 0.4);
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all var(--transition-base);
+  z-index: 100;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-input-focus);
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle__icon {
+  font-size: 1rem;
+}
+
+/* On small screens, hide the text and just show the emoji to save space */
+@media (max-width: 480px) {
+  .theme-toggle__text {
+    display: none;
+  }
+  .theme-toggle {
+    padding: 0.6rem;
+    right: 1rem;
+  }
 }
 
 /* Reset & Base */
@@ -132,6 +194,50 @@ body {
   pointer-events: none;
 }
 
+/* Container for Logo + Text */
+.header__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centers the whole brand block */
+  gap: 1rem; /* Space between image and text */
+  margin-bottom: 0.5rem;
+}
+
+/* Style the logo image */
+.header__logo-img {
+  width: 50px; /* Adjust size as needed */
+  height: 50px;
+  object-fit: contain;
+  border-radius: 8px; /* Optional: rounds the logo corners */
+}
+
+/* Reset the logo text styles if you had background gradients before */
+.header__logo {
+  font-size: 2.5rem;
+  margin: 0;
+  color: var(--text-primary);
+  background: none;
+  -webkit-text-fill-color: initial;
+}
+
+/* Adjust the header padding now that it's a simple logo layout */
+.header {
+  padding: 3rem 1rem;
+  background: var(--bg-secondary); /* Or keep your existing background */
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Mobile fix: Stack them if the screen is too small */
+@media (max-width: 480px) {
+  .header__brand {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .header__logo {
+    font-size: 1.8rem;
+  }
+}
+
 .header__content {
   position: relative;
   z-index: 1;
@@ -155,6 +261,53 @@ body {
   font-weight: 400;
   color: var(--text-secondary);
   letter-spacing: 0.01em;
+}
+
+/* Container for the buttons at the top */
+.header__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  width: 100%;
+}
+
+/* The New Saved Button Styling */
+.header__saved-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(239, 68, 68, 0.1); /* Light red tint */
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.header__saved-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Style when you are viewing the Saved list */
+.header__saved-btn.is-active {
+  background: #374151; /* Dark gray */
+  color: white;
+  border-color: #1f2937;
+}
+
+/* Hide text on very small mobile screens if needed */
+@media (max-width: 480px) {
+  .header__saved-text {
+    display: none;
+  }
+  .header__saved-btn {
+    padding: 8px;
+  }
 }
 
 /* ===================================
@@ -486,6 +639,81 @@ body {
 
 .event-card__link:hover .event-card__link-arrow {
   transform: translateX(3px);
+}
+
+/* The circular button container */
+.event-card__bookmark {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Glassmorphism Effect */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(
+    4px
+  ); /* Blurs the card background slightly behind the button */
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+
+  /* Smooth Shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The Heart Character */
+.event-card__heart-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  color: transparent;
+  /* Thin, professional outline */
+  -webkit-text-stroke: 1.2px #64748b;
+  transition: all 0.3s ease;
+}
+
+/* Hover State */
+.event-card__bookmark:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Saved State (Active) --- */
+.event-card__bookmark.is-active {
+  background: #fff; /* Solid white when active to pop */
+  border-color: #fecdd3;
+}
+
+.event-card__bookmark.is-active .event-card__heart-icon {
+  color: #ff4d4d; /* Bright, clean red */
+  -webkit-text-stroke: 1px #ff4d4d;
+  /* Adds a tiny glow to the heart when saved */
+  filter: drop-shadow(0 0 2px rgba(255, 77, 77, 0.3));
+}
+/* Saved Events Section Styling */
+.saved-events__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.saved-events__title {
+  font-size: 1.8rem;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+}
+
+.saved-events__subtitle {
+  color: #718096;
+  font-size: 1rem;
 }
 
 /* ===================================

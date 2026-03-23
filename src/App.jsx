@@ -1,7 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
+import SavedEvents from "./components/SavedEvents";
 import events from "./data/events.json";
 
 function parseISODate(dateString) {
@@ -18,6 +19,28 @@ function startOfDay(date) {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      return localStorage.getItem("theme") || "light";
+    }
+    return "light";
+  });
+  const [showSaved, setShowSaved] = useState(false);
+
+  useEffect(() => {
+    if (theme === "light") {
+      document.body.classList.add("light-theme");
+    } else {
+      document.body.classList.remove("light-theme");
+    }
+
+    // This line "records" the choice in the browser
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () =>
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -143,47 +166,64 @@ export default function App() {
 
   return (
     <>
-      <Header />
-      <SearchBar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        selectedRegion={selectedRegion}
-        onRegionChange={setSelectedRegion}
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-        dateFilterType={dateFilterType}
-        onDateFilterTypeChange={handleDateFilterTypeChange}
-        customDate={customDate}
-        onCustomDateChange={setCustomDate}
-        rangeStart={rangeStart}
-        onRangeStartChange={setRangeStart}
-        rangeEnd={rangeEnd}
-        onRangeEndChange={setRangeEnd}
-        regions={regions}
-        categories={categories}
+      <Header
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onToggleSaved={() => setShowSaved(!showSaved)}
+        isShowingSaved={showSaved}
       />
+
+      {!showSaved && (
+        <SearchBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          selectedRegion={selectedRegion}
+          onRegionChange={setSelectedRegion}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          dateFilterType={dateFilterType}
+          onDateFilterTypeChange={handleDateFilterTypeChange}
+          customDate={customDate}
+          onCustomDateChange={setCustomDate}
+          rangeStart={rangeStart}
+          onRangeStartChange={setRangeStart}
+          rangeEnd={rangeEnd}
+          onRangeEndChange={setRangeEnd}
+          regions={regions}
+          categories={categories}
+        />
+      )}
       <main className="main" id="main-content">
-        <p className="main__results-info">
-          Showing{" "}
-          <span className="main__results-count">{filteredEvents.length}</span>{" "}
-          event{filteredEvents.length !== 1 ? "s" : ""}
-        </p>
-        <div className="events-grid" id="events-grid">
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))
-          ) : (
-            <div className="empty-state" id="empty-state">
-              <div className="empty-state__icon">🔎</div>
-              <h2 className="empty-state__title">No events found</h2>
-              <p className="empty-state__description">
-                Try adjusting your search terms or filters to find events near
-                you.
-              </p>
+        {showSaved ? (
+          <SavedEvents allEvents={events} />
+        ) : (
+          <>
+            <p className="main__results-info">
+              Showing{" "}
+              <span className="main__results-count">
+                {filteredEvents.length}
+              </span>{" "}
+              event{filteredEvents.length !== 1 ? "s" : ""}
+            </p>
+
+            <div className="events-grid" id="events-grid">
+              {filteredEvents.length > 0 ? (
+                filteredEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))
+              ) : (
+                <div className="empty-state" id="empty-state">
+                  <div className="empty-state__icon">🔎</div>
+                  <h2 className="empty-state__title">No events found</h2>
+                  <p className="empty-state__description">
+                    Try adjusting your search terms or filters to find events
+                    near you.
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </main>
       <footer className="footer">
         <p>
