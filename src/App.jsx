@@ -31,7 +31,12 @@ export default function App() {
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
 
   const [theme, setTheme] = useState(() => {
-    if (typeof window !== "undefined" && window.localStorage) {
+    // Check if we are in a browser and if localStorage.getItem actually exists
+    if (
+      typeof window !== "undefined" &&
+      window.localStorage &&
+      typeof window.localStorage.getItem === "function"
+    ) {
       return localStorage.getItem("theme") || "dark";
     }
     return "dark";
