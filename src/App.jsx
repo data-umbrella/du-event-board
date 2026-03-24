@@ -23,7 +23,15 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
-  const [viewMode, setViewMode] = useUrlState("view", "list");
+  const [viewRaw, setViewRaw] = useUrlState("view", "list");
+  const [selectedTag, setSelectedTag] = useUrlState("tag", "");
+  const viewMode = viewRaw === "map" ? "map" : "list";
+
+  useEffect(() => {
+    if (viewRaw !== "list" && viewRaw !== "map") {
+      setViewRaw("list");
+    }
+  }, [viewRaw, setViewRaw]);
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
@@ -81,6 +89,22 @@ export default function App() {
     return unique.sort();
   }, []);
 
+  const tags = useMemo(() => {
+    const unique = new Set();
+    events.forEach((event) => {
+      if (Array.isArray(event.tags)) {
+        event.tags.forEach((tag) => unique.add(tag));
+      }
+    });
+    return [...unique].sort((a, b) => a.localeCompare(b));
+  }, []);
+
+  useEffect(() => {
+    if (selectedTag && !tags.includes(selectedTag)) {
+      setSelectedTag("");
+    }
+  }, [selectedTag, tags, setSelectedTag]);
+
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
 
@@ -119,6 +143,10 @@ export default function App() {
       // Category filter
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
+
+      const matchesTag =
+        !selectedTag ||
+        (event.tags && event.tags.some((tag) => tag === selectedTag));
 
       // Date filter
       let matchesDate = true;
@@ -160,12 +188,19 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesTag &&
+        matchesDate
+      );
     });
   }, [
     searchTerm,
     selectedRegion,
     selectedCategory,
+    selectedTag,
     dateFilterType,
     customDate,
     rangeStart,
@@ -192,6 +227,9 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        tags={tags}
+        selectedTag={selectedTag}
+        onTagChange={setSelectedTag}
       />
       <main className="main" id="main-content">
         <div
@@ -226,7 +264,10 @@ export default function App() {
             }}
           >
             <button
-              onClick={() => setViewMode("list")}
+              type="button"
+              onClick={() => setViewRaw("list")}
+              aria-pressed={viewMode === "list"}
+              aria-label="List view"
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "8px",
@@ -266,7 +307,10 @@ export default function App() {
               List
             </button>
             <button
-              onClick={() => setViewMode("map")}
+              type="button"
+              onClick={() => setViewRaw("map")}
+              aria-pressed={viewMode === "map"}
+              aria-label="Map view"
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "8px",
