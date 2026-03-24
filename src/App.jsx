@@ -71,6 +71,16 @@ export default function App() {
     }
   };
 
+  const handleClearAll = () => {
+    setSearchTerm("");
+    setSelectedRegion("");
+    setSelectedCategory("");
+    setDateFilterType("all");
+    setCustomDate("");
+    setRangeStart("");
+    setRangeEnd("");
+  };
+
   const regions = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.region))];
     return unique.sort();
@@ -193,6 +203,67 @@ export default function App() {
         regions={regions}
         categories={categories}
       />
+
+      {/* Active filter chips */}
+      {(searchTerm ||
+        selectedRegion ||
+        selectedCategory ||
+        dateFilterType !== "all") && (
+        <div className="filter-chips">
+          {searchTerm && (
+            <span className="filter-chip">
+              Search: {searchTerm}
+              <button
+                className="filter-chip__remove"
+                onClick={() => setSearchTerm("")}
+                aria-label="Remove search filter"
+              >
+                ✕
+              </button>
+            </span>
+          )}
+          {selectedRegion && (
+            <span className="filter-chip">
+              Region: {selectedRegion}
+              <button
+                className="filter-chip__remove"
+                onClick={() => setSelectedRegion("")}
+                aria-label="Remove region filter"
+              >
+                ✕
+              </button>
+            </span>
+          )}
+          {selectedCategory && (
+            <span className="filter-chip">
+              Category: {selectedCategory}
+              <button
+                className="filter-chip__remove"
+                onClick={() => setSelectedCategory("")}
+                aria-label="Remove category filter"
+              >
+                ✕
+              </button>
+            </span>
+          )}
+          {dateFilterType !== "all" && (
+            <span className="filter-chip">
+              Date: {dateFilterType}
+              <button
+                className="filter-chip__remove"
+                onClick={() => handleDateFilterTypeChange("all")}
+                aria-label="Remove date filter"
+              >
+                ✕
+              </button>
+            </span>
+          )}
+          <button className="filter-chips__clear-all" onClick={handleClearAll}>
+            Clear all
+          </button>
+        </div>
+      )}
+
       <main className="main" id="main-content">
         <div
           style={{
