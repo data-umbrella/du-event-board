@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
@@ -32,9 +32,15 @@ export default function App() {
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
 
+<<<<<<< HEAD
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
+=======
+  const [radiusStr, setRadiusStr] = useUrlState("radius", "50");
+  const searchRadius = parseInt(radiusStr, 10) || 50;
+  const [mapNotification, setMapNotification] = useState(null);
+>>>>>>> 5f15ab0 (feat: enhanced map with marker clustering, theme-aware popups, and combined geolocation controls)
 
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
@@ -60,6 +66,63 @@ export default function App() {
       localStorage.setItem("theme", theme);
     }
   }, [theme]);
+
+  // Geolocation "Near Me" Logic
+  const handleNearMe = useCallback(() => {
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+
+          // Find the nearest region within search radius
+          let nearestRegion = null;
+          let minDistanceSq = Infinity;
+
+          // 1 degree is roughly 111km
+          const radiusDeg = searchRadius / 111;
+          const maxDistSq = Math.pow(radiusDeg, 2);
+
+          events.forEach((event) => {
+            if (event.lat && event.lng) {
+              const d2 =
+                Math.pow(event.lat - latitude, 2) +
+                Math.pow(event.lng - longitude, 2);
+
+              if (d2 < minDistanceSq && d2 <= maxDistSq) {
+                minDistanceSq = d2;
+                nearestRegion = event.region;
+              }
+            }
+          });
+
+          if (nearestRegion) {
+            setSelectedRegion(nearestRegion);
+            setMapNotification(null);
+          } else {
+            setMapNotification(
+              `No events found within ${searchRadius}km of your location.`,
+            );
+            setTimeout(() => setMapNotification(null), 5000);
+          }
+        },
+        (error) => {
+          console.debug("Geolocation was denied or failed:", error);
+          setMapNotification("Location access denied or failed.");
+          setTimeout(() => setMapNotification(null), 5000);
+        },
+        { timeout: 10000 },
+      );
+    }
+  }, [searchRadius, setSelectedRegion]);
+
+  useEffect(() => {
+    // Only attempt to auto-locate if no region is currently selected
+    if (!selectedRegion) {
+      // handleNearMe(); // Disabled automatic geolocation on load
+    }
+    // We only want this once on mount/load if empty
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleTheme = () =>
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
@@ -331,7 +394,14 @@ export default function App() {
             )}
           </div>
         ) : (
-          <EventMap events={filteredEvents} />
+          <EventMap
+            events={filteredEvents}
+            theme={theme}
+            onNearMe={handleNearMe}
+            searchRadius={searchRadius}
+            onRadiusChange={(val) => setRadiusStr(val.toString())}
+            notification={mapNotification}
+          />
         )}
       </main>
       <Footer onNavigate={setCurrentPage} />
