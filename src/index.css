@@ -485,6 +485,15 @@ body {
   opacity: 1;
 }
 
+.event-card__image {
+  display: block;
+  width: calc(100% + 3.5rem);
+  margin: -1.75rem -1.75rem 1.25rem -1.75rem;
+  height: 180px;
+  object-fit: cover;
+  background: var(--bg-secondary);
+}
+
 .event-card__category {
   display: inline-block;
   font-size: 0.7rem;

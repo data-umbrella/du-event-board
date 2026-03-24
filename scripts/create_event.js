@@ -83,6 +83,11 @@ async function main() {
       message: "Event URL (e.g. Meetup/Event link)?",
     },
     {
+      type: "text",
+      name: "image_url",
+      message: "Event Cover Image URL (Optional, leave blank if none)?",
+    },
+    {
       type: "list",
       name: "tags",
       message: 'Tags (comma separated, e.g. "react, frontend, javascript")?',
@@ -102,6 +107,11 @@ async function main() {
       ? "\n    tags:\n" + cleanTags.map((t) => `      - ${t}`).join("\n")
       : "\n    tags: []";
 
+  const imageYaml =
+    response.image_url && response.image_url.trim()
+      ? `\n    image_url: "${response.image_url.trim().replace(/"/g, '\\"')}"`
+      : "";
+
   const newEventStr = `
   - id: "${nextId}"
     title: "${response.title.replace(/"/g, '\\"')}"
@@ -111,7 +121,7 @@ async function main() {
     location: "${response.location.replace(/"/g, '\\"')}"
     region: "${response.region.replace(/"/g, '\\"')}"
     category: "${response.category.replace(/"/g, '\\"')}"
-    url: "${response.url.replace(/"/g, '\\"')}"${tagsYaml}
+    url: "${response.url.replace(/"/g, '\\"')}"${imageYaml}${tagsYaml}
 `;
 
   fs.appendFileSync(EVENTS_FILE, newEventStr);
