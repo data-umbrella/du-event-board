@@ -82,61 +82,58 @@ jobs:
           # ── Validation ───────────────────────────────────────────────────────
           errors = []
 
-          # Required fields
           if not title:
-              errors.append("❌ **Event Title** is required.")
+              errors.append("- **Event Title** is required.")
           if not description:
-              errors.append("❌ **Event Description** is required.")
+              errors.append("- **Event Description** is required.")
           if not url:
-              errors.append("❌ **Event URL** is required.")
+              errors.append("- **Event URL** is required.")
           if not date:
-              errors.append("❌ **Event Date** is required.")
+              errors.append("- **Event Date** is required.")
           if not region:
-              errors.append("❌ **City / Region** is required.")
+              errors.append("- **City / Region** is required.")
           if not country:
-              errors.append("❌ **Country** is required.")
+              errors.append("- **Country** is required.")
           if not category:
-              errors.append("❌ **Category** is required.")
+              errors.append("- **Category** is required.")
           if not fmt:
-              errors.append("❌ **Event Format** is required.")
+              errors.append("- **Event Format** is required.")
 
-          # Date format: must be YYYY-MM-DD
           if date:
               try:
-                  parsed_date = datetime.strptime(date, "%Y-%m-%d")
+                  datetime.strptime(date, "%Y-%m-%d")
               except ValueError:
-                  errors.append(f"❌ **Event Date** `{date}` is not valid. Use YYYY-MM-DD format (e.g. 2026-06-15).")
+                  errors.append(f"- **Event Date** `{date}` is not valid. Use YYYY-MM-DD format (e.g. 2026-06-15).")
 
-          # URL format: must start with http:// or https://
           if url and not re.match(r"^https?://", url):
-              errors.append(f"❌ **Event URL** `{url}` is not valid. It must start with `https://` or `http://`.")
+              errors.append(f"- **Event URL** `{url}` is not valid. It must start with `https://` or `http://`.")
 
-          # Time format: must be HH:MM if provided
           if time and not re.match(r"^\d{2}:\d{2}$", time):
-              errors.append(f"❌ **Event Time** `{time}` is not valid. Use HH:MM format (e.g. 19:00).")
+              errors.append(f"- **Event Time** `{time}` is not valid. Use HH:MM format (e.g. 19:00).")
 
-          # logo_url format if provided
           if logo_url and not re.match(r"^https?://", logo_url):
-              errors.append(f"❌ **Organization Logo URL** `{logo_url}` is not valid. It must start with `https://` or `http://`.")
+              errors.append(f"- **Organization Logo URL** `{logo_url}` is not valid. It must start with `https://` or `http://`.")
 
           # ── If validation failed, write errors to output and exit ────────────
           if errors:
               error_list = "\n".join(errors)
               with open(os.environ["GITHUB_OUTPUT"], "a") as out:
                   out.write("validation_passed=false\n")
-                  # Escape newlines for GitHub Actions output
                   escaped = error_list.replace("\n", "%0A")
                   out.write(f"validation_errors={escaped}\n")
               print("Validation failed:")
               print(error_list)
-              sys.exit(0)  # Exit 0 so the step doesn't fail — we handle it in next step
+              sys.exit(0)
 
           # ── Parse tags into list ─────────────────────────────────────────────
           tags = [t.strip().lower() for t in tags_raw.split(",") if t.strip()] if tags_raw else []
 
-          # ── Load existing events.yaml ────────────────────────────────────────
-          with open("events.yaml", "r") as f:
-              data = yaml.safe_load(f) or {}
+          # ── Load existing events.yaml (create if missing) ────────────────────
+          if os.path.exists("events.yaml"):
+              with open("events.yaml", "r") as f:
+                  data = yaml.safe_load(f) or {}
+          else:
+              data = {}
 
           events = data.get("events", [])
 
@@ -165,7 +162,6 @@ jobs:
               "language":    language,
           }
 
-          # Only include optional fields if they have values
           if time:      new_event["time"]      = time
           if timezone:  new_event["timezone"]  = timezone
           if location:  new_event["location"]  = location
@@ -180,7 +176,7 @@ jobs:
           with open("events.yaml", "w") as f:
               yaml.dump(data, f, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
-          print(f"✅ Appended event ID {next_id}: {title}")
+          print(f"Appended event ID {next_id}: {title}")
 
           # ── Write outputs for next steps ─────────────────────────────────────
           safe_title = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:50]
@@ -200,16 +196,13 @@ jobs:
           ERRORS: ${{ steps.parse.outputs.validation_errors }}
         run: |
           gh issue comment "$ISSUE_NUMBER" \
-            --body "🤖 **Automated Validation Failed**
+            --body "**Automated Validation Failed**
 
           The event submission could not be processed due to the following errors:
 
           $ERRORS
 
-          **What to do:**
-          Please open a new issue with the corrected information. A maintainer will review and re-approve it.
-
-          Sorry for the inconvenience! 🙏"
+          Please open a new issue with the corrected information. A maintainer will review and re-approve it."
 
       - name: Stop if validation failed
         if: steps.parse.outputs.validation_passed == 'false'
@@ -217,7 +210,15 @@ jobs:
           echo "Validation failed. Stopping workflow."
           exit 1
 
-      # ── 5. Create branch, commit, push ──────────────────────────────────────
+      # ── 5. Detect default branch ─────────────────────────────────────────────
+      - name: Get default branch
+        id: default_branch
+        run: |
+          DEFAULT=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+          echo "name=$DEFAULT" >> "$GITHUB_OUTPUT"
+          echo "Default branch is: $DEFAULT"
+
+      # ── 6. Create branch, commit, push ──────────────────────────────────────
       - name: Create branch and commit
         env:
           BRANCH_NAME: ${{ steps.parse.outputs.branch_name }}
@@ -227,25 +228,30 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Delete remote branch if it already exists (prevents non-fast-forward errors on reruns)
+          git push origin --delete "$BRANCH_NAME" 2>/dev/null || true
+
           git checkout -b "$BRANCH_NAME"
           git add events.yaml
           git commit -m "feat: add event \"$EVENT_TITLE\" (closes #$ISSUE_NUMBER)"
           git push origin "$BRANCH_NAME"
 
-      # ── 6. Open PR and enable auto-merge ────────────────────────────────────
-      - name: Open PR with auto-merge enabled
+      # ── 7. Open PR ───────────────────────────────────────────────────────────
+      - name: Open PR
+        id: open_pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH_NAME: ${{ steps.parse.outputs.branch_name }}
           EVENT_TITLE: ${{ steps.parse.outputs.event_title }}
           EVENT_ID: ${{ steps.parse.outputs.event_id }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
+          DEFAULT_BRANCH: ${{ steps.default_branch.outputs.name }}
         run: |
           PR_URL=$(gh pr create \
-            --base main \
+            --base "$DEFAULT_BRANCH" \
             --head "$BRANCH_NAME" \
             --title "feat: add event \"$EVENT_TITLE\"" \
-            --body "## 🤖 Automated Event Submission
+            --body "## Automated Event Submission
 
           This PR was automatically generated from issue #$ISSUE_NUMBER.
 
@@ -255,27 +261,33 @@ jobs:
           | **Event Title** | $EVENT_TITLE |
           | **Source Issue** | #$ISSUE_NUMBER |
 
-          > ✅ Validation passed. Auto-merge is enabled — this PR will merge automatically once all checks pass.
-
-          Closes #$ISSUE_NUMBER" \
+          Validation passed. Closes #$ISSUE_NUMBER" \
             --label "event-submission")
 
           echo "PR created: $PR_URL"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
 
-          # Enable auto-merge (squash merge)
-          gh pr merge "$PR_URL" --auto --squash
+      # ── 8. Enable auto-merge (best effort) ──────────────────────────────────
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ steps.open_pr.outputs.pr_url }}
+        run: |
+          gh pr merge "$PR_URL" --auto --squash || echo "Auto-merge could not be enabled. A maintainer can merge the PR manually."
 
-      # ── 7. Comment on issue confirming success ───────────────────────────────
+      # ── 9. Comment on issue confirming success ───────────────────────────────
       - name: Comment success on issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           EVENT_TITLE: ${{ steps.parse.outputs.event_title }}
+          PR_URL: ${{ steps.open_pr.outputs.pr_url }}
         run: |
           gh issue comment "$ISSUE_NUMBER" \
-            --body "🤖 **Automation triggered successfully!**
+            --body "**Automation triggered successfully.**
 
-          ✅ **$EVENT_TITLE** has passed validation and a PR has been automatically created.
-          Auto-merge is enabled — your event will appear on the board once all checks pass. 🎉
+          **$EVENT_TITLE** has passed validation and a pull request has been created: $PR_URL
 
-          Thank you for your contribution to Data Umbrella!"
+          The event will appear on the board once the PR is reviewed and merged.
+
+          Thank you for your contribution to Data Umbrella."
