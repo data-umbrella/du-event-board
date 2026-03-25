@@ -84,7 +84,13 @@ Edit `data/events.yaml` and add a new entry following the existing format:
   tags:
     - tag1
     - tag2
+  # Optional coordinates for map view
+  lat: -23.5505
+  lng: -46.6333
 ```
+
+If one coordinate is present, both must be present. Valid ranges: `lat` in
+`[-90, 90]` and `lng` in `[-180, 180]`.
 
 Then run `npm run generate` to update the JSON, and open a Pull Request. CI
 will validate the YAML and run tests automatically.

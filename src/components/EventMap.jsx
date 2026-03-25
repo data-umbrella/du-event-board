@@ -17,16 +17,28 @@ L.Icon.Default.mergeOptions({
 });
 
 export default function EventMap({ events }) {
-  // Find center based on first geocoded event or fallback
-  const mapCenter = events.find((e) => e.lat && e.lng)
-    ? [
-        events.find((e) => e.lat && e.lng).lat,
-        events.find((e) => e.lat && e.lng).lng,
-      ]
-    : [-14.235, -51.925]; // Center of Brazil as fallback
+  const hasValidCoordinates = (event) => {
+    if (typeof event.lat !== "number" || typeof event.lng !== "number") {
+      return false;
+    }
+    return (
+      Number.isFinite(event.lat) &&
+      Number.isFinite(event.lng) &&
+      event.lat >= -90 &&
+      event.lat <= 90 &&
+      event.lng >= -180 &&
+      event.lng <= 180
+    );
+  };
 
   // Filter events with valid coords
-  const mapEvents = events.filter((e) => e.lat && e.lng);
+  const mapEvents = events.filter(hasValidCoordinates);
+
+  // Find center based on first geocoded event or fallback
+  const mapCenter =
+    mapEvents.length > 0
+      ? [mapEvents[0].lat, mapEvents[0].lng]
+      : [-14.235, -51.925]; // Center of Brazil as fallback
 
   if (mapEvents.length === 0) {
     return (
