@@ -35,6 +35,7 @@ export default function EventCard({ event }) {
       <p className="event-card__description">{event.description}</p>
 
       <div className="event-card__meta">
+        
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📅</span>
           <span>{formattedDate}</span>
@@ -47,6 +48,12 @@ export default function EventCard({ event }) {
           <span className="event-card__meta-icon">📍</span>
           <span>{event.location}</span>
         </div>
+        <div className="event-card__meta-item">
+  <span className="event-card__meta-icon">👥</span>
+  <span>
+    {event.capacity != null ? `${event.capacity} spots` : "Unlimited"}
+  </span>
+</div>
       </div>
 
       {event.tags && event.tags.length > 0 && (
