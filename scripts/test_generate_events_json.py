@@ -1,6 +1,6 @@
 """
 title: Unit tests for event coordinate validation in generate_events_json.
-summary: |-
+summary: >-
   Covers optional lat/lng pairing, ranges, and string-to-number normalization.
 """
 
