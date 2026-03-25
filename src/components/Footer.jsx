@@ -106,7 +106,7 @@ function Footer() {
             </a>
 
             <p className="footer-tagline">
-              A community for underrepresented persons in data science.
+              A data science and open source community.
             </p>
 
             <div className="footer-socials" aria-label="Social links">
