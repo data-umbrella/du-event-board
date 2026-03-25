@@ -1,3 +1,5 @@
+import { FaGlobe, FaTwitter, FaLinkedin } from "react-icons/fa";
+
 export default function EventCard({ event }) {
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
@@ -8,6 +10,10 @@ export default function EventCard({ event }) {
       day: "numeric",
     },
   );
+
+  const hasSocials =
+    event.socials &&
+    Object.values(event.socials).some(Boolean);
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
@@ -40,17 +46,59 @@ export default function EventCard({ event }) {
         </div>
       )}
 
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
-      )}
+      <div className="event-card__actions">
+        {event.url && (
+          <a
+            href={event.url}
+            className="event-card__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+            <span className="event-card__link-arrow">→</span>
+          </a>
+        )}
+
+        {hasSocials && (
+          <div className="event-card__socials">
+            {event.socials.website && (
+              <a
+                href={event.socials.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Website"
+                className="event-card__social-link"
+              >
+                <FaGlobe />
+              </a>
+            )}
+
+            {event.socials.twitter && (
+              <a
+                href={event.socials.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Twitter"
+                className="event-card__social-link"
+              >
+                <FaTwitter />
+              </a>
+            )}
+
+            {event.socials.linkedin && (
+              <a
+                href={event.socials.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="event-card__social-link"
+              >
+                <FaLinkedin />
+              </a>
+            )}
+          </div>
+        )}
+      </div>
     </article>
   );
 }
