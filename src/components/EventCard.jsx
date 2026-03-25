@@ -8,12 +8,11 @@ export default function EventCard({ event }) {
       year: "numeric",
       month: "long",
       day: "numeric",
-    },
+    }
   );
 
   const hasSocials =
-    event.socials &&
-    Object.values(event.socials).some(Boolean);
+    event.socials && Object.values(event.socials).some(Boolean);
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
