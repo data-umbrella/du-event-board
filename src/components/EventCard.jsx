@@ -11,7 +11,7 @@ export default function EventCard({ event }) {
       year: "numeric",
       month: "long",
       day: "numeric",
-    },
+    },  
   );
 
   const statusMap = {
@@ -25,6 +25,7 @@ export default function EventCard({ event }) {
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
+
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 
@@ -36,28 +37,36 @@ export default function EventCard({ event }) {
         )}
       </div>
 
+      <span className="event-card__category">{event.category}</span>
+
+
       <h2 className="event-card__title">{event.title}</h2>
-      <p className="event-card__description">{event.description}</p>
+
+      <p className="event-card__description">
+        {event.description || "No description available."}
+      </p>
 
       <div className="event-card__meta">
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📅</span>
           <span>{formattedDate}</span>
         </div>
+
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">🕐</span>
-          <span>{event.time}</span>
+          <span>{event.time || "Time TBD"}</span>
         </div>
+
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📍</span>
-          <span>{event.location}</span>
+          <span>{event.location || "Location TBD"}</span>
         </div>
       </div>
 
       {event.tags && event.tags.length > 0 && (
         <div className="event-card__tags">
-          {event.tags.map((tag) => (
-            <span key={tag} className="event-card__tag">
+          {event.tags.map((tag, index) => (
+            <span key={`${tag}-${index}`} className="event-card__tag">
               #{tag}
             </span>
           ))}
@@ -85,6 +94,7 @@ export default function EventCard({ event }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Website"
+                title="Website"
                 className="event-card__social-link"
               >
                 <FaGlobe />
@@ -97,6 +107,7 @@ export default function EventCard({ event }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter"
+                title="Twitter"
                 className="event-card__social-link"
               >
                 <FaTwitter />
@@ -109,6 +120,7 @@ export default function EventCard({ event }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
+                title="LinkedIn"
                 className="event-card__social-link"
               >
                 <FaLinkedin />

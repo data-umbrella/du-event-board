@@ -1438,11 +1438,6 @@ body {
   transition: all 0.2s ease;
 }
 
-.event-card__social-link:hover {
-  color: #7c3aed; /* match purple theme */
-  transform: scale(1.1);
-}
-
 .event-card__actions {
   display: flex;
   justify-content: space-between;
