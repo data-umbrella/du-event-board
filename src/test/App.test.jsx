@@ -6,6 +6,8 @@ describe("App", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 3, 15, 12, 0, 0)); // Apr 15, 2026 (local)
+    // Clear the URL global state so tests don't leak into each other when reading window.location.search
+    window.history.replaceState(null, "", "/");
   });
 
   afterEach(() => {

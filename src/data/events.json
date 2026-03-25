@@ -13,7 +13,9 @@
       "python",
       "programming",
       "community"
-    ]
+    ],
+    "lat": -30.0324999,
+    "lng": -51.2303767
   },
   {
     "id": "2",
@@ -29,7 +31,9 @@
       "react",
       "javascript",
       "frontend"
-    ]
+    ],
+    "lat": -23.5506507,
+    "lng": -46.6333824
   },
   {
     "id": "3",
@@ -45,7 +49,9 @@
       "open-source",
       "community",
       "programming"
-    ]
+    ],
+    "lat": -25.4295963,
+    "lng": -49.2712724
   },
   {
     "id": "4",
@@ -61,7 +67,9 @@
       "data-science",
       "machine-learning",
       "python"
-    ]
+    ],
+    "lat": -22.9110137,
+    "lng": -43.2093727
   },
   {
     "id": "5",
@@ -77,7 +85,9 @@
       "devops",
       "docker",
       "kubernetes"
-    ]
+    ],
+    "lat": -19.9227318,
+    "lng": -43.9450948
   },
   {
     "id": "6",
@@ -93,7 +103,9 @@
       "design",
       "ux",
       "figma"
-    ]
+    ],
+    "lat": -30.0324999,
+    "lng": -51.2303767
   },
   {
     "id": "7",
@@ -109,7 +121,9 @@
       "rust",
       "programming",
       "systems"
-    ]
+    ],
+    "lat": -23.5506507,
+    "lng": -46.6333824
   },
   {
     "id": "8",
@@ -125,23 +139,8 @@
       "hackathon",
       "community",
       "innovation"
-    ]
-  },
-  {
-    "id": "9",
-    "title": "AI & Machine Learning Summit - Brasília",
-    "description": "A one-day summit bringing together researchers, engineers, and practitioners to discuss the latest trends in artificial intelligence and machine learning. Sessions include keynote talks, hands-on workshops, and networking opportunities.",
-    "date": "2026-05-03",
-    "time": "09:30",
-    "location": "Innovation Hub Brasília, Setor Comercial Sul, Brasília",
-    "region": "Brasília",
-    "category": "Technology",
-    "url": "https://example.com/ai-ml-summit-br",
-    "tags": [
-      "artificial-intelligence",
-      "machine-learning",
-      "data-science",
-      "networking"
-    ]
+    ],
+    "lat": -27.544562,
+    "lng": -48.4999697
   }
 ]
