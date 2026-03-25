@@ -14,6 +14,20 @@
       "programming",
       "community"
     ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://python.org"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/python"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.com/python"
+      }
+    ],
     "lat": -30.0324999,
     "lng": -51.2303767
   },
@@ -32,16 +46,30 @@
       "javascript",
       "frontend"
     ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://react.dev"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/react"
+      },
+      {
+        "name": "instagram",
+        "url": "https://instagram.com/react"
+      }
+    ],
     "lat": -23.5506507,
     "lng": -46.6333824
   },
   {
     "id": "3",
     "title": "Open Source Friday - Curitiba",
-    "description": "Contribute to open source projects together! We'll pair program on popular OSS projects and help newcomers make their first contribution.",
+    "description": "Contribute to open source projects together!",
     "date": "2026-03-22",
     "time": "18:30",
-    "location": "Espaço Digital, Rua XV de Novembro 700, Curitiba",
+    "location": "Espaço Digital, Curitiba",
     "region": "Curitiba",
     "category": "Technology",
     "url": "https://example.com/oss-friday-cwb",
@@ -50,16 +78,30 @@
       "community",
       "programming"
     ],
+    "socials": [
+      {
+        "name": "github",
+        "url": "https://github.com"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.com"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/opensource"
+      }
+    ],
     "lat": -25.4295963,
     "lng": -49.2712724
   },
   {
     "id": "4",
     "title": "Data Science Bootcamp - Rio de Janeiro",
-    "description": "A full-day bootcamp on data science fundamentals: pandas, scikit-learn, and visualization with matplotlib.",
+    "description": "A full-day bootcamp on data science fundamentals.",
     "date": "2026-04-05",
     "time": "09:00",
-    "location": "Lab Analytics, Rua Visconde de Pirajá 330, Rio de Janeiro",
+    "location": "Lab Analytics, Rio de Janeiro",
     "region": "Rio de Janeiro",
     "category": "Education",
     "url": "https://example.com/ds-bootcamp-rj",
@@ -68,16 +110,26 @@
       "machine-learning",
       "python"
     ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://datascience.com"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/datascience"
+      }
+    ],
     "lat": -22.9110137,
     "lng": -43.2093727
   },
   {
     "id": "5",
     "title": "DevOps Meetup - Belo Horizonte",
-    "description": "Monthly DevOps meetup discussing CI/CD pipelines, container orchestration, and infrastructure as code.",
+    "description": "Monthly DevOps meetup discussing CI/CD pipelines.",
     "date": "2026-04-10",
     "time": "19:00",
-    "location": "MG Tech Center, Av. Afonso Pena 1500, Belo Horizonte",
+    "location": "MG Tech Center, Belo Horizonte",
     "region": "Belo Horizonte",
     "category": "Technology",
     "url": "https://example.com/devops-bh",
@@ -86,16 +138,30 @@
       "docker",
       "kubernetes"
     ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://devops.com"
+      },
+      {
+        "name": "slack",
+        "url": "https://slack.com/devops"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/devops"
+      }
+    ],
     "lat": -19.9227318,
     "lng": -43.9450948
   },
   {
     "id": "6",
     "title": "UX Design Workshop - Porto Alegre",
-    "description": "Learn user experience design principles and create wireframes using Figma. Perfect for beginners and developers wanting to improve their design skills.",
+    "description": "Learn user experience design principles.",
     "date": "2026-04-12",
     "time": "10:00",
-    "location": "Design Lab POA, Rua Mostardeiro 120, Porto Alegre",
+    "location": "Design Lab POA",
     "region": "Porto Alegre",
     "category": "Design",
     "url": "https://example.com/ux-workshop-poa",
@@ -104,16 +170,26 @@
       "ux",
       "figma"
     ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://figma.com"
+      },
+      {
+        "name": "instagram",
+        "url": "https://instagram.com/design"
+      }
+    ],
     "lat": -30.0324999,
     "lng": -51.2303767
   },
   {
     "id": "7",
     "title": "Rust Programming Intro - São Paulo",
-    "description": "Introduction to the Rust programming language. We'll cover ownership, borrowing, and building your first CLI tool.",
+    "description": "Introduction to Rust programming.",
     "date": "2026-04-18",
     "time": "18:00",
-    "location": "Hacker House SP, Rua Augusta 2690, São Paulo",
+    "location": "Hacker House SP",
     "region": "São Paulo",
     "category": "Technology",
     "url": "https://example.com/rust-intro-sp",
@@ -122,16 +198,26 @@
       "programming",
       "systems"
     ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://rust-lang.org"
+      },
+      {
+        "name": "twitter",
+        "url": "https://twitter.com/rustlang"
+      }
+    ],
     "lat": -23.5506507,
     "lng": -46.6333824
   },
   {
     "id": "8",
     "title": "Community Hackathon - Florianópolis",
-    "description": "48-hour hackathon focused on building solutions for local community challenges. Teams of 3-5 people. Prizes for top 3 teams!",
+    "description": "48-hour hackathon for community solutions.",
     "date": "2026-04-25",
     "time": "08:00",
-    "location": "ACATE, Rodovia SC-401 600, Florianópolis",
+    "location": "ACATE",
     "region": "Florianópolis",
     "category": "Community",
     "url": "https://example.com/hackathon-floripa",
@@ -140,7 +226,21 @@
       "community",
       "innovation"
     ],
-    "lat": -27.544562,
-    "lng": -48.4999697
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://hackathon.com"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.com/hackathon"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/hackathon"
+      }
+    ],
+    "lat": 37.02504,
+    "lng": 14.492981
   }
 ]

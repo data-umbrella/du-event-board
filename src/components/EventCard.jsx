@@ -1,3 +1,12 @@
+import {
+  FaGlobe,
+  FaTwitter,
+  FaInstagram,
+  FaDiscord,
+  FaSlack,
+  FaLinkedin,
+} from "react-icons/fa";
+
 export default function EventCard({ event }) {
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
@@ -8,6 +17,19 @@ export default function EventCard({ event }) {
       day: "numeric",
     },
   );
+
+  function getSocialIcon(name) {
+    const iconMap = {
+      website: <FaGlobe />,
+      twitter: <FaTwitter />,
+      instagram: <FaInstagram />,
+      discord: <FaDiscord />,
+      slack: <FaSlack />,
+      linkedin: <FaLinkedin />,
+    };
+
+    return iconMap[name?.toLowerCase()] || <FaGlobe />;
+  }
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
@@ -40,17 +62,35 @@ export default function EventCard({ event }) {
         </div>
       )}
 
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
-      )}
+      <div className="moreInfo">
+        {event.url && (
+          <a
+            href={event.url}
+            className="event-card__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+            <span className="event-card__link-arrow">→</span>
+          </a>
+        )}
+
+        {event.socials && event.socials.length > 0 && (
+          <div className="socialIcons">
+            {event.socials.map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={social.name}
+              >
+                {getSocialIcon(social.name)}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
     </article>
   );
 }

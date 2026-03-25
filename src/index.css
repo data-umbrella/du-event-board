@@ -25,23 +25,17 @@
   --accent-secondary: #c084fc;
   --accent-glow: rgba(124, 92, 252, 0.25);
 
-  --gradient-hero: linear-gradient(
-    135deg,
-    #1a1040 0%,
-    #0d0d2b 50%,
-    #0a1628 100%
-  );
-  --gradient-accent: linear-gradient(
-    135deg,
-    #7c5cfc 0%,
-    #c084fc 50%,
-    #f472b6 100%
-  );
-  --gradient-card: linear-gradient(
-    135deg,
-    rgba(124, 92, 252, 0.08) 0%,
-    rgba(192, 132, 252, 0.04) 100%
-  );
+  --gradient-hero: linear-gradient(135deg,
+      #1a1040 0%,
+      #0d0d2b 50%,
+      #0a1628 100%);
+  --gradient-accent: linear-gradient(135deg,
+      #7c5cfc 0%,
+      #c084fc 50%,
+      #f472b6 100%);
+  --gradient-card: linear-gradient(135deg,
+      rgba(124, 92, 252, 0.08) 0%,
+      rgba(192, 132, 252, 0.04) 100%);
 
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-accent: rgba(124, 92, 252, 0.3);
@@ -73,7 +67,8 @@
   --text-secondary: #4a5568;
   --text-muted: #718096;
 
-  --accent-primary: #6366f1; /* Slightly deeper indigo for contrast */
+  --accent-primary: #6366f1;
+  /* Slightly deeper indigo for contrast */
   --accent-secondary: #8b5cf6;
 
   --gradient-hero: linear-gradient(135deg, #e2e8f0 0%, #edf2f7 100%);
@@ -117,6 +112,7 @@
   .theme-toggle__text {
     display: none;
   }
+
   .theme-toggle {
     padding: 0.6rem;
     right: 1rem;
@@ -171,11 +167,9 @@ body {
   left: -20%;
   width: 140%;
   height: 200%;
-  background: radial-gradient(
-    ellipse at 30% 50%,
-    rgba(124, 92, 252, 0.12) 0%,
-    transparent 60%
-  );
+  background: radial-gradient(ellipse at 30% 50%,
+      rgba(124, 92, 252, 0.12) 0%,
+      transparent 60%);
   pointer-events: none;
 }
 
@@ -186,11 +180,9 @@ body {
   right: -10%;
   width: 60%;
   height: 160%;
-  background: radial-gradient(
-    ellipse at 70% 50%,
-    rgba(244, 114, 182, 0.08) 0%,
-    transparent 60%
-  );
+  background: radial-gradient(ellipse at 70% 50%,
+      rgba(244, 114, 182, 0.08) 0%,
+      transparent 60%);
   pointer-events: none;
 }
 
@@ -198,17 +190,21 @@ body {
 .header__brand {
   display: flex;
   align-items: center;
-  justify-content: center; /* Centers the whole brand block */
-  gap: 1rem; /* Space between image and text */
+  justify-content: center;
+  /* Centers the whole brand block */
+  gap: 1rem;
+  /* Space between image and text */
   margin-bottom: 0.5rem;
 }
 
 /* Style the logo image */
 .header__logo-img {
-  width: 50px; /* Adjust size as needed */
+  width: 50px;
+  /* Adjust size as needed */
   height: 50px;
   object-fit: contain;
-  border-radius: 8px; /* Optional: rounds the logo corners */
+  border-radius: 8px;
+  /* Optional: rounds the logo corners */
 }
 
 /* Reset the logo text styles if you had background gradients before */
@@ -223,7 +219,8 @@ body {
 /* Adjust the header padding now that it's a simple logo layout */
 .header {
   padding: 3rem 1rem;
-  background: var(--bg-secondary); /* Or keep your existing background */
+  background: var(--bg-secondary);
+  /* Or keep your existing background */
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -233,6 +230,7 @@ body {
     flex-direction: column;
     gap: 0.5rem;
   }
+
   .header__logo {
     font-size: 1.8rem;
   }
@@ -460,6 +458,8 @@ body {
   position: relative;
   overflow: hidden;
   cursor: default;
+  display: flex;
+  flex-direction: column;
 }
 
 .event-card::before {
@@ -489,6 +489,7 @@ body {
   display: inline-block;
   font-size: 0.7rem;
   font-weight: 600;
+  align-self: flex-start;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--accent-secondary);
@@ -571,6 +572,8 @@ body {
   gap: 0.5rem;
   font-size: 0.85rem;
   font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
   color: var(--accent-primary);
   text-decoration: none;
   padding: 0.5rem 1rem;
@@ -592,6 +595,54 @@ body {
 
 .event-card__link:hover .event-card__link-arrow {
   transform: translateX(3px);
+}
+
+.moreInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: auto;
+  padding-top: 12px;
+  gap: 10px;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.socialIcons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+
+  transition: all 0.25s ease;
+}
+
+.socialIcons a:hover {
+  background: var(--bg-input-focus);
+  border-color: var(--border-accent);
+
+  transform: translateY(-2px);
+}
+
+.socialIcons svg {
+  color: var(--text-primary);
+  width: 16px;
+  height: 16px;
+}
+
+.socialIcons a:hover svg {
+  color: var(--accent-secondary);
 }
 
 /* ===================================
