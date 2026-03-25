@@ -39,7 +39,7 @@ repos:
 
       - id: mypy
         name: mypy
-        entry: mypy scripts/
+        entry: mypy -p scripts
         language: system
         pass_filenames: false
 
