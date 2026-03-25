@@ -251,15 +251,15 @@ describe("App", () => {
     renderApp();
     expect(
       screen.getByText(
-        "Discover tech events, meetups, and workshops near your region"
-      )
+        "Discover tech events, meetups, and workshops near your region",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renders event cards", () => {
     renderApp();
     expect(
-      screen.getByText("Python Meetup - Porto Alegre")
+      screen.getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
     expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
   });
@@ -274,13 +274,13 @@ describe("App", () => {
   it("filters events by search term", () => {
     renderApp();
     const searchInput = screen.getByPlaceholderText(
-      "Search events by name, description, or tags..."
+      "Search events by name, description, or tags...",
     );
 
     fireEvent.change(searchInput, { target: { value: "python" } });
 
     expect(
-      screen.getByText("Python Meetup - Porto Alegre")
+      screen.getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
   });
 
@@ -291,7 +291,7 @@ describe("App", () => {
     fireEvent.change(regionSelect, { target: { value: "Porto Alegre" } });
 
     expect(
-      screen.getByText("Python Meetup - Porto Alegre")
+      screen.getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
   });
 
@@ -302,14 +302,14 @@ describe("App", () => {
     fireEvent.change(categorySelect, { target: { value: "Education" } });
 
     expect(
-      screen.getByText("Data Science Bootcamp - Rio de Janeiro")
+      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
     ).toBeInTheDocument();
   });
 
   it("shows empty state when no events match", () => {
     renderApp();
     const searchInput = screen.getByPlaceholderText(
-      "Search events by name, description, or tags..."
+      "Search events by name, description, or tags...",
     );
 
     fireEvent.change(searchInput, {
@@ -329,7 +329,7 @@ describe("App", () => {
     setDateFilter("upcoming");
 
     expect(
-      screen.getByText("Rust Programming Intro - São Paulo")
+      screen.getByText("Rust Programming Intro - São Paulo"),
     ).toBeInTheDocument();
   });
 
@@ -338,7 +338,7 @@ describe("App", () => {
     setDateFilter("thisWeek");
 
     expect(
-      screen.getByText("Rust Programming Intro - São Paulo")
+      screen.getByText("Rust Programming Intro - São Paulo"),
     ).toBeInTheDocument();
   });
 
@@ -347,7 +347,7 @@ describe("App", () => {
     setDateFilter("thisMonth");
 
     expect(
-      screen.getByText("DevOps Meetup - Belo Horizonte")
+      screen.getByText("DevOps Meetup - Belo Horizonte"),
     ).toBeInTheDocument();
   });
 
@@ -360,7 +360,7 @@ describe("App", () => {
     });
 
     expect(
-      screen.getByText("DevOps Meetup - Belo Horizonte")
+      screen.getByText("DevOps Meetup - Belo Horizonte"),
     ).toBeInTheDocument();
   });
 
@@ -377,7 +377,7 @@ describe("App", () => {
     });
 
     expect(
-      screen.getByText("DevOps Meetup - Belo Horizonte")
+      screen.getByText("DevOps Meetup - Belo Horizonte"),
     ).toBeInTheDocument();
   });
 
