@@ -8,7 +8,7 @@ export default function EventCard({ event }) {
       year: "numeric",
       month: "long",
       day: "numeric",
-    }
+    },
   );
 
   const hasSocials =
