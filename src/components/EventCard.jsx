@@ -1,9 +1,9 @@
 import { getEventStatus } from "../utils/eventHelpers";
-
 import { FaGlobe, FaTwitter, FaLinkedin } from "react-icons/fa";
 
 export default function EventCard({ event }) {
   const status = getEventStatus(event.date);
+
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
@@ -11,7 +11,7 @@ export default function EventCard({ event }) {
       year: "numeric",
       month: "long",
       day: "numeric",
-    },  
+    }
   );
 
   const statusMap = {
@@ -25,7 +25,6 @@ export default function EventCard({ event }) {
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
-
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 
@@ -36,9 +35,6 @@ export default function EventCard({ event }) {
           </div>
         )}
       </div>
-
-      <span className="event-card__category">{event.category}</span>
-
 
       <h2 className="event-card__title">{event.title}</h2>
 
