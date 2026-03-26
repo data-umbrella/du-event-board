@@ -1129,14 +1129,6 @@ body {
   .event-card__title {
     font-size: 1.1rem;
   }
-
-  .share-menu__panel {
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100vw - 3rem);
-    min-width: 240px;
-  }
 }
 
 /* ===================================
