@@ -25,6 +25,8 @@ describe("App", () => {
       writable: true,
       value: revokeObjectURLMock,
     });
+    // Clear the URL global state so tests don't leak into each other when reading window.location.search
+    window.history.replaceState(null, "", "/");
   });
 
   afterEach(() => {
