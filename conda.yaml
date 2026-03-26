@@ -15,3 +15,5 @@ dependencies:
       - vulture
       - types-PyYAML
       - douki
+      - jsonschema
+      - types-jsonschema
