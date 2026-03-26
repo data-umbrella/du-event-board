@@ -565,6 +565,21 @@ body {
   background: rgba(192, 132, 252, 0.08);
 }
 
+/* CHANGE: Anchor for the icon's absolute positioning */
+.event-card--past {
+  position: relative;
+}
+
+/* CHANGE: Pin the clock icon to the top-right corner of the card */
+.event-card__past-icon {
+  position: absolute;
+  top: 2rem;
+  right: 1rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: default;
+}
+
 .event-card__link {
   display: inline-flex;
   align-items: center;

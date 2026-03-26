@@ -172,6 +172,27 @@ export default function App() {
     rangeEnd,
   ]);
 
+  const sortedEvents = useMemo(() => {
+    return [...filteredEvents].sort((a, b) => {
+      const today = startOfDay(new Date());
+
+      const aDate = parseISODate(a.date);
+      const bDate = parseISODate(b.date);
+
+      const aIsPast = aDate < today;
+      const bIsPast = bDate < today;
+
+      // Push past events to bottom
+      if (aIsPast !== bIsPast) return aIsPast - bIsPast;
+
+      // If both upcoming → sort by nearest date
+      if (!aIsPast) return aDate - bDate;
+
+      // If both past → most recent first
+      return bDate - aDate;
+    });
+  }, [filteredEvents]);
+
   return (
     <>
       <Header theme={theme} onToggleTheme={toggleTheme} />
@@ -305,8 +326,8 @@ export default function App() {
 
         {viewMode === "list" ? (
           <div className="events-grid" id="events-grid">
-            {filteredEvents.length > 0 ? (
-              filteredEvents.map((event) => (
+            {sortedEvents.length > 0 ? (
+              sortedEvents.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))
             ) : (
@@ -321,7 +342,7 @@ export default function App() {
             )}
           </div>
         ) : (
-          <EventMap events={filteredEvents} />
+          <EventMap events={sortedEvents} />
         )}
       </main>
       <footer className="footer">
