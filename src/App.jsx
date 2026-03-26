@@ -1,10 +1,13 @@
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import EventMap from "./components/EventMap";
+import PlannerPanel from "./components/PlannerPanel";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
+import { createIcsContent } from "./lib/ics";
+import { PLANNER_STORAGE_KEY } from "./lib/planner";
 
 function parseISODate(dateString) {
   if (!dateString) return null;
@@ -19,19 +22,38 @@ function startOfDay(date) {
   return normalized;
 }
 
+function loadSavedEventIds() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(PLANNER_STORAGE_KEY);
+    if (!rawValue) {
+      return [];
+    }
+
+    const parsedValue = JSON.parse(rawValue);
+    return Array.isArray(parsedValue)
+      ? parsedValue.filter((value) => typeof value === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
   const [viewMode, setViewMode] = useUrlState("view", "list");
-
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+  const [savedEventIds, setSavedEventIds] = useState(loadSavedEventIds);
 
   const [theme, setTheme] = useState(() => {
-    // Check if we are in a browser and if localStorage.getItem actually exists
     if (
       typeof window !== "undefined" &&
       window.localStorage &&
@@ -39,6 +61,7 @@ export default function App() {
     ) {
       return localStorage.getItem("theme") || "dark";
     }
+
     return "dark";
   });
 
@@ -49,14 +72,24 @@ export default function App() {
       document.body.classList.remove("light-theme");
     }
 
-    // This line "records" the choice in the browser
     if (typeof localStorage !== "undefined" && localStorage.setItem) {
       localStorage.setItem("theme", theme);
     }
   }, [theme]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(
+      PLANNER_STORAGE_KEY,
+      JSON.stringify(savedEventIds),
+    );
+  }, [savedEventIds]);
+
   const toggleTheme = () =>
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    setTheme((previousTheme) => (previousTheme === "dark" ? "light" : "dark"));
 
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
@@ -71,21 +104,66 @@ export default function App() {
     }
   };
 
+  const toggleSavedEvent = (eventId) => {
+    setSavedEventIds((currentIds) =>
+      currentIds.includes(eventId)
+        ? currentIds.filter((id) => id !== eventId)
+        : [...currentIds, eventId],
+    );
+  };
+
+  const clearPlanner = () => {
+    setSavedEventIds([]);
+  };
+
+  const exportPlanner = () => {
+    if (savedEvents.length === 0 || typeof window === "undefined") {
+      return;
+    }
+
+    const calendarContent = createIcsContent(savedEvents);
+    const calendarFile = new Blob([calendarContent], {
+      type: "text/calendar;charset=utf-8",
+    });
+    const downloadUrl = window.URL.createObjectURL(calendarFile);
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = "du-event-planner.ics";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  };
+
   const regions = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.region))];
+    const unique = [...new Set(events.map((event) => event.region))];
     return unique.sort();
   }, []);
 
   const categories = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.category))];
+    const unique = [...new Set(events.map((event) => event.category))];
     return unique.sort();
   }, []);
+
+  const savedEvents = useMemo(() => {
+    const savedIds = new Set(savedEventIds);
+
+    return events
+      .filter((event) => savedIds.has(event.id))
+      .sort((left, right) => {
+        if (left.date === right.date) {
+          return left.time.localeCompare(right.time);
+        }
+
+        return left.date.localeCompare(right.date);
+      });
+  }, [savedEventIds]);
 
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
 
     const today = startOfDay(new Date());
-
     const weekStart = new Date(today);
     const dayIndex = (today.getDay() + 6) % 7;
     weekStart.setDate(today.getDate() - dayIndex);
@@ -103,24 +181,21 @@ export default function App() {
 
     return events.filter((event) => {
       const eventDate = parseISODate(event.date);
-      if (!eventDate) return false;
 
-      // Text search: title, description, tags
+      if (!eventDate) {
+        return false;
+      }
+
       const matchesSearch =
         !term ||
         event.title.toLowerCase().includes(term) ||
         event.description.toLowerCase().includes(term) ||
         (event.tags &&
           event.tags.some((tag) => tag.toLowerCase().includes(term)));
-
-      // Region filter
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
-
-      // Category filter
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
 
-      // Date filter
       let matchesDate = true;
 
       switch (dateFilterType) {
@@ -194,19 +269,25 @@ export default function App() {
         categories={categories}
       />
       <main className="main" id="main-content">
+        <PlannerPanel
+          savedEvents={savedEvents}
+          onRemoveEvent={toggleSavedEvent}
+          onClearPlanner={clearPlanner}
+          onExportPlanner={exportPlanner}
+        />
+
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            gap: "1rem",
             marginBottom: "1.5rem",
             paddingLeft: "0.25rem",
+            flexWrap: "wrap",
           }}
         >
-          <p
-            className="main__results-info"
-            style={{ marginBottom: 0, paddingLeft: 0 }}
-          >
+          <p className="main__results-info" style={{ marginBottom: 0 }}>
             Showing{" "}
             <span className="main__results-count">
               {filteredEvents.length}
@@ -226,6 +307,7 @@ export default function App() {
             }}
           >
             <button
+              type="button"
               onClick={() => setViewMode("list")}
               style={{
                 padding: "0.5rem 1rem",
@@ -244,6 +326,7 @@ export default function App() {
                 alignItems: "center",
                 gap: "6px",
               }}
+              aria-pressed={viewMode === "list"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -266,6 +349,7 @@ export default function App() {
               List
             </button>
             <button
+              type="button"
               onClick={() => setViewMode("map")}
               style={{
                 padding: "0.5rem 1rem",
@@ -282,6 +366,7 @@ export default function App() {
                 alignItems: "center",
                 gap: "6px",
               }}
+              aria-pressed={viewMode === "map"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -303,30 +388,33 @@ export default function App() {
           </div>
         </div>
 
-        {viewMode === "list" ? (
+        {viewMode === "map" ? (
+          <EventMap events={filteredEvents} />
+        ) : filteredEvents.length > 0 ? (
           <div className="events-grid" id="events-grid">
-            {filteredEvents.length > 0 ? (
-              filteredEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))
-            ) : (
-              <div className="empty-state" id="empty-state">
-                <div className="empty-state__icon">🔎</div>
-                <h2 className="empty-state__title">No events found</h2>
-                <p className="empty-state__description">
-                  Try adjusting your search terms or filters to find events
-                  near you.
-                </p>
-              </div>
-            )}
+            {filteredEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                isSaved={savedEventIds.includes(event.id)}
+                onToggleSave={toggleSavedEvent}
+              />
+            ))}
           </div>
         ) : (
-          <EventMap events={filteredEvents} />
+          <div className="empty-state" id="empty-state">
+            <div className="empty-state__icon">🔎</div>
+            <h2 className="empty-state__title">No events found</h2>
+            <p className="empty-state__description">
+              Try adjusting your search terms or filters to find events near
+              you.
+            </p>
+          </div>
         )}
       </main>
       <footer className="footer">
         <p>
-          DU Event Board — Built with ❤️ by the community.{" "}
+          DU Event Board - Built with ❤️ by the community.{" "}
           <a
             href="https://github.com/osl-incubator/du-event-board"
             target="_blank"

@@ -39,6 +39,7 @@ venv/
 
 # Misc
 *.local
+*.sh
 
 # Map Cache
 .geocode_cache.json

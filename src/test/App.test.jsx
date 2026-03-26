@@ -1,11 +1,30 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "../App";
+import { createIcsContent } from "../lib/ics";
+import { PLANNER_STORAGE_KEY } from "../lib/planner";
 
 describe("App", () => {
+  let createObjectURLMock;
+  let revokeObjectURLMock;
+
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 3, 15, 12, 0, 0)); // Apr 15, 2026 (local)
+    window.localStorage.removeItem(PLANNER_STORAGE_KEY);
+
+    createObjectURLMock = vi.fn(() => "blob:planner-file");
+    revokeObjectURLMock = vi.fn();
+
+    Object.defineProperty(window.URL, "createObjectURL", {
+      writable: true,
+      value: createObjectURLMock,
+    });
+
+    Object.defineProperty(window.URL, "revokeObjectURL", {
+      writable: true,
+      value: revokeObjectURLMock,
+    });
     // Clear the URL global state so tests don't leak into each other when reading window.location.search
     window.history.replaceState(null, "", "/");
   });
@@ -47,6 +66,12 @@ describe("App", () => {
     expect(resultsInfo).toBeInTheDocument();
     expect(resultsInfo.textContent).toContain("8");
     expect(resultsInfo.textContent).toContain("events");
+  });
+
+  it("shows an empty planner by default", () => {
+    render(<App />);
+    expect(screen.getByText("Your saved events")).toBeInTheDocument();
+    expect(screen.getByText("No saved events yet")).toBeInTheDocument();
   });
 
   it("filters events by search term", () => {
@@ -218,5 +243,78 @@ describe("App", () => {
     });
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
+  });
+
+  it("saves an event to the planner and persists it", () => {
+    render(<App />);
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Save Python Meetup - Porto Alegre to planner",
+      }),
+    );
+
+    expect(screen.getByText("1 saved event")).toBeInTheDocument();
+    expect(screen.getAllByText("Python Meetup - Porto Alegre").length).toBe(2);
+    expect(
+      JSON.parse(window.localStorage.getItem(PLANNER_STORAGE_KEY)),
+    ).toEqual(["1"]);
+  });
+
+  it("restores saved events from localStorage", () => {
+    window.localStorage.setItem(PLANNER_STORAGE_KEY, JSON.stringify(["2"]));
+
+    render(<App />);
+
+    expect(screen.getByText("1 saved event")).toBeInTheDocument();
+    expect(screen.getAllByText("React Workshop - São Paulo").length).toBe(2);
+  });
+
+  it("exports saved events as a calendar file", () => {
+    render(<App />);
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Save Python Meetup - Porto Alegre to planner",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Export calendar" }));
+
+    expect(createObjectURLMock).toHaveBeenCalledTimes(1);
+    expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:planner-file");
+  });
+
+  it("creates ICS payload with summary, dtstart, and dtend for same-day events", () => {
+    const calendarPayload = createIcsContent([
+      {
+        id: "day-event",
+        title: "Python Meetup - Porto Alegre",
+        description: "Monthly Python meetup.",
+        date: "2026-03-15",
+        time: "19:00",
+        location: "TechHub",
+      },
+    ]);
+
+    expect(calendarPayload).toContain("SUMMARY:Python Meetup - Porto Alegre");
+    expect(calendarPayload).toContain("DTSTART:20260315T190000");
+    expect(calendarPayload).toContain("DTEND:20260315T200000");
+  });
+
+  it("creates ICS events with DTEND on next day when an event crosses midnight", () => {
+    const calendarPayload = createIcsContent([
+      {
+        id: "night-event",
+        title: "Late Night Coding Session",
+        description: "Coding until after midnight.",
+        date: "2026-04-10",
+        time: "23:30",
+        location: "Online",
+      },
+    ]);
+
+    expect(calendarPayload).toContain("SUMMARY:Late Night Coding Session");
+    expect(calendarPayload).toContain("DTSTART:20260410T233000");
+    expect(calendarPayload).toContain("DTEND:20260411T003000");
   });
 });
