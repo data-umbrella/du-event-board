@@ -445,7 +445,8 @@ body {
 .planner {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: linear-gradient(
+  background:
+    linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.05),
       rgba(124, 92, 252, 0.08)
