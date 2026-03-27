@@ -576,6 +576,63 @@ body {
 }
 
 /* ===================================
+   Calendar View
+   =================================== */
+.calendar-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.calendar-view__month {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.9rem;
+  background: rgba(15, 19, 48, 0.45);
+}
+
+.calendar-view__month-title {
+  font-size: 1.3rem;
+  margin-bottom: 0.7rem;
+  color: var(--text-primary);
+}
+
+.calendar-view__events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.calendar-view__event {
+  display: grid;
+  grid-template-columns: 130px 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #25d6ff;
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+}
+
+.calendar-view__event-date {
+  color: #f4f4fb;
+  font-size: 0.93rem;
+}
+
+.calendar-view__event-link {
+  color: #c678ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.calendar-view__event-badge {
+  font-size: 0.85rem;
+  border-radius: 4px;
+  background: #f7cbd5;
+  color: #2e2648;
+  padding: 0.25rem 0.45rem;
+}
+
+/* ===================================
    Event Card
    =================================== */
 .event-card {
@@ -904,6 +961,11 @@ body {
   .event-row__meta {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .calendar-view__event {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
   }
 
   .event-card {

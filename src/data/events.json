@@ -142,5 +142,77 @@
     ],
     "lat": -27.544562,
     "lng": -48.4999697
+  },
+  {
+    "id": "9",
+    "title": "AI Virtual Meetup - India",
+    "description": "Online meetup discussing practical LLM workflows, prompt evaluation, and open-source tooling demos.",
+    "date": "2026-05-02",
+    "time": "20:00",
+    "location": "Virtual (Zoom)",
+    "region": "Remote",
+    "category": "Technology",
+    "url": "https://example.com/ai-virtual-meetup-india",
+    "tags": [
+      "virtual-meetup",
+      "ai",
+      "community"
+    ],
+    "lat": 20.593684,
+    "lng": 78.96288
+  },
+  {
+    "id": "10",
+    "title": "Open Data Hackathon - Mumbai",
+    "description": "Build civic-tech projects using open datasets in a 24-hour hackathon with mentor support.",
+    "date": "2026-05-09",
+    "time": "09:00",
+    "location": "Nesco IT Park, Goregaon East, Mumbai",
+    "region": "Mumbai",
+    "category": "Community",
+    "url": "https://example.com/open-data-hackathon-mumbai",
+    "tags": [
+      "hackathon",
+      "open-data",
+      "innovation"
+    ],
+    "lat": 19.1551,
+    "lng": 72.8526
+  },
+  {
+    "id": "11",
+    "title": "Cloud Native Virtual Meet Up",
+    "description": "Virtual panel on Kubernetes observability, cost optimization, and production incident learnings.",
+    "date": "2026-05-16",
+    "time": "18:30",
+    "location": "Virtual (YouTube Live)",
+    "region": "Remote",
+    "category": "Technology",
+    "url": "https://example.com/cloud-native-virtual-meetup",
+    "tags": [
+      "virtual-meetup",
+      "kubernetes",
+      "devops"
+    ],
+    "lat": 28.6139,
+    "lng": 77.209
+  },
+  {
+    "id": "12",
+    "title": "Student Build Hackathon - Bengaluru",
+    "description": "Campus-community hackathon for students to build AI and web products with mentor office-hours.",
+    "date": "2026-06-06",
+    "time": "10:00",
+    "location": "Koramangala Startup Hub, Bengaluru",
+    "region": "Bengaluru",
+    "category": "Education",
+    "url": "https://example.com/student-build-hackathon-blr",
+    "tags": [
+      "hackathon",
+      "students",
+      "programming"
+    ],
+    "lat": 12.9716,
+    "lng": 77.5946
   }
 ]

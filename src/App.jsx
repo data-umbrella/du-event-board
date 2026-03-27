@@ -23,7 +23,7 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
-  const [viewMode, setViewMode] = useState("list");
+  const [viewMode, setViewMode] = useUrlState("view", "list");
   const [selectedTag, setSelectedTag] = useState("");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
@@ -226,10 +226,12 @@ export default function App() {
           </div>
           <div className="view-toggle view-toggle--screenshot">
             <button
-              type="button"
-              className="view-toggle__button view-toggle__button--disabled"
-              disabled
-              aria-disabled="true"
+              onClick={() => setViewMode("grid")}
+              aria-pressed={viewMode === "grid"}
+              aria-label="Grid view"
+              className={`view-toggle__button ${
+                viewMode === "grid" ? "view-toggle__button--active" : ""
+              }`}
             >
               Grid
             </button>
@@ -244,10 +246,12 @@ export default function App() {
               List
             </button>
             <button
-              type="button"
-              className="view-toggle__button view-toggle__button--disabled"
-              disabled
-              aria-disabled="true"
+              onClick={() => setViewMode("calendar")}
+              aria-pressed={viewMode === "calendar"}
+              aria-label="Calendar view"
+              className={`view-toggle__button ${
+                viewMode === "calendar" ? "view-toggle__button--active" : ""
+              }`}
             >
               Calendar
             </button>
@@ -264,7 +268,24 @@ export default function App() {
           </div>
         </div>
 
-        {viewMode === "list" ? (
+        {viewMode === "grid" ? (
+          <div className="events-grid" id="events-grid">
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))
+            ) : (
+              <div className="empty-state" id="empty-state">
+                <div className="empty-state__icon">🔎</div>
+                <h2 className="empty-state__title">No events found</h2>
+                <p className="empty-state__description">
+                  Try adjusting your search terms or filters to find events
+                  near you.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : viewMode === "list" ? (
           <div className="events-grid events-list" id="events-grid">
             {filteredEvents.length > 0 ? (
               monthGroups.map((group) => (
@@ -287,6 +308,41 @@ export default function App() {
                 </p>
               </div>
             )}
+          </div>
+        ) : viewMode === "calendar" ? (
+          <div className="calendar-view" id="calendar-view">
+            {monthGroups.map((group) => (
+              <section key={group.key} className="calendar-view__month">
+                <h2 className="calendar-view__month-title">{group.label}</h2>
+                <div className="calendar-view__events">
+                  {group.events.map((event) => (
+                    <article key={event.id} className="calendar-view__event">
+                      <span className="calendar-view__event-date">
+                        {new Date(event.date + "T00:00:00").toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          },
+                        )}
+                      </span>
+                      <a
+                        href={event.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="calendar-view__event-link"
+                      >
+                        {event.title}
+                      </a>
+                      <span className="calendar-view__event-badge">
+                        {event.category}
+                      </span>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
         ) : (
           <EventMap events={filteredEvents} />
