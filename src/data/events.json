@@ -16,7 +16,7 @@
       "programming",
       "community"
     ],
-    "poster": "/poster_1.jpg",
+    "poster": "poster_1.jpg",
     "org": "Python Community",
     "mode": "Offline",
     "registrations": 150,
@@ -60,7 +60,7 @@
       "javascript",
       "frontend"
     ],
-    "poster": "/poster_1.jpg",
+    "poster": "poster_1.jpg",
     "org": "Frontend Devs",
     "mode": "Offline",
     "registrations": 200,
@@ -104,7 +104,7 @@
       "community",
       "programming"
     ],
-    "poster": "/poster_1.jpg",
+    "poster": "poster_1.jpg",
     "org": "OSS Community",
     "mode": "Offline",
     "registrations": 120,
@@ -148,7 +148,7 @@
       "machine-learning",
       "python"
     ],
-    "poster": "/poster_1.jpg",
+    "poster": "poster_1.jpg",
     "org": "Data Labs",
     "mode": "Offline",
     "registrations": 180,
@@ -192,7 +192,7 @@
       "docker",
       "kubernetes"
     ],
-    "poster": "/poster_1.jpg",
+    "poster": "poster_1.jpg",
     "org": "DevOps Group",
     "mode": "Offline",
     "registrations": 140,
@@ -236,7 +236,7 @@
       "ux",
       "figma"
     ],
-    "poster": "/poster_1.jpg",
+    "poster": "poster_1.jpg",
     "org": "Design Hub",
     "mode": "Offline",
     "registrations": 160,
@@ -280,7 +280,7 @@
       "programming",
       "systems"
     ],
-    "poster": "/poster_1.jpg",
+    "poster": "poster_1.jpg",
     "org": "Rust Community",
     "mode": "Offline",
     "registrations": 130,
@@ -324,7 +324,7 @@
       "community",
       "innovation"
     ],
-    "poster": "/poster_1.jpg",
+    "poster": "poster_1.jpg",
     "org": "Hackathon Org",
     "mode": "Offline",
     "registrations": 250,
