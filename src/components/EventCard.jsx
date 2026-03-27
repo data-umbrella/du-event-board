@@ -19,6 +19,10 @@ export default function EventCard({ event, viewMode = "grid" }) {
   );
 
   if (viewMode === "list") {
+    const categoryToneClass = `event-row__category--${event.category
+      .toLowerCase()
+      .replace(/\s+/g, "-")}`;
+
     return (
       <article className="event-row" id={`event-${event.id}`}>
         <div className="event-row__content">
@@ -36,7 +40,9 @@ export default function EventCard({ event, viewMode = "grid" }) {
           )}
         </div>
         <div className="event-row__meta">
-          <span className="event-row__category">{event.category}</span>
+          <span className={`event-row__category ${categoryToneClass}`}>
+            {event.category}
+          </span>
           <span className="event-row__date">{compactDate}</span>
         </div>
       </article>

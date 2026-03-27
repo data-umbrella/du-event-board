@@ -410,6 +410,26 @@ body {
   font-weight: 600;
 }
 
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.1rem;
+}
+
+.results-header__left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.results-header__title {
+  font-size: 2rem;
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
 /* ===================================
    Event Grid
    =================================== */
@@ -441,7 +461,7 @@ body {
 }
 
 .events-list__month-title {
-  font-size: 1.8rem;
+  font-size: 2rem;
   line-height: 1.2;
   font-weight: 700;
   color: var(--text-primary);
@@ -506,10 +526,53 @@ body {
   white-space: nowrap;
 }
 
+.event-row__category--education {
+  background: #d6f4c9;
+  color: #1f3a2d;
+}
+
+.event-row__category--community {
+  background: #cfe4ff;
+  color: #1f2e52;
+}
+
+.event-row__category--design {
+  background: #e7ddff;
+  color: #352660;
+}
+
 .event-row__date {
   color: #f4f4fb;
   font-size: 1.03rem;
   white-space: nowrap;
+}
+
+.view-toggle--screenshot {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.view-toggle__button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  background: #f2f2f5;
+  color: #35353d;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+}
+
+.view-toggle__button--active {
+  background: #a74df9;
+  color: #fff;
+  border-color: #a74df9;
+}
+
+.view-toggle__button--disabled {
+  opacity: 0.82;
+  cursor: default;
 }
 
 /* ===================================
@@ -819,7 +882,17 @@ body {
   }
 
   .events-list__month-title {
-    font-size: 1.45rem;
+    font-size: 1.5rem;
+  }
+
+  .results-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .results-header__title {
+    font-size: 1.6rem;
   }
 
   .event-row {
