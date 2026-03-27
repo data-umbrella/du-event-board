@@ -24,7 +24,10 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
   const [selectedTag, setSelectedTag] = useUrlState("tag", "");
-  const [selectedEventType, setSelectedEventType] = useUrlState("eventType", "");
+  const [selectedEventType, setSelectedEventType] = useUrlState(
+    "eventType",
+    "",
+  );
   const [selectedCost, setSelectedCost] = useUrlState("cost", "");
   const [viewMode, setViewMode] = useUrlState("view", "list");
 
@@ -157,7 +160,8 @@ export default function App() {
       const matchesCountry =
         !selectedCountry || event.country === selectedCountry;
       const matchesState = !selectedState || event.state === selectedState;
-      const matchesRegion = !selectedRegion || event.region === selectedRegion;
+      const matchesRegion =
+        !selectedRegion || event.region === selectedRegion;
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
       const matchesTag =
@@ -277,7 +281,9 @@ export default function App() {
         <section className="results-toolbar" aria-label="Results summary">
           <p className="main__results-info">
             Showing{" "}
-            <span className="main__results-count">{filteredEvents.length}</span>{" "}
+            <span className="main__results-count">
+              {filteredEvents.length}
+            </span>{" "}
             event{filteredEvents.length !== 1 ? "s" : ""}
           </p>
 

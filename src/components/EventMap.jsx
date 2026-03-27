@@ -52,10 +52,18 @@ export default function EventMap({ events }) {
         transition={{ duration: 0.4 }}
         className="map-container"
       >
-        <MapContainer center={mapCenter} zoom={4} className="map-container__frame">
+        <MapContainer
+          center={mapCenter}
+          zoom={4}
+          className="map-container__frame"
+        >
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            attribution={
+              '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+              "OpenStreetMap</a> contributors &copy; " +
+              '<a href="https://carto.com/attributions">CARTO</a>'
+            }
           />
 
           {mapEvents.map((event) => (
@@ -63,7 +71,9 @@ export default function EventMap({ events }) {
               <Popup className="premium-popup">
                 <div className="map-popup">
                   <div className="map-popup__header">
-                    <span className="event-card__category">{event.category}</span>
+                    <span className="event-card__category">
+                      {event.category}
+                    </span>
                     <span className="event-card__pill event-card__pill--muted">
                       {toLabel(event.event_type)}
                     </span>
@@ -74,7 +84,10 @@ export default function EventMap({ events }) {
                   <div className="map-popup__meta">
                     <Calendar size={14} />
                     <span>
-                      {formatEventDateRange(event.start_date || event.date, event.end_date)}{" "}
+                      {formatEventDateRange(
+                        event.start_date || event.date,
+                        event.end_date,
+                      )}{" "}
                       • {event.time}
                     </span>
                   </div>

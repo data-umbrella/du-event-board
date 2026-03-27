@@ -11,7 +11,10 @@ function toLabel(value) {
 }
 
 export default function EventCard({ event }) {
-  const status = getEventStatus(event.start_date || event.date, event.end_date);
+  const status = getEventStatus(
+    event.start_date || event.date,
+    event.end_date,
+  );
   const formattedDate = formatEventDateRange(
     event.start_date || event.date,
     event.end_date,

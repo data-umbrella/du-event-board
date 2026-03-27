@@ -45,15 +45,17 @@ export function formatEventDateRange(startDate, endDate) {
     })}`;
   }
 
-  return `${start.toLocaleDateString("en-US", formatOptions)} - ${end.toLocaleDateString(
-    "en-US",
-    formatOptions,
-  )}`;
+  const formattedStart = start.toLocaleDateString("en-US", formatOptions);
+  const formattedEnd = end.toLocaleDateString("en-US", formatOptions);
+
+  return `${formattedStart} - ${formattedEnd}`;
 }
 
 export function eventOverlapsRange(event, rangeStart, rangeEnd) {
   const eventStart = parseISODate(event.start_date || event.date);
-  const eventEnd = parseISODate(event.end_date || event.start_date || event.date);
+  const eventEnd = parseISODate(
+    event.end_date || event.start_date || event.date,
+  );
 
   if (!eventStart || !eventEnd) return false;
   if (rangeStart && eventEnd < rangeStart) return false;
