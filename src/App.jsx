@@ -321,7 +321,7 @@ export default function App() {
             )}
           </div>
         ) : (
-          <EventMap events={filteredEvents} />
+          <EventMap events={filteredEvents} theme={theme} />
         )}
       </main>
       <footer className="footer">
