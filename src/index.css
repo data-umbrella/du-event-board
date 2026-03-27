@@ -426,6 +426,93 @@ body {
 }
 
 /* ===================================
+   Compact List View (review-aligned)
+   =================================== */
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.events-list__month-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.events-list__month-title {
+  font-size: 1.8rem;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.events-list__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  max-height: 430px;
+  overflow-y: auto;
+  padding-right: 0.35rem;
+}
+
+.event-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  border: 2px solid #25d6ff;
+  border-radius: 10px;
+  padding: 0.42rem 0.7rem;
+  background: rgba(12, 18, 48, 0.55);
+}
+
+.event-row__content {
+  min-width: 0;
+  flex: 1;
+}
+
+.event-row__title {
+  color: #c678ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-row__title:hover {
+  color: #d89bff;
+}
+
+.event-row__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.event-row__category {
+  background: #f7cbd5;
+  color: #2e2648;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.34rem 0.5rem;
+  white-space: nowrap;
+}
+
+.event-row__date {
+  color: #f4f4fb;
+  font-size: 1.03rem;
+  white-space: nowrap;
+}
+
+/* ===================================
    Event Card
    =================================== */
 .event-card {
@@ -729,6 +816,21 @@ body {
   .events-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  .events-list__month-title {
+    font-size: 1.45rem;
+  }
+
+  .event-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .event-row__meta {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .event-card {

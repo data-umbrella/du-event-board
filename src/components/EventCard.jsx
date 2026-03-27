@@ -9,6 +9,40 @@ export default function EventCard({ event, viewMode = "grid" }) {
     },
   );
 
+  const compactDate = new Date(event.date + "T00:00:00").toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    },
+  );
+
+  if (viewMode === "list") {
+    return (
+      <article className="event-row" id={`event-${event.id}`}>
+        <div className="event-row__content">
+          {event.url ? (
+            <a
+              href={event.url}
+              className="event-row__title"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {event.title}
+            </a>
+          ) : (
+            <span className="event-row__title">{event.title}</span>
+          )}
+        </div>
+        <div className="event-row__meta">
+          <span className="event-row__category">{event.category}</span>
+          <span className="event-row__date">{compactDate}</span>
+        </div>
+      </article>
+    );
+  }
+
   return (
     <article
       className={

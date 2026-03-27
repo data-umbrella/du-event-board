@@ -166,6 +166,30 @@ export default function App() {
     rangeEnd,
   ]);
 
+  const monthGroups = useMemo(() => {
+    const sorted = [...filteredEvents].sort(
+      (a, b) => parseISODate(a.date) - parseISODate(b.date),
+    );
+
+    return sorted.reduce((groups, event) => {
+      const eventDate = parseISODate(event.date);
+      const key = `${eventDate.getFullYear()}-${eventDate.getMonth()}`;
+      const monthLabel = eventDate.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      });
+
+      const existing = groups.find((group) => group.key === key);
+      if (existing) {
+        existing.events.push(event);
+      } else {
+        groups.push({ key, label: monthLabel, events: [event] });
+      }
+
+      return groups;
+    }, []);
+  }, [filteredEvents]);
+
   return (
     <>
       <Header />
@@ -305,8 +329,15 @@ export default function App() {
         {viewMode === "list" ? (
           <div className="events-grid events-list" id="events-grid">
             {filteredEvents.length > 0 ? (
-              filteredEvents.map((event) => (
-                <EventCard key={event.id} event={event} viewMode="list" />
+              monthGroups.map((group) => (
+                <section key={group.key} className="events-list__month-group">
+                  <h2 className="events-list__month-title">{group.label}</h2>
+                  <div className="events-list__rows">
+                    {group.events.map((event) => (
+                      <EventCard key={event.id} event={event} viewMode="list" />
+                    ))}
+                  </div>
+                </section>
               ))
             ) : (
               <div className="empty-state" id="empty-state">
