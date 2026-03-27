@@ -5,8 +5,7 @@ import App from "../App";
 describe("App", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date(2026, 3, 15, 12, 0, 0)); // Apr 15, 2026 (local)
-    // Clear the URL global state so tests don't leak into each other when reading window.location.search
+    vi.setSystemTime(new Date(2026, 3, 15, 12, 0, 0));
     window.history.replaceState(null, "", "/");
   });
 
@@ -14,10 +13,11 @@ describe("App", () => {
     vi.useRealTimers();
   });
 
-  const setDateFilter = (value) => {
-    const dateFilterSelect = screen.getByLabelText("Date filter");
-    fireEvent.change(dateFilterSelect, { target: { value } });
-  };
+  function setDateFilter(value) {
+    fireEvent.change(screen.getByLabelText("Date filter"), {
+      target: { value },
+    });
+  }
 
   it("renders the header with the site title", () => {
     render(<App />);
@@ -33,29 +33,31 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders event cards", () => {
+  it("renders event cards with enriched metadata", () => {
     render(<App />);
     expect(
       screen.getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
     expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
+    expect(screen.getAllByText("Python Porto Alegre")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("In Person")[0]).toBeInTheDocument();
   });
 
   it("shows the total events count", () => {
     render(<App />);
     const resultsInfo = screen.getByText(/Showing/);
-    expect(resultsInfo).toBeInTheDocument();
     expect(resultsInfo.textContent).toContain("8");
     expect(resultsInfo.textContent).toContain("events");
   });
 
   it("filters events by search term", () => {
     render(<App />);
-    const searchInput = screen.getByPlaceholderText(
-      "Search events by name, description, or tags...",
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Search events, places, formats, or hashtags...",
+      ),
+      { target: { value: "python" } },
     );
-
-    fireEvent.change(searchInput, { target: { value: "python" } });
 
     expect(
       screen.getByText("Python Meetup - Porto Alegre"),
@@ -68,11 +70,11 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("filters events by region", () => {
+  it("filters events by state", () => {
     render(<App />);
-    const regionSelect = screen.getByDisplayValue("All Regions");
-
-    fireEvent.change(regionSelect, { target: { value: "Porto Alegre" } });
+    fireEvent.change(screen.getByDisplayValue("All States / Provinces"), {
+      target: { value: "Rio Grande do Sul" },
+    });
 
     expect(
       screen.getByText("Python Meetup - Porto Alegre"),
@@ -85,29 +87,59 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("filters events by category", () => {
+  it("filters events by hashtag", () => {
     render(<App />);
-    const categorySelect = screen.getByDisplayValue("All Categories");
-
-    fireEvent.change(categorySelect, { target: { value: "Education" } });
+    fireEvent.change(screen.getByDisplayValue("All Hashtags"), {
+      target: { value: "docker" },
+    });
 
     expect(
-      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
+      screen.getByText("DevOps Meetup - Belo Horizonte"),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("Python Meetup - Porto Alegre"),
     ).not.toBeInTheDocument();
   });
 
+  it("filters events by event format", () => {
+    render(<App />);
+    fireEvent.change(screen.getByDisplayValue("All Formats"), {
+      target: { value: "online" },
+    });
+
+    expect(
+      screen.getByText("DevOps Meetup - Belo Horizonte"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Rust Programming Intro - São Paulo"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("filters events by cost", () => {
+    render(<App />);
+    fireEvent.change(screen.getByDisplayValue("All Costs"), {
+      target: { value: "paid" },
+    });
+
+    expect(
+      screen.getByText("React Workshop - São Paulo"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("DevOps Meetup - Belo Horizonte"),
+    ).not.toBeInTheDocument();
+  });
+
   it("shows empty state when no events match", () => {
     render(<App />);
-    const searchInput = screen.getByPlaceholderText(
-      "Search events by name, description, or tags...",
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Search events, places, formats, or hashtags...",
+      ),
+      { target: { value: "xyznonexistentevent" } },
     );
-
-    fireEvent.change(searchInput, {
-      target: { value: "xyznonexistentevent" },
-    });
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
   });
@@ -142,9 +174,6 @@ describe("App", () => {
     expect(
       screen.queryByText("Community Hackathon - Florianópolis"),
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("UX Design Workshop - Porto Alegre"),
-    ).not.toBeInTheDocument();
   });
 
   it("filters events by thisMonth", () => {
@@ -162,15 +191,16 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("filters events by customDate", () => {
+  it("filters events by customDate using date ranges", () => {
     render(<App />);
     setDateFilter("customDate");
 
-    const customDateInput = screen.getByLabelText("Custom date");
-    fireEvent.change(customDateInput, { target: { value: "2026-04-10" } });
+    fireEvent.change(screen.getByLabelText("Custom date"), {
+      target: { value: "2026-04-13" },
+    });
 
     expect(
-      screen.getByText("DevOps Meetup - Belo Horizonte"),
+      screen.getByText("UX Design Workshop - Porto Alegre"),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("Rust Programming Intro - São Paulo"),
@@ -197,12 +227,8 @@ describe("App", () => {
     expect(
       screen.getByText("Rust Programming Intro - São Paulo"),
     ).toBeInTheDocument();
-
     expect(
       screen.queryByText("Community Hackathon - Florianópolis"),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Data Science Bootcamp - Rio de Janeiro"),
     ).not.toBeInTheDocument();
   });
 

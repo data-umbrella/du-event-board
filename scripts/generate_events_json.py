@@ -10,11 +10,11 @@ import json
 import os
 import sys
 import time
-import urllib.request
 import urllib.parse
-from typing import Any
+import urllib.request
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import yaml  # type: ignore
 
@@ -22,12 +22,19 @@ REQUIRED_FIELDS = [
     "id",
     "title",
     "description",
-    "date",
+    "start_date",
+    "end_date",
     "time",
     "location",
     "region",
+    "state",
+    "country",
     "category",
+    "event_type",
+    "cost",
 ]
+ALLOWED_EVENT_TYPES = {"online", "in-person", "hybrid"}
+ALLOWED_COSTS = {"free", "paid"}
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 INPUT_FILE = PROJECT_ROOT / "data" / "events.yaml"
@@ -58,7 +65,7 @@ def get_cache() -> dict[str, Any]:
     global _geocode_cache
     if _geocode_cache is None:
         if CACHE_FILE.exists():
-            with open(CACHE_FILE, "r") as f:
+            with open(CACHE_FILE, "r", encoding="utf-8") as f:
                 _geocode_cache = json.load(f)
         else:
             _geocode_cache = {}
@@ -70,7 +77,7 @@ def save_cache() -> None:
     title: Save the geocode cache dictionary back to disk.
     """
     if _geocode_cache is not None:
-        with open(CACHE_FILE, "w") as f:
+        with open(CACHE_FILE, "w", encoding="utf-8") as f:
             json.dump(_geocode_cache, f, indent=2)
 
 
@@ -135,27 +142,54 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
         if field not in event or not event[field]:
             errors.append(f"Event #{index}: Missing required field '{field}'")
 
-    # Validate date format
-    if "date" in event:
-        try:
-            if isinstance(event["date"], datetime):
-                event["date"] = event["date"].strftime("%Y-%m-%d")
-            datetime.strptime(str(event["date"]), "%Y-%m-%d")
-        except ValueError:
-            errors.append(
-                f"Event #{index}: Invalid date format '{event['date']}' (expected YYYY-MM-DD)"
-            )
+    parsed_dates: dict[str, datetime] = {}
+    for field in ["start_date", "end_date"]:
+        if field in event:
+            try:
+                if isinstance(event[field], datetime):
+                    event[field] = event[field].strftime("%Y-%m-%d")
+                parsed_dates[field] = datetime.strptime(
+                    str(event[field]), "%Y-%m-%d"
+                )
+            except ValueError:
+                errors.append(
+                    f"Event #{index}: Invalid {field} format '{event[field]}' (expected YYYY-MM-DD)"
+                )
 
-    # Validate time format
+    if (
+        "start_date" in parsed_dates
+        and "end_date" in parsed_dates
+        and parsed_dates["end_date"] < parsed_dates["start_date"]
+    ):
+        errors.append(
+            f"Event #{index}: end_date must be on or after start_date"
+        )
+
     if "time" in event:
         try:
-            # Handle time objects if PyYAML parsed them
             if not isinstance(event["time"], str):
                 event["time"] = event["time"].strftime("%H:%M")
             datetime.strptime(event["time"], "%H:%M")
         except ValueError:
             errors.append(
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
+            )
+
+    if "event_type" in event and event["event_type"] not in ALLOWED_EVENT_TYPES:
+        errors.append(
+            f"Event #{index}: Invalid event_type '{event['event_type']}'"
+        )
+
+    if "cost" in event and event["cost"] not in ALLOWED_COSTS:
+        errors.append(f"Event #{index}: Invalid cost '{event['cost']}'")
+
+    if "organizer_logo" in event and event["organizer_logo"]:
+        parsed_logo = urllib.parse.urlparse(event["organizer_logo"])
+        is_local_asset = event["organizer_logo"].startswith("/")
+        is_remote_asset = parsed_logo.scheme in {"http", "https"}
+        if not is_local_asset and not is_remote_asset:
+            errors.append(
+                f"Event #{index}: organizer_logo must be an absolute URL or root-relative asset path"
             )
 
     return errors
@@ -178,7 +212,6 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
     lines = original_content.splitlines(keepends=True)
     final_output = []
 
-    # Track which events we've already updated in this pass
     updated_ids = {str(e["id"]) for e in events_with_coords if "lat" in e}
 
     i = 0
@@ -186,18 +219,14 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
         line = lines[i]
         final_output.append(line)
 
-        # Look for the start of an event: "  - id: \"X\"" or "  - id: 'X'"
         if line.strip().startswith("- id:"):
-            # Extract the ID
             event_id = line.strip().split(":", 1)[1].strip().strip("'\"")
 
             if event_id in updated_ids:
-                # Find the event data
                 event_data = next(
                     e for e in events_with_coords if str(e["id"]) == event_id
                 )
 
-                # Check if it already has coordinates in the text block
                 block_end = i + 1
                 has_lat = False
                 while block_end < len(lines):
@@ -209,22 +238,8 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
                     block_end += 1
 
                 if not has_lat:
-                    # Insert before the block ends or before an empty line
-                    # Determine indentation (match the 'id' key's indentation)
-                    id_indent = line[: line.find("- id:")]
-                    property_indent = id_indent + "    "
-
-                    # Wait, if id_indent is "  ", then id is at 4, title is at 4.
-                    # So property_indent should be id_indent + "  " to reach 4 spaces.
-                    # Actually, let's just use "    " directly as it matches the file.
-                    property_indent = "    "
-
-                    final_output.append(
-                        f"{property_indent}lat: {event_data['lat']}\n"
-                    )
-                    final_output.append(
-                        f"{property_indent}lng: {event_data['lng']}\n"
-                    )
+                    final_output.append(f"    lat: {event_data['lat']}\n")
+                    final_output.append(f"    lng: {event_data['lng']}\n")
 
         i += 1
 
@@ -252,17 +267,16 @@ def main() -> None:
     events = data["events"]
     print(f"Found {len(events)} events")
 
-    # Track if we updated any events with new coordinates
     new_coords_found = False
-
-    # Validate all events
     all_errors = []
+
     for i, event in enumerate(events, start=1):
         errors = validate_event(event, i)
         all_errors.extend(errors)
 
-        # Geocode if we have a location and no coordinates
-        if not all_errors and "lat" not in event:
+        event["date"] = event["start_date"]
+
+        if not errors and "lat" not in event:
             coords = None
             if (
                 "location" in event
@@ -291,7 +305,6 @@ def main() -> None:
 
     print("All events validated successfully")
 
-    # If we found new coordinates locally, save them back to the source YAML surgically
     if new_coords_found and not is_ci():
         print(
             f"Surgically updating source file with new coordinates: {INPUT_FILE}"
@@ -300,11 +313,8 @@ def main() -> None:
         print("  Done.")
 
     save_cache()
-
-    # Ensure output directory exists
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    # Write JSON output
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(events, f, indent=2, ensure_ascii=False)
         f.write("\n")
