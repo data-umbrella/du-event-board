@@ -752,3 +752,29 @@ body {
     font-size: 1.1rem;
   }
 }
+
+.event-card__socials {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.event-card__social-link {
+  font-size: 20px;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.event-card__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.event-card__social-link:hover {
+  color: var(--accent-primary);
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+}

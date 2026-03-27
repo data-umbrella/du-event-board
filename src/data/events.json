@@ -11,6 +11,11 @@
     "region": "Porto Alegre",
     "category": "Technology",
     "url": "https://example.com/python-poa",
+    "socials": {
+      "website": "https://python.org",
+      "twitter": "https://twitter.com/ThePSF",
+      "linkedin": "https://linkedin.com/company/python-software-foundation"
+    },
     "tags": [
       "python",
       "programming",
