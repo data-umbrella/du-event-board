@@ -140,7 +140,7 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
         try:
             if isinstance(event["date"], datetime):
                 event["date"] = event["date"].strftime("%Y-%m-%d")
-            datetime.strptime(str(event["date"]), "%Y-%m-%d")
+            datetime.strptime(str(event["date"]), "%Y-%m-%d") 
         except ValueError:
             errors.append(
                 f"Event #{index}: Invalid date format '{event['date']}' (expected YYYY-MM-DD)"
