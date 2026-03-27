@@ -1,4 +1,7 @@
+import { getEventStatus } from "../utils/eventHelpers";
+
 export default function EventCard({ event }) {
+  const status = getEventStatus(event.date);
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
@@ -9,9 +12,25 @@ export default function EventCard({ event }) {
     },
   );
 
+  const statusMap = {
+    live: "status-badge--live",
+    upcoming: "status-badge--upcoming",
+    ended: "status-badge--ended",
+  };
+
   return (
     <article className="event-card" id={`event-${event.id}`}>
-      <span className="event-card__category">{event.category}</span>
+      <div className="event-card__header">
+        <span className="event-card__category">{event.category}</span>
+
+        {status !== "none" && (
+          <div className={`status-badge ${statusMap[status]}`}>
+            {status === "live" && <span className="live-dot" />}
+            {status === "live" ? "Live Now" : status}
+          </div>
+        )}
+      </div>
+
       <h2 className="event-card__title">{event.title}</h2>
       <p className="event-card__description">{event.description}</p>
 
