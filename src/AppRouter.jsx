@@ -4,7 +4,7 @@ import EventDetailPage from "./components/EventDetailPage";
 
 export default function AppRouter() {
   return (
-    <BrowserRouter basename="/du-event-board">
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/event/:id" element={<EventDetailPage />} />
