@@ -121,7 +121,6 @@
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
-
 .theme-toggle:hover {
   background: var(--bg-input-focus);
   border-color: var(--border-accent);
