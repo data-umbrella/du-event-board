@@ -16,6 +16,27 @@ export default function SearchBar({
   regions,
   categories,
 }) {
+  // Reset logic for all fields
+  const handleClearFilters = () => {
+    onSearchChange("");
+    onRegionChange("");
+    onCategoryChange("");
+    onDateFilterTypeChange("all");
+    onCustomDateChange("");
+    onRangeStartChange("");
+    onRangeEndChange("");
+  };
+
+  // Show button only if any filter is active
+  const hasActiveFilters =
+    searchTerm !== "" ||
+    selectedRegion !== "" ||
+    selectedCategory !== "" ||
+    dateFilterType !== "all" ||
+    customDate !== "" ||
+    rangeStart !== "" ||
+    rangeEnd !== "";
+
   return (
     <div className="search" id="search">
       <div className="search__container">
@@ -165,6 +186,19 @@ export default function SearchBar({
                 style={{ width: "160px" }}
               />
             </div>
+          )}
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={handleClearFilters}
+              className="search__clear-btn"
+              title="Clear all filters"
+            >
+              <span className="search__clear-icon">✕</span>
+              Clear Filters
+            </button>
           )}
         </div>
       </div>
