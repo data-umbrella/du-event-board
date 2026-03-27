@@ -1,4 +1,8 @@
+import { Link, useInRouterContext } from "react-router-dom";
+
 export default function EventCard({ event }) {
+  const inRouter = useInRouterContext();
+
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
@@ -40,17 +44,23 @@ export default function EventCard({ event }) {
         </div>
       )}
 
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
-      )}
+      {event.url &&
+        (inRouter ? (
+          <Link to={`/event/${event.id}`} className="event-card__link">
+            Learn more
+            <span className="event-card__link-arrow">→</span>
+          </Link>
+        ) : (
+          <a
+            href={event.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="event-card__link"
+          >
+            Learn more
+            <span className="event-card__link-arrow">→</span>
+          </a>
+        ))}
     </article>
   );
 }
