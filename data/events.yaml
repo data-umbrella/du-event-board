@@ -92,8 +92,6 @@ events:
       - python
 
   - id: "5"
-    lat: -19.9227318
-    lng: -43.9450948
     title: "DevOps Meetup - Belo Horizonte"
     description: "Monthly DevOps meetup discussing CI/CD pipelines, container orchestration, and infrastructure as code."
     start_date: "2026-04-10"

@@ -7,16 +7,16 @@ GitHub Pages site. Events are defined in a simple YAML file, and the site is
 automatically built and deployed via GitHub Actions when changes are merged to
 `main`.
 
-## 🚀 How It Works
+## How It Works
 
-1. **Events are defined in YAML** — see [`data/events.yaml`](data/events.yaml)
-2. **GitHub Actions generates the frontend data** — a Python script converts
-   YAML → JSON
-3. **React frontend displays the events** — with search, region, and category
-   filtering
-4. **Deployed automatically to GitHub Pages** — on every push to `main`
+1. **Events are defined in YAML** - see [`data/events.yaml`](data/events.yaml)
+2. **GitHub Actions generates the frontend data** - a Python script converts
+   YAML to JSON
+3. **React frontend displays the events** - with search, geographic, hashtag,
+   format, and cost filtering
+4. **Deployed automatically to GitHub Pages** - on every push to `main`
 
-## 📅 Adding a New Event
+## Adding a New Event
 
 Edit `data/events.yaml` and add a new entry:
 
@@ -24,11 +24,18 @@ Edit `data/events.yaml` and add a new entry:
 - id: "9"
   title: "Your Event Name"
   description: "A brief description of the event."
-  date: "2026-05-01"
+  start_date: "2026-05-01"
+  end_date: "2026-05-01"
   time: "18:00"
   location: "Venue Name, City"
   region: "City Name"
+  state: "State or Province"
+  country: "Country Name"
   category: "Technology"
+  event_type: "online"
+  cost: "free"
+  organizer_name: "Organizer Name"
+  organizer_logo: "/DU_logo.png"
   url: "https://example.com/your-event"
   tags:
     - tag1
@@ -38,7 +45,7 @@ Edit `data/events.yaml` and add a new entry:
 Then open a Pull Request. CI will validate the YAML and run tests. Once merged,
 the site is automatically rebuilt and deployed.
 
-## 🛠️ Local Development
+## Local Development
 
 ### Prerequisites
 
@@ -72,51 +79,51 @@ npm run dev
 | `npm run lint`     | Lint the codebase              |
 | `npm run generate` | Generate events.json from YAML |
 
-## 📁 Project Structure
+## Project Structure
 
-```
+```text
 du-event-board/
-├── .github/
-│   ├── ISSUE_TEMPLATE/          # Issue templates
-│   ├── PULL_REQUEST_TEMPLATE.md # PR template
-│   └── workflows/
-│       ├── ci.yaml              # PR checks (lint, test, build)
-│       └── deploy.yaml          # Deploy to GitHub Pages
-├── data/
-│   └── events.yaml              # Event definitions (source of truth)
-├── scripts/
-│   └── generate_events_json.py  # YAML → JSON converter
-├── src/
-│   ├── components/
-│   │   ├── EventCard.jsx        # Event card component
-│   │   ├── Header.jsx           # Site header
-│   │   └── SearchBar.jsx        # Search and filters
-│   ├── data/
-│   │   └── events.json          # Generated from YAML
-│   ├── test/
-│   │   ├── App.test.jsx         # App tests
-│   │   └── setup.js             # Test setup
-│   ├── App.jsx                  # Main app component
-│   ├── index.css                # Design system
-│   └── main.jsx                 # Entry point
-├── .editorconfig
-├── .gitignore
-├── .pre-commit-config.yaml
-├── .prettierrc.yaml
-├── CODE_OF_CONDUCT.md
-├── LICENSE
-├── README.md
-├── index.html
-├── package.json
-└── vite.config.js
+|-- .github/
+|   |-- ISSUE_TEMPLATE/          # Issue templates
+|   |-- PULL_REQUEST_TEMPLATE.md # PR template
+|   `-- workflows/
+|       |-- ci.yaml              # PR checks (lint, test, build)
+|       `-- deploy.yaml          # Deploy to GitHub Pages
+|-- data/
+|   `-- events.yaml              # Event definitions (source of truth)
+|-- scripts/
+|   `-- generate_events_json.py  # YAML to JSON converter
+|-- src/
+|   |-- components/
+|   |   |-- EventCard.jsx        # Event card component
+|   |   |-- Header.jsx           # Site header
+|   |   `-- SearchBar.jsx        # Search and advanced filters
+|   |-- data/
+|   |   `-- events.json          # Generated from YAML
+|   |-- test/
+|   |   |-- App.test.jsx         # App tests
+|   |   `-- setup.js             # Test setup
+|   |-- App.jsx                  # Main app component
+|   |-- index.css                # Design system
+|   `-- main.jsx                 # Entry point
+|-- .editorconfig
+|-- .gitignore
+|-- .pre-commit-config.yaml
+|-- .prettierrc.yaml
+|-- CODE_OF_CONDUCT.md
+|-- LICENSE
+|-- README.md
+|-- index.html
+|-- package.json
+`-- vite.config.js
 ```
 
-## 🤝 Contributing
+## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup (including conda
 environment) and contribution guidelines.
 
-## 📄 License
+## License
 
-This project is licensed under the BSD 3-Clause License — see the
+This project is licensed under the BSD 3-Clause License - see the
 [LICENSE](LICENSE) file for details.
