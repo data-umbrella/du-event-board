@@ -1,5 +1,7 @@
 events:
   - id: "1"
+    lat: -30.0324999
+    lng: -51.2303767
     title: "Python Meetup - Porto Alegre"
     description: "Monthly Python community meetup featuring talks on web development, data science, and automation. Open to all skill levels."
     date: "2026-03-15"
@@ -14,6 +16,8 @@ events:
       - community
 
   - id: "2"
+    lat: -23.5506507
+    lng: -46.6333824
     title: "React Workshop - São Paulo"
     description: "Hands-on workshop covering React hooks, state management, and building modern web applications. Bring your laptop!"
     date: "2026-03-20"
@@ -28,6 +32,8 @@ events:
       - frontend
 
   - id: "3"
+    lat: -25.4295963
+    lng: -49.2712724
     title: "Open Source Friday - Curitiba"
     description: "Contribute to open source projects together! We'll pair program on popular OSS projects and help newcomers make their first contribution."
     date: "2026-03-28"
@@ -42,6 +48,8 @@ events:
       - programming
 
   - id: "4"
+    lat: -22.9110137
+    lng: -43.2093727
     title: "Data Science Bootcamp - Rio de Janeiro"
     description: "A full-day bootcamp on data science fundamentals: pandas, scikit-learn, and visualization with matplotlib."
     date: "2026-04-05"
@@ -56,6 +64,8 @@ events:
       - python
 
   - id: "5"
+    lat: -19.9227318
+    lng: -43.9450948
     title: "DevOps Meetup - Belo Horizonte"
     description: "Monthly DevOps meetup discussing CI/CD pipelines, container orchestration, and infrastructure as code."
     date: "2026-04-10"
@@ -70,6 +80,8 @@ events:
       - kubernetes
 
   - id: "6"
+    lat: -30.0324999
+    lng: -51.2303767
     title: "UX Design Workshop - Porto Alegre"
     description: "Learn user experience design principles and create wireframes using Figma. Perfect for beginners and developers wanting to improve their design skills."
     date: "2026-04-12"
@@ -84,6 +96,8 @@ events:
       - figma
 
   - id: "7"
+    lat: -23.5506507
+    lng: -46.6333824
     title: "Rust Programming Intro - São Paulo"
     description: "Introduction to the Rust programming language. We'll cover ownership, borrowing, and building your first CLI tool."
     date: "2026-04-18"
@@ -98,6 +112,8 @@ events:
       - systems
 
   - id: "8"
+    lat: -27.544562
+    lng: -48.4999697
     title: "Community Hackathon - Florianópolis"
     description: "48-hour hackathon focused on building solutions for local community challenges. Teams of 3-5 people. Prizes for top 3 teams!"
     date: "2026-04-25"
