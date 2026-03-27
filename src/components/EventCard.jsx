@@ -11,7 +11,7 @@ export default function EventCard({ event }) {
       year: "numeric",
       month: "long",
       day: "numeric",
-    },
+    }
   );
 
   const statusMap = {
@@ -57,17 +57,6 @@ export default function EventCard({ event }) {
           <span className="event-card__meta-icon">📍</span>
           <span>{event.location || "Location TBD"}</span>
         </div>
-        {event.capacity ? (
-          <div className="event-card__meta-item">
-            <span className="event-card__meta-icon">🎟️</span>
-            <span>{event.capacity} spots</span>
-          </div>
-        ) : (
-          <div className="event-card__meta-item">
-            <span className="event-card__meta-icon">🎟️</span>
-            <span>Unlimited</span>
-          </div>
-        )}
       </div>
 
       {event.tags && event.tags.length > 0 && (
