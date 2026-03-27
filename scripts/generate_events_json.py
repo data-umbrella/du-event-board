@@ -41,7 +41,7 @@ INPUT_FILE = PROJECT_ROOT / "data" / "events.yaml"
 OUTPUT_FILE = PROJECT_ROOT / "src" / "data" / "events.json"
 CACHE_FILE = PROJECT_ROOT / "data" / ".geocode_cache.json"
 
-_geocode_cache = None
+_geocode_cache: dict[str, Any] | None = None
 
 
 def is_ci() -> bool:
@@ -97,14 +97,18 @@ def geocode_location(location_str: str) -> tuple[float, float] | None:
     if location_str in cache:
         return (cache[location_str][0], cache[location_str][1])
 
-    # Skip network calls in CI/CD environments to keep builds fast and avoid rate limits
+    # Skip network calls in CI/CD environments to keep builds fast
+    # and avoid rate limits.
     if is_ci():
         print(f"  [CI] Skipping geocode for '{location_str}'")
         return None
 
     print(f"  [Network] Fetching coordinates for '{location_str}'...")
     query = urllib.parse.quote(location_str)
-    url = f"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1"
+    url = (
+        "https://nominatim.openstreetmap.org/search"
+        f"?q={query}&format=json&limit=1"
+    )
 
     req = urllib.request.Request(
         url, headers={"User-Agent": "DU-Event-Board-App/1.0"}
@@ -153,7 +157,8 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
                 )
             except ValueError:
                 errors.append(
-                    f"Event #{index}: Invalid {field} format '{event[field]}' (expected YYYY-MM-DD)"
+                    f"Event #{index}: Invalid {field} format "
+                    f"'{event[field]}' (expected YYYY-MM-DD)"
                 )
 
     if (
@@ -172,10 +177,14 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
             datetime.strptime(event["time"], "%H:%M")
         except ValueError:
             errors.append(
-                f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
+                f"Event #{index}: Invalid time format "
+                f"'{event['time']}' (expected HH:MM)"
             )
 
-    if "event_type" in event and event["event_type"] not in ALLOWED_EVENT_TYPES:
+    if (
+        "event_type" in event
+        and event["event_type"] not in ALLOWED_EVENT_TYPES
+    ):
         errors.append(
             f"Event #{index}: Invalid event_type '{event['event_type']}'"
         )
@@ -189,7 +198,8 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
         is_remote_asset = parsed_logo.scheme in {"http", "https"}
         if not is_local_asset and not is_remote_asset:
             errors.append(
-                f"Event #{index}: organizer_logo must be an absolute URL or root-relative asset path"
+                f"Event #{index}: organizer_logo must be an absolute URL "
+                f"or root-relative asset path"
             )
 
     return errors
@@ -307,7 +317,8 @@ def main() -> None:
 
     if new_coords_found and not is_ci():
         print(
-            f"Surgically updating source file with new coordinates: {INPUT_FILE}"
+            "Surgically updating source file with new "
+            f"coordinates: {INPUT_FILE}"
         )
         update_yaml_surgically(events)
         print("  Done.")
