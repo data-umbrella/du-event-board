@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import App from "../App";
 
 describe("App", () => {
@@ -218,5 +218,86 @@ describe("App", () => {
     });
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
+  });
+
+  it("filters events by selected tag chip", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "#python" }));
+
+    expect(
+      screen.getByText("Python Meetup - Porto Alegre"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("React Workshop - São Paulo"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("adds tag query param when a tag chip is selected", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "#python" }));
+
+    expect(window.location.search).toContain("tag=python");
+  });
+
+  it("applies tag filter from URL on initial load", () => {
+    window.history.replaceState(null, "", "/?tag=python");
+    render(<App />);
+
+    expect(
+      screen.getByText("Python Meetup - Porto Alegre"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("React Workshop - São Paulo"),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "All" }));
+    expect(window.location.search).not.toContain("tag=python");
+  });
+
+  it("drops invalid tag param from URL by resetting filter", async () => {
+    vi.useRealTimers();
+    window.history.replaceState(null, "", "/?tag=not-a-real-tag");
+    render(<App />);
+
+    await waitFor(() => {
+      const resultsInfo = screen.getByText(/Showing/);
+      expect(resultsInfo.textContent).toContain("8");
+    });
+    vi.useFakeTimers();
+  });
+
+  it("adds view query param when map view is selected", () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Map view" }));
+
+    expect(window.location.search).toContain("view=map");
+  });
+
+  it("opens map view from URL on initial load", () => {
+    window.history.replaceState(null, "", "/?view=map");
+    render(<App />);
+
+    expect(screen.getByRole("button", { name: "Map view" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+
+  it("combines tag and region in URL params", () => {
+    window.history.replaceState(null, "", "/?tag=python&region=Porto+Alegre");
+    render(<App />);
+
+    expect(
+      screen.getByText("Python Meetup - Porto Alegre"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Data Science Bootcamp - Rio de Janeiro"),
+    ).not.toBeInTheDocument();
   });
 });
