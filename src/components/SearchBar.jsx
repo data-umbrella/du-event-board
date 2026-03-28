@@ -81,7 +81,15 @@ export default function SearchBar({
         </div>
         </div>
 
-        <div className="search__row search__row--date">
+        <div
+          className="search__row search__row--date"
+          style={{
+            alignItems: "center",
+            flexWrap: "wrap",
+            display: "flex",
+            gap: "0.75rem",
+          }}
+        >
           <div
             className={
               "search__select-wrapper search__select-wrapper--date-type"
@@ -108,7 +116,7 @@ export default function SearchBar({
               <input
                 id="custom-date-input"
                 type="date"
-                className="search__date-input"
+                className="search__date-input search__select"
                 value={customDate}
                 onChange={(e) => onCustomDateChange(e.target.value)}
                 aria-label="Custom date"
@@ -116,24 +124,61 @@ export default function SearchBar({
             </div>
           )}
 
-          {dateFilterType === "customRange" && (
-            <div className="search__date-group">
+          {dateFilterType !== "customDate" && (
+            <div
+              className="search__date-group"
+              style={{
+                display: "flex",
+                gap: "0.75rem",
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
               <input
                 id="range-start-input"
-                type="date"
-                className="search__date-input"
+                type={rangeStart ? "date" : "text"}
+                placeholder="Start Date"
+                onFocus={(e) => {
+                  e.target.type = "date";
+                }}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
+                }}
+                className="search__date-input search__select"
                 value={rangeStart}
-                onChange={(e) => onRangeStartChange(e.target.value)}
+                onChange={(e) => {
+                  if (dateFilterType !== "customRange")
+                    onDateFilterTypeChange("customRange");
+                  onRangeStartChange(e.target.value);
+                }}
                 aria-label="Range start date"
+                style={{ width: "160px" }}
               />
-              <span className="search__date-separator">—</span>
+              <span
+                className="search__date-separator"
+                style={{ color: "var(--text-muted)" }}
+              >
+                —
+              </span>
               <input
                 id="range-end-input"
-                type="date"
-                className="search__date-input"
+                type={rangeEnd ? "date" : "text"}
+                placeholder="End Date"
+                onFocus={(e) => {
+                  e.target.type = "date";
+                }}
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
+                }}
+                className="search__date-input search__select"
                 value={rangeEnd}
-                onChange={(e) => onRangeEndChange(e.target.value)}
+                onChange={(e) => {
+                  if (dateFilterType !== "customRange")
+                    onDateFilterTypeChange("customRange");
+                  onRangeEndChange(e.target.value);
+                }}
                 aria-label="Range end date"
+                style={{ width: "160px" }}
               />
             </div>
           )}
