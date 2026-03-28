@@ -73,7 +73,8 @@
   --text-secondary: #4a5568;
   --text-muted: #718096;
 
-  --accent-primary: #6366f1; /* Slightly deeper indigo for contrast */
+  --accent-primary: #6366f1;
+  /* Slightly deeper indigo for contrast */
   --accent-secondary: #8b5cf6;
 
   --gradient-hero: linear-gradient(135deg, #e2e8f0 0%, #edf2f7 100%);
@@ -224,17 +225,21 @@ body {
 .header__brand {
   display: flex;
   align-items: center;
-  justify-content: center; /* Centers the whole brand block */
-  gap: 1rem; /* Space between image and text */
+  justify-content: center;
+  /* Centers the whole brand block */
+  gap: 1rem;
+  /* Space between image and text */
   margin-bottom: 0.5rem;
 }
 
 /* Style the logo image */
 .header__logo-img {
-  width: 50px; /* Adjust size as needed */
+  width: 50px;
+  /* Adjust size as needed */
   height: 50px;
   object-fit: contain;
-  border-radius: 8px; /* Optional: rounds the logo corners */
+  border-radius: 8px;
+  /* Optional: rounds the logo corners */
 }
 
 /* Reset the logo text styles if you had background gradients before */
@@ -249,7 +254,8 @@ body {
 /* Adjust the header padding now that it's a simple logo layout */
 .header {
   padding: 3rem 1rem;
-  background: var(--bg-secondary); /* Or keep your existing background */
+  background: var(--bg-secondary);
+  /* Or keep your existing background */
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -442,6 +448,64 @@ body {
   color: var(--text-primary);
 }
 
+.custom-dropdown {
+  position: relative;
+}
+
+.dropdown-header {
+  padding: 0.75rem 1rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.5rem;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.custom-dropdown {
+  position: relative;
+}
+
+.custom-dropdown::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 10px;
+}
+
+.custom-dropdown:hover .dropdown-content,
+.dropdown-content:hover {
+  display: block;
+}
+
+.dropdown-content label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.dropdown-content label:hover {
+  background: var(--bg-input-focus);
+  border-radius: 4px;
+}
+
 /* ===================================
    Main Content
    =================================== */
@@ -594,6 +658,7 @@ body {
     transform: scale(1);
     opacity: 0.8;
   }
+
   100% {
     transform: scale(2.5);
     opacity: 0;
@@ -771,7 +836,8 @@ body {
 }
 
 .footer__company-name {
-  color: #3b50c3; /* specific deep blue matching screenshot */
+  color: #3b50c3;
+  /* specific deep blue matching screenshot */
   font-weight: 500;
   font-size: 0.9rem;
   margin-bottom: 0.2rem;
@@ -1282,14 +1348,16 @@ body {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 2rem;
-  height: 160px; /* Increased height */
+  height: 160px;
+  /* Increased height */
   justify-content: center;
   width: 100%;
 }
 
 .sponsor-card__logo {
   max-width: 100%;
-  max-height: 140px; /* Increased max-height */
+  max-height: 140px;
+  /* Increased max-height */
   object-fit: contain;
   transition: all var(--transition-base);
 }

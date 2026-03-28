@@ -70,9 +70,10 @@ describe("App", () => {
 
   it("filters events by region", () => {
     render(<App />);
-    const regionSelect = screen.getByDisplayValue("All Regions");
+    const regionDropdown = screen.getByText("All Regions");
 
-    fireEvent.change(regionSelect, { target: { value: "Porto Alegre" } });
+    const option = screen.getByLabelText("Porto Alegre");
+    fireEvent.click(option);
 
     expect(
       screen.getByText("Python Meetup - Porto Alegre"),
@@ -87,9 +88,10 @@ describe("App", () => {
 
   it("filters events by category", () => {
     render(<App />);
-    const categorySelect = screen.getByDisplayValue("All Categories");
+    const categoryDropdown = screen.getByText("All Categories");
 
-    fireEvent.change(categorySelect, { target: { value: "Education" } });
+    const option = screen.getByLabelText("Education");
+    fireEvent.click(option);
 
     expect(
       screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
