@@ -27,6 +27,11 @@ export default function App() {
   const [currentPage, setCurrentPage] = useUrlState("page", "events");
   const [viewMode, setViewMode] = useUrlState("view", "list");
 
+  const [dateFilterType, setDateFilterType] = useState("all");
+  const [customDate, setCustomDate] = useState("");
+  const [rangeStart, setRangeStart] = useState("");
+  const [rangeEnd, setRangeEnd] = useState("");
+  const [sortOrder, setSortOrder]= useState("");
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
@@ -66,7 +71,7 @@ export default function App() {
 
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
-
+  
     if (nextType !== "customDate") {
       setCustomDate("");
     }
@@ -168,6 +173,7 @@ export default function App() {
 
       return matchesSearch && matchesRegion && matchesCategory && matchesDate;
     });
+
   }, [
     searchTerm,
     selectedRegion,
@@ -177,6 +183,19 @@ export default function App() {
     rangeStart,
     rangeEnd,
   ]);
+
+  const sortedEvents = useMemo(() => {
+  return [...filteredEvents].sort((a, b) => {
+    const dateA = parseISODate(a.date)?.getTime() ?? Infinity;
+    const dateB = parseISODate(b.date)?.getTime() ?? Infinity;
+
+    if (sortOrder === "date-asc") return dateA - dateB;
+    if (sortOrder === "date-desc") return dateB - dateA;
+    if (sortOrder === "name") {return a.title.localeCompare(b.title);}
+    return 0;
+  });
+}, 
+    [filteredEvents, sortOrder]);
 
   return (
     <>
@@ -202,8 +221,30 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
       />
       <main className="main" id="main-content">
+        <p className="main__results-info">
+          Showing{" "}
+          <span className="main__results-count">{sortedEvents.length}</span>{" "}
+          event{sortedEvents.length !== 1 ? "s" : ""}
+        </p>
+        <div className="events-grid" id="events-grid">
+          {sortedEvents.length > 0 ? (
+            sortedEvents.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))
+          ) : (
+            <div className="empty-state" id="empty-state">
+              <div className="empty-state__icon">🔎</div>
+              <h2 className="empty-state__title">No events found</h2>
+              <p className="empty-state__description">
+                Try adjusting your search terms or filters to find events near
+                you.
+              </p>
+            </div>
+          )}
         <div
           style={{
             display: "flex",
