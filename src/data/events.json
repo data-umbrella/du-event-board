@@ -142,23 +142,5 @@
       "community",
       "innovation"
     ]
-  },
-  {
-    "id": "9",
-    "lat": 12.9767936,
-    "lng": 77.590082,
-    "title": "Community Hackathon - Bengaluru",
-    "description": "48-hour hackathon focused on building solutions for local community challenges. Teams of 3-5 people. Prizes for top 3 teams!",
-    "date": "2026-04-25",
-    "time": "08:00",
-    "location": "Rio Business Park, Mahadevapura Village, Krishnarajapuram, Hobli, Bengaluru East, Bengaluru, Karnataka 560037",
-    "region": "Bengaluru",
-    "category": "Community",
-    "url": "https://example.com/hackathon-floripa",
-    "tags": [
-      "hackathon",
-      "community",
-      "innovation"
-    ]
   }
 ]
