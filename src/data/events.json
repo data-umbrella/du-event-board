@@ -15,7 +15,33 @@
       "python",
       "programming",
       "community"
-    ]
+    ],
+    "poster": "poster_1.jpg",
+    "org": "Python Community",
+    "mode": "Offline",
+    "registrations": 150,
+    "deadline": "2026-03-10",
+    "overview": "Python meetup with talks and networking.",
+    "schedule": [
+      "Talks",
+      "Networking"
+    ],
+    "prizes": [
+      "Swag Kits"
+    ],
+    "faq": [
+      "Entry fee? → Free"
+    ],
+    "contact": {
+      "email": "python@event.com",
+      "phone": "+91 9000000001"
+    },
+    "socials": {
+      "website": "https://example.com",
+      "twitter": "https://twitter.com",
+      "linkedin": "https://linkedin.com",
+      "instagram": "https://instagram.com"
+    }
   },
   {
     "id": "2",
@@ -33,7 +59,33 @@
       "react",
       "javascript",
       "frontend"
-    ]
+    ],
+    "poster": "poster_1.jpg",
+    "org": "Frontend Devs",
+    "mode": "Offline",
+    "registrations": 200,
+    "deadline": "2026-03-18",
+    "overview": "Hands-on React learning session.",
+    "schedule": [
+      "Intro",
+      "Hands-on"
+    ],
+    "prizes": [
+      "Certificates"
+    ],
+    "faq": [
+      "Laptop required? → Yes"
+    ],
+    "contact": {
+      "email": "react@event.com",
+      "phone": "+91 9000000002"
+    },
+    "socials": {
+      "website": "https://example.com",
+      "twitter": "https://twitter.com",
+      "linkedin": "https://linkedin.com",
+      "instagram": "https://instagram.com"
+    }
   },
   {
     "id": "3",
@@ -51,7 +103,33 @@
       "open-source",
       "community",
       "programming"
-    ]
+    ],
+    "poster": "poster_1.jpg",
+    "org": "OSS Community",
+    "mode": "Offline",
+    "registrations": 120,
+    "deadline": "2026-03-21",
+    "overview": "Collaborative open source contribution event.",
+    "schedule": [
+      "Intro",
+      "Contribution"
+    ],
+    "prizes": [
+      "Recognition"
+    ],
+    "faq": [
+      "Beginner friendly? → Yes"
+    ],
+    "contact": {
+      "email": "oss@event.com",
+      "phone": "+91 9000000003"
+    },
+    "socials": {
+      "website": "https://example.com",
+      "twitter": "https://twitter.com",
+      "linkedin": "https://linkedin.com",
+      "instagram": "https://instagram.com"
+    }
   },
   {
     "id": "4",
@@ -69,7 +147,33 @@
       "data-science",
       "machine-learning",
       "python"
-    ]
+    ],
+    "poster": "poster_1.jpg",
+    "org": "Data Labs",
+    "mode": "Offline",
+    "registrations": 180,
+    "deadline": "2026-04-01",
+    "overview": "Full-day data science training.",
+    "schedule": [
+      "Morning Session",
+      "Hands-on"
+    ],
+    "prizes": [
+      "Certificates"
+    ],
+    "faq": [
+      "Prior knowledge? → Basic Python"
+    ],
+    "contact": {
+      "email": "ds@event.com",
+      "phone": "+91 9000000004"
+    },
+    "socials": {
+      "website": "https://example.com",
+      "twitter": "https://twitter.com",
+      "linkedin": "https://linkedin.com",
+      "instagram": "https://instagram.com"
+    }
   },
   {
     "id": "5",
@@ -87,7 +191,33 @@
       "devops",
       "docker",
       "kubernetes"
-    ]
+    ],
+    "poster": "poster_1.jpg",
+    "org": "DevOps Group",
+    "mode": "Offline",
+    "registrations": 140,
+    "deadline": "2026-04-08",
+    "overview": "Discussion on DevOps tools and practices.",
+    "schedule": [
+      "Talks",
+      "Q&A"
+    ],
+    "prizes": [
+      "Swag"
+    ],
+    "faq": [
+      "Entry fee? → Free"
+    ],
+    "contact": {
+      "email": "devops@event.com",
+      "phone": "+91 9000000005"
+    },
+    "socials": {
+      "website": "https://example.com",
+      "twitter": "https://twitter.com",
+      "linkedin": "https://linkedin.com",
+      "instagram": "https://instagram.com"
+    }
   },
   {
     "id": "6",
@@ -105,7 +235,33 @@
       "design",
       "ux",
       "figma"
-    ]
+    ],
+    "poster": "poster_1.jpg",
+    "org": "Design Hub",
+    "mode": "Offline",
+    "registrations": 160,
+    "deadline": "2026-04-10",
+    "overview": "UX design fundamentals workshop.",
+    "schedule": [
+      "Intro",
+      "Figma Practice"
+    ],
+    "prizes": [
+      "Certificates"
+    ],
+    "faq": [
+      "Tools needed? → Figma"
+    ],
+    "contact": {
+      "email": "ux@event.com",
+      "phone": "+91 9000000006"
+    },
+    "socials": {
+      "website": "https://example.com",
+      "twitter": "https://twitter.com",
+      "linkedin": "https://linkedin.com",
+      "instagram": "https://instagram.com"
+    }
   },
   {
     "id": "7",
@@ -123,7 +279,33 @@
       "rust",
       "programming",
       "systems"
-    ]
+    ],
+    "poster": "poster_1.jpg",
+    "org": "Rust Community",
+    "mode": "Offline",
+    "registrations": 130,
+    "deadline": "2026-04-15",
+    "overview": "Introductory Rust programming session.",
+    "schedule": [
+      "Basics",
+      "CLI Build"
+    ],
+    "prizes": [
+      "Certificates"
+    ],
+    "faq": [
+      "Experience needed? → Basic coding"
+    ],
+    "contact": {
+      "email": "rust@event.com",
+      "phone": "+91 9000000007"
+    },
+    "socials": {
+      "website": "https://example.com",
+      "twitter": "https://twitter.com",
+      "linkedin": "https://linkedin.com",
+      "instagram": "https://instagram.com"
+    }
   },
   {
     "id": "8",
@@ -141,6 +323,36 @@
       "hackathon",
       "community",
       "innovation"
-    ]
+    ],
+    "poster": "poster_1.jpg",
+    "org": "Hackathon Org",
+    "mode": "Offline",
+    "registrations": 250,
+    "deadline": "2026-04-20",
+    "overview": "48-hour hackathon with ideation, development and final pitching.",
+    "schedule": [
+      "Day 1 - Idea",
+      "Day 2 - Build",
+      "Day 3 - Present"
+    ],
+    "prizes": [
+      "🥇 ₹1,00,000",
+      "🥈 ₹50,000",
+      "🥉 ₹25,000"
+    ],
+    "faq": [
+      "Team size? → 3-5",
+      "Food? → Provided"
+    ],
+    "contact": {
+      "email": "hack@event.com",
+      "phone": "+91 9444444444"
+    },
+    "socials": {
+      "website": "https://example.com",
+      "twitter": "https://twitter.com",
+      "linkedin": "https://linkedin.com",
+      "instagram": "https://instagram.com"
+    }
   }
 ]
