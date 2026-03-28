@@ -1,6 +1,6 @@
 import { getEventStatus } from "../utils/eventHelpers";
 
-export default function EventCard({ event }) {
+export default function EventCard({ event, compact = false }) {
   const status = getEventStatus(event.date);
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
@@ -19,7 +19,10 @@ export default function EventCard({ event }) {
   };
 
   return (
-    <article className="event-card" id={`event-${event.id}`}>
+    <article
+      className={`event-card${compact ? " event-card--compact" : ""}`}
+      id={compact ? undefined : `event-${event.id}`}
+    >
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 
@@ -49,7 +52,7 @@ export default function EventCard({ event }) {
         </div>
       </div>
 
-      {event.tags && event.tags.length > 0 && (
+      {event.tags && event.tags.length > 0 && !compact && (
         <div className="event-card__tags">
           {event.tags.map((tag) => (
             <span key={tag} className="event-card__tag">

@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import App from "../App";
+
+function getEventsGrid() {
+  const el = document.getElementById("events-grid");
+  if (!el) throw new Error("#events-grid not found");
+  return el;
+}
 
 describe("App", () => {
   beforeEach(() => {
@@ -41,6 +47,16 @@ describe("App", () => {
     expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
   });
 
+  it("renders the featured events strip for YAML-flagged events", () => {
+    render(<App />);
+    expect(
+      screen.getByRole("heading", { name: /featured events/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText("Open Source Friday - Curitiba").length,
+    ).toBeGreaterThanOrEqual(1);
+  });
+
   it("shows the total events count", () => {
     render(<App />);
     const resultsInfo = screen.getByText(/Showing/);
@@ -57,14 +73,15 @@ describe("App", () => {
 
     fireEvent.change(searchInput, { target: { value: "python" } });
 
+    const grid = getEventsGrid();
     expect(
-      screen.getByText("Python Meetup - Porto Alegre"),
+      within(grid).getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
+      within(grid).getByText("Data Science Bootcamp - Rio de Janeiro"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("React Workshop - São Paulo"),
+      within(grid).queryByText("React Workshop - São Paulo"),
     ).not.toBeInTheDocument();
   });
 
@@ -91,11 +108,12 @@ describe("App", () => {
 
     fireEvent.change(categorySelect, { target: { value: "Education" } });
 
+    const grid = getEventsGrid();
     expect(
-      screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
+      within(grid).getByText("Data Science Bootcamp - Rio de Janeiro"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("Python Meetup - Porto Alegre"),
+      within(grid).queryByText("Python Meetup - Porto Alegre"),
     ).not.toBeInTheDocument();
   });
 
@@ -121,11 +139,12 @@ describe("App", () => {
     render(<App />);
     setDateFilter("upcoming");
 
+    const grid = getEventsGrid();
     expect(
-      screen.getByText("Rust Programming Intro - São Paulo"),
+      within(grid).getByText("Rust Programming Intro - São Paulo"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Community Hackathon - Florianópolis"),
+      within(grid).getByText("Community Hackathon - Florianópolis"),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("UX Design Workshop - Porto Alegre"),
@@ -151,11 +170,12 @@ describe("App", () => {
     render(<App />);
     setDateFilter("thisMonth");
 
+    const grid = getEventsGrid();
     expect(
-      screen.getByText("DevOps Meetup - Belo Horizonte"),
+      within(grid).getByText("DevOps Meetup - Belo Horizonte"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Community Hackathon - Florianópolis"),
+      within(grid).getByText("Community Hackathon - Florianópolis"),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("Python Meetup - Porto Alegre"),
