@@ -50,12 +50,13 @@ export default function App() {
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
 
+  const [sortOrder, setSortOrder] = useState("");
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
   const [theme, setTheme] = useState(() => {
-    // Check if we are in a browser and if localStorage.getItem actually exists
     if (
       typeof window !== "undefined" &&
       window.localStorage &&
@@ -73,7 +74,6 @@ export default function App() {
       document.body.classList.remove("light-theme");
     }
 
-    // This line "records" the choice in the browser
     if (typeof localStorage !== "undefined" && localStorage.setItem) {
       localStorage.setItem("theme", theme);
     }
@@ -179,14 +179,23 @@ export default function App() {
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 
+<<<<<<< HEAD
       // Region filter
-      const matchesRegion = !selectedRegion || event.region === selectedRegion;
+=======
+      const matchesSearch =
+        !term ||
+        String(event.title || "").toLowerCase().includes(term) ||
+        String(event.description || "").toLowerCase().includes(term) ||
+        (Array.isArray(event.tags) &&
+          event.tags.some((tag) =>
+            String(tag || "").toLowerCase().includes(term),
+          ));
 
-      // Category filter
+>>>>>>> dff1bae (Add event sorting functionality with date and name options)
+      const matchesRegion = !selectedRegion || event.region === selectedRegion;
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
 
-      // Date filter
       let matchesDate = true;
 
       switch (dateFilterType) {
@@ -238,22 +247,37 @@ export default function App() {
     rangeEnd,
   ]);
 
-  // Group events by month for list view
+  const sortedEvents = useMemo(() => {
+    return [...filteredEvents].sort((a, b) => {
+      const dateA = parseISODate(a.date)?.getTime() ?? Infinity;
+      const dateB = parseISODate(b.date)?.getTime() ?? Infinity;
+
+      if (sortOrder === "date-asc") return dateA - dateB;
+      if (sortOrder === "date-desc") return dateB - dateA;
+      if (sortOrder === "name") return a.title.localeCompare(b.title);
+      return 0;
+    });
+  }, [filteredEvents, sortOrder]);
+
   const groupedEvents = useMemo(() => {
     if (viewMode !== "list") return null;
+
     const groups = {};
-    filteredEvents.forEach((event) => {
+    sortedEvents.forEach((event) => {
       const date = parseISODate(event.date);
       if (!date) return;
+
       const key = date.toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
       });
+
       if (!groups[key]) groups[key] = [];
       groups[key].push(event);
     });
+
     return groups;
-  }, [filteredEvents, viewMode]);
+  }, [sortedEvents, viewMode]);
 
   return (
     <>
@@ -262,6 +286,7 @@ export default function App() {
         onToggleTheme={toggleTheme}
         onNavigate={setCurrentPage}
       />
+
       {currentPage === "events" ? (
         <>
           <SearchBar
@@ -281,10 +306,12 @@ export default function App() {
             onRangeEndChange={setRangeEnd}
             regions={regions}
             categories={categories}
+            sortOrder={sortOrder}
+            onSortOrderChange={setSortOrder}
           />
+
           <main className="main" id="main-content">
             <div
-              className="view-header"
               style={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -299,9 +326,9 @@ export default function App() {
               >
                 Showing{" "}
                 <span className="main__results-count">
-                  {filteredEvents.length}
+                  {sortedEvents.length}
                 </span>{" "}
-                event{filteredEvents.length !== 1 ? "s" : ""}
+                event{sortedEvents.length !== 1 ? "s" : ""}
               </p>
 
               <div
@@ -353,6 +380,7 @@ export default function App() {
                   </svg>
                   Grid
                 </button>
+
                 <button
                   onClick={() => setViewMode("list")}
                   style={{
@@ -393,6 +421,7 @@ export default function App() {
                   </svg>
                   List
                 </button>
+
                 <button
                   onClick={() => setViewMode("map")}
                   style={{
@@ -435,8 +464,8 @@ export default function App() {
 
             {viewMode === "grid" ? (
               <div className="events-grid" id="events-grid">
-                {filteredEvents && filteredEvents.length > 0 ? (
-                  filteredEvents.map((event) => (
+                {sortedEvents.length > 0 ? (
+                  sortedEvents.map((event) => (
                     <EventCard key={event.id} event={event} viewMode="grid" />
                   ))
                 ) : (
@@ -462,21 +491,23 @@ export default function App() {
               </div>
             ) : viewMode === "list" ? (
               <div className="events-list" id="events-list">
-                {filteredEvents && filteredEvents.length > 0 ? (
-                  Object.entries(groupedEvents).map(([month, monthEvents]) => (
-                    <div key={month} className="events-list__month-group">
-                      <h3 className="events-list__month-heading">{month}</h3>
-                      <div className="events-list__month-rows">
-                        {monthEvents.map((event) => (
-                          <EventCard
-                            key={event.id}
-                            event={event}
-                            viewMode="list"
-                          />
-                        ))}
+                {sortedEvents.length > 0 ? (
+                  Object.entries(groupedEvents || {}).map(
+                    ([month, monthEvents]) => (
+                      <div key={month} className="events-list__month-group">
+                        <h3 className="events-list__month-heading">{month}</h3>
+                        <div className="events-list__month-rows">
+                          {monthEvents.map((event) => (
+                            <EventCard
+                              key={event.id}
+                              event={event}
+                              viewMode="list"
+                            />
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))
+                    ),
+                  )
                 ) : (
                   <div className="empty-state" id="empty-state">
                     <div className="empty-state__icon">🔎</div>
@@ -499,7 +530,7 @@ export default function App() {
                 )}
               </div>
             ) : (
-              <EventMap events={filteredEvents} />
+              <EventMap events={sortedEvents} />
             )}
           </main>
         </>
@@ -508,6 +539,7 @@ export default function App() {
       ) : currentPage === "sponsors" ? (
         <Sponsors />
       ) : null}
+
       <Footer onNavigate={setCurrentPage} />
       <BackToTop />
     </>
