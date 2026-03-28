@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import EventMap from "./components/EventMap";
+import Footer from "./components/Footer";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 
@@ -23,12 +24,17 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
+  const [currentPage, setCurrentPage] = useUrlState("page", "events");
   const [viewMode, setViewMode] = useUrlState("view", "list");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
 
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
@@ -174,7 +180,11 @@ export default function App() {
 
   return (
     <>
-      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <Header
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onNavigate={setCurrentPage}
+      />
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -324,18 +334,7 @@ export default function App() {
           <EventMap events={filteredEvents} />
         )}
       </main>
-      <footer className="footer">
-        <p>
-          DU Event Board — Built with ❤️ by the community.{" "}
-          <a
-            href="https://github.com/osl-incubator/du-event-board"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Contribute on GitHub
-          </a>
-        </p>
-      </footer>
+      <Footer onNavigate={setCurrentPage} />
     </>
   );
 }
