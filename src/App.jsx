@@ -289,7 +289,9 @@ export default function App() {
                     padding: "0.5rem 1rem",
                     borderRadius: "8px",
                     background:
-                      viewMode === "map" ? "var(--accent-primary)" : "transparent",
+                      viewMode === "map"
+                        ? "var(--accent-primary)"
+                        : "transparent",
                     color: viewMode === "map" ? "#fff" : "var(--text-muted)",
                     border: "none",
                     cursor: "pointer",
