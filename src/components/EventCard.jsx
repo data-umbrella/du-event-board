@@ -1,4 +1,5 @@
 import { getEventStatus } from "../utils/eventHelpers";
+import { downloadICS } from "../utils/icsGenerator";
 
 export default function EventCard({ event, viewMode = "grid" }) {
   const status = getEventStatus(event.date);
@@ -98,17 +99,29 @@ export default function EventCard({ event, viewMode = "grid" }) {
         </div>
       )}
 
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div className="event-card__actions">
+        <button
+          className="event-card__calendar-btn"
+          onClick={() => downloadICS(event)}
+          aria-label={`Add ${event.title} to calendar`}
+          type="button"
         >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
-      )}
+          <span className="event-card__calendar-icon">📆</span>
+          Add to Calendar
+        </button>
+
+        {event.url && (
+          <a
+            href={event.url}
+            className="event-card__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+            <span className="event-card__link-arrow">→</span>
+          </a>
+        )}
+      </div>
     </article>
   );
 }
