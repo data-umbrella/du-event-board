@@ -32,15 +32,12 @@ export default function App() {
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
 
-<<<<<<< HEAD
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
-=======
   const [radiusStr, setRadiusStr] = useUrlState("radius", "50");
   const searchRadius = parseInt(radiusStr, 10) || 50;
   const [mapNotification, setMapNotification] = useState(null);
->>>>>>> 5f15ab0 (feat: enhanced map with marker clustering, theme-aware popups, and combined geolocation controls)
 
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
