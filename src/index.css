@@ -16,10 +16,13 @@
   --bg-card-hover: rgba(255, 255, 255, 0.08);
   --bg-input: rgba(255, 255, 255, 0.06);
   --bg-input-focus: rgba(255, 255, 255, 0.1);
+  --bg-card-button: rgba(121, 92, 252, 0.7);
+  --bg-card-button-hover: rgba(121, 92, 252, 0.5);
 
   --text-primary: #f0f0f8;
   --text-secondary: #a0a0c0;
   --text-muted: #6a6a90;
+  --text-btn: #ececf7;
 
   --accent-primary: #7c5cfc;
   --accent-secondary: #c084fc;
@@ -143,6 +146,7 @@
   .theme-toggle__text {
     display: none;
   }
+
   .theme-toggle {
     padding: 0.6rem;
     right: 1rem;
@@ -259,6 +263,7 @@ body {
     flex-direction: column;
     gap: 0.5rem;
   }
+
   .header__logo {
     font-size: 1.8rem;
   }
@@ -594,6 +599,7 @@ body {
     transform: scale(1);
     opacity: 0.8;
   }
+
   100% {
     transform: scale(2.5);
     opacity: 0;
@@ -667,6 +673,12 @@ body {
   background: rgba(192, 132, 252, 0.08);
 }
 
+.event-card__footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .event-card__link {
   display: inline-flex;
   align-items: center;
@@ -694,6 +706,45 @@ body {
 
 .event-card__link:hover .event-card__link-arrow {
   transform: translateX(3px);
+}
+
+.event-card__join {
+  margin-left: auto;
+}
+
+/* Participation action styles for join/cancel flow. */
+.event-card__join-button {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-btn);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card-button);
+  border: 1px solid var(--border-accent);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.event-card__join-button:hover {
+  background: var(--bg-card-button-hover);
+  transform: scale(1.05);
+}
+
+.event-card__join-button.joined {
+  background-color: var(--accent-glow);
+  color: var(--accent-primary);
+}
+
+.event-card__join-button.joined:hover {
+  background-color: var(--bg-card);
+}
+
+.event-card__joined-marker {
+  color: rgb(2, 151, 2);
+  font-size: 0.75rem;
+  font-style: italic;
+  margin-right: 0.75rem;
 }
 
 /* ===================================

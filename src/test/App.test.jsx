@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import App from "../App";
 
 describe("App", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 3, 15, 12, 0, 0)); // Apr 15, 2026 (local)
+    localStorage.clear();
     // Clear the URL global state so tests don't leak into each other when reading window.location.search
     window.history.replaceState(null, "", "/");
   });
@@ -17,6 +18,17 @@ describe("App", () => {
   const setDateFilter = (value) => {
     const dateFilterSelect = screen.getByLabelText("Date filter");
     fireEvent.change(dateFilterSelect, { target: { value } });
+  };
+
+  const getEventCardByTitle = (title) =>
+    screen.getByText(title).closest("article");
+
+  const clickJoinEventForTitle = (title) => {
+    const card = getEventCardByTitle(title);
+    const joinButton = within(card).getByRole("button", {
+      name: "Join event",
+    });
+    fireEvent.click(joinButton);
   };
 
   it("renders the header with the site title", () => {
@@ -218,5 +230,66 @@ describe("App", () => {
     });
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
+  });
+
+  it("shows a dedicated message when there are no joined events", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /^Joined$/ }));
+
+    expect(screen.getByText("No joined events yet")).toBeInTheDocument();
+    expect(
+      screen.getByText("Join events to see them here."),
+    ).toBeInTheDocument();
+  });
+
+  it("shows joined events in Joined view after joining", () => {
+    render(<App />);
+
+    clickJoinEventForTitle("Rust Programming Intro - São Paulo");
+    fireEvent.click(screen.getByRole("button", { name: /^Joined$/ }));
+
+    expect(
+      screen.getByText("Rust Programming Intro - São Paulo"),
+    ).toBeInTheDocument();
+    const resultsInfo = screen.getByText(/Showing/);
+    expect(resultsInfo).toHaveTextContent(/Showing\s*1\s*event/);
+  });
+
+  it("shows no matching joined events when joined events are filtered out", () => {
+    render(<App />);
+
+    clickJoinEventForTitle("Rust Programming Intro - São Paulo");
+    fireEvent.click(screen.getByRole("button", { name: /^Joined$/ }));
+
+    const searchInput = screen.getByPlaceholderText(
+      "Search events by name, description, or tags...",
+    );
+    fireEvent.change(searchInput, { target: { value: "python" } });
+
+    expect(screen.getByText("No matching joined events")).toBeInTheDocument();
+    expect(
+      screen.getByText("Try switching to All or broadening your filters."),
+    ).toBeInTheDocument();
+  });
+
+  it("returns to empty joined message after canceling the last joined event", () => {
+    render(<App />);
+
+    clickJoinEventForTitle("Rust Programming Intro - São Paulo");
+    fireEvent.click(screen.getByRole("button", { name: /^Joined$/ }));
+
+    const joinedCard = getEventCardByTitle(
+      "Rust Programming Intro - São Paulo",
+    );
+    const cancelButton = within(joinedCard).getByRole("button", {
+      name: "Cancel",
+    });
+    fireEvent.click(cancelButton);
+
+    expect(screen.getByText("No joined events yet")).toBeInTheDocument();
+    expect(
+      screen.getByText("Join events to see them here."),
+    ).toBeInTheDocument();
   });
 });
