@@ -6,6 +6,7 @@ import EventMap from "./components/EventMap";
 import Footer from "./components/Footer";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
+import { useParticipation } from "./hooks/useParticipation";
 
 function parseISODate(dateString) {
   if (!dateString) return null;
@@ -35,6 +36,10 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
+
+  // This state is used to toggle the display of only joined events.
+  const [showJoined, setShowJoined] = useState(false);
+  const { joinedEvents, joinEvent, cancelEvent, isJoined } = useParticipation();
 
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
@@ -107,7 +112,9 @@ export default function App() {
     const selectedRangeStart = parseISODate(rangeStart);
     const selectedRangeEnd = parseISODate(rangeEnd);
 
-    return events.filter((event) => {
+    const sourceEvents = showJoined ? joinedEvents : events;
+
+    return sourceEvents.filter((event) => {
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 
@@ -176,6 +183,8 @@ export default function App() {
     customDate,
     rangeStart,
     rangeEnd,
+    showJoined,
+    joinedEvents,
   ]);
 
   return (
@@ -208,6 +217,8 @@ export default function App() {
           style={{
             display: "flex",
             justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "1rem",
             alignItems: "center",
             marginBottom: "1.5rem",
             paddingLeft: "0.25rem",
@@ -223,6 +234,60 @@ export default function App() {
             </span>{" "}
             event{filteredEvents.length !== 1 ? "s" : ""}
           </p>
+          <div
+            className="joined-toggle"
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              background: "var(--bg-input)",
+              padding: "0.3rem",
+              borderRadius: "12px",
+              border: "1px solid var(--border-subtle)",
+            }}
+          >
+            <button
+              onClick={() => setShowJoined(false)}
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                background: showJoined
+                  ? "transparent"
+                  : "var(--accent-secondary)",
+                color: showJoined ? "var(--text-muted)" : "#fff",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: "bold",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setShowJoined(true)}
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                background: showJoined
+                  ? "var(--accent-secondary)"
+                  : "transparent",
+                color: showJoined ? "#fff" : "var(--text-muted)",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: "bold",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              Joined
+            </button>
+          </div>
 
           <div
             className="view-toggle"
@@ -317,15 +382,30 @@ export default function App() {
           <div className="events-grid" id="events-grid">
             {filteredEvents.length > 0 ? (
               filteredEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  joinEvent={joinEvent}
+                  cancelEvent={cancelEvent}
+                  isJoined={isJoined}
+                />
               ))
             ) : (
               <div className="empty-state" id="empty-state">
                 <div className="empty-state__icon">🔎</div>
-                <h2 className="empty-state__title">No events found</h2>
+                <h2 className="empty-state__title">
+                  {showJoined
+                    ? joinedEvents.length === 0
+                      ? "No joined events yet"
+                      : "No matching joined events"
+                    : "No events found"}
+                </h2>
                 <p className="empty-state__description">
-                  Try adjusting your search terms or filters to find events
-                  near you.
+                  {showJoined
+                    ? joinedEvents.length === 0
+                      ? "Join events to see them here."
+                      : "Try switching to All or broadening your filters."
+                    : "Try adjusting your search terms or filters to find events near you."}
                 </p>
               </div>
             )}
