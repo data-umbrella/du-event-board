@@ -1,7 +1,14 @@
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import React, { useEffect, useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  ZoomControl,
+} from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, ExternalLink } from "lucide-react";
+import { Calendar, ExternalLink, Locate } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -16,15 +23,62 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-export default function EventMap({ events }) {
-  // Find center based on first geocoded event or fallback
-  const mapCenter = events.find((e) => e.lat && e.lng)
-    ? [
-        events.find((e) => e.lat && e.lng).lat,
-        events.find((e) => e.lat && e.lng).lng,
-      ]
-    : [-14.235, -51.925]; // Center of Brazil as fallback
+// Component to handle map bounds and automatic geolocation
+function MapController({ events }) {
+  const map = useMap();
+  const locationCircleRef = React.useRef(null);
+  const [hasLocated, setHasLocated] = useState(false);
 
+  useEffect(() => {
+    // 1. Initial fit bounds to cover all events (if any)
+    // Using zoom 7 for a better "regional/city" context while still broad
+    if (events.length > 0 && !hasLocated) {
+      const bounds = L.latLngBounds(events.map((e) => [e.lat, e.lng]));
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 7 });
+    }
+
+    // 2. Automatically trigger geolocation on mount
+    if (!hasLocated) {
+      map.locate({ setView: true, maxZoom: 8 });
+    }
+
+    const onLocationFound = (e) => {
+      setHasLocated(true);
+      if (locationCircleRef.current) {
+        map.removeLayer(locationCircleRef.current);
+      }
+      locationCircleRef.current = L.circle(e.latlng, {
+        radius: e.accuracy,
+        color: "var(--accent-primary)",
+        fillColor: "var(--accent-primary)",
+        fillOpacity: 0.1,
+        weight: 1,
+      }).addTo(map);
+    };
+
+    const onLocationError = (e) => {
+      // If location fails/denied, explicitly show ALL events
+      console.warn("Geolocation fallback: showing entire map view.");
+      setHasLocated(true);
+      if (events.length > 0) {
+        const bounds = L.latLngBounds(events.map((e) => [e.lat, e.lng]));
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 7 });
+      }
+    };
+
+    map.on("locationfound", onLocationFound);
+    map.on("locationerror", onLocationError);
+
+    return () => {
+      map.off("locationfound", onLocationFound);
+      map.off("locationerror", onLocationError);
+    };
+  }, [events, map, hasLocated]);
+
+  return null;
+}
+
+export default function EventMap({ events }) {
   // Filter events with valid coords
   const mapEvents = events.filter((e) => e.lat && e.lng);
 
@@ -39,6 +93,10 @@ export default function EventMap({ events }) {
       </div>
     );
   }
+
+  // Initial center: World view
+  const initialCenter = [20, 0];
+  const initialZoom = 2;
 
   return (
     <AnimatePresence>
@@ -56,11 +114,13 @@ export default function EventMap({ events }) {
           border: "1px solid var(--border-subtle)",
           boxShadow: "var(--shadow-lg), var(--shadow-glow)",
           marginBottom: "2rem",
+          position: "relative",
         }}
       >
         <MapContainer
-          center={mapCenter}
-          zoom={4}
+          center={initialCenter}
+          zoom={initialZoom}
+          zoomControl={false}
           style={{
             height: "100%",
             width: "100%",
@@ -71,6 +131,9 @@ export default function EventMap({ events }) {
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           />
+
+          <ZoomControl position="topright" />
+          <MapController events={mapEvents} />
 
           {mapEvents.map((event) => (
             <Marker key={event.id} position={[event.lat, event.lng]}>
