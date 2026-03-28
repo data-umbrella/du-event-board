@@ -158,6 +158,35 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
             )
 
+    # Validate optional coordinates. They must be provided as a pair.
+    has_lat = "lat" in event and event["lat"] not in (None, "")
+    has_lng = "lng" in event and event["lng"] not in (None, "")
+    if has_lat != has_lng:
+        errors.append(
+            f"Event #{index}: Coordinates must include both 'lat' and 'lng' when provided"
+        )
+    elif has_lat and has_lng:
+        try:
+            lat_value = float(event["lat"])
+            lng_value = float(event["lng"])
+        except (TypeError, ValueError):
+            errors.append(
+                f"Event #{index}: Coordinates must be numeric values for 'lat' and 'lng'"
+            )
+        else:
+            if not -90 <= lat_value <= 90:
+                errors.append(
+                    f"Event #{index}: Invalid lat '{event['lat']}' (expected range -90 to 90)"
+                )
+            if not -180 <= lng_value <= 180:
+                errors.append(
+                    f"Event #{index}: Invalid lng '{event['lng']}' (expected range -180 to 180)"
+                )
+
+            # Store normalized numeric values in JSON output.
+            event["lat"] = lat_value
+            event["lng"] = lng_value
+
     return errors
 
 
@@ -261,8 +290,8 @@ def main() -> None:
         errors = validate_event(event, i)
         all_errors.extend(errors)
 
-        # Geocode if we have a location and no coordinates
-        if not all_errors and "lat" not in event:
+        # Geocode only when both coordinates are missing.
+        if not all_errors and "lat" not in event and "lng" not in event:
             coords = None
             if (
                 "location" in event

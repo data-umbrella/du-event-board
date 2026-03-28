@@ -33,7 +33,13 @@ Edit `data/events.yaml` and add a new entry:
   tags:
     - tag1
     - tag2
+  # Optional coordinates for map view
+  lat: -23.5505
+  lng: -46.6333
 ```
+
+If coordinates are provided, include both `lat` and `lng`. Valid ranges are:
+`lat` between `-90` and `90`, and `lng` between `-180` and `180`.
 
 Then open a Pull Request. CI will validate the YAML and run tests. Once merged,
 the site is automatically rebuilt and deployed.
