@@ -160,8 +160,7 @@ export default function App() {
       const matchesCountry =
         !selectedCountry || event.country === selectedCountry;
       const matchesState = !selectedState || event.state === selectedState;
-      const matchesRegion =
-        !selectedRegion || event.region === selectedRegion;
+      const matchesRegion = !selectedRegion || event.region === selectedRegion;
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
       const matchesTag =

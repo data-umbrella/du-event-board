@@ -38,9 +38,7 @@ describe("App", () => {
     expect(
       screen.getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText("React Workshop - São Paulo"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
     expect(screen.getAllByText("Python Porto Alegre")[0]).toBeInTheDocument();
     expect(screen.getAllByText("In Person")[0]).toBeInTheDocument();
   });
@@ -123,9 +121,7 @@ describe("App", () => {
       target: { value: "paid" },
     });
 
-    expect(
-      screen.getByText("React Workshop - São Paulo"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
     expect(
       screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
     ).toBeInTheDocument();

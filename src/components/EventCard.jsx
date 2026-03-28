@@ -1,7 +1,4 @@
-import {
-  formatEventDateRange,
-  getEventStatus,
-} from "../utils/eventHelpers";
+import { formatEventDateRange, getEventStatus } from "../utils/eventHelpers";
 
 function toLabel(value) {
   return value
