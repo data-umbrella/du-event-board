@@ -7,6 +7,7 @@ summary: |-
 """
 
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -16,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 
 import yaml  # type: ignore
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo  # Python 3.9+ standard library for time zones
 
 REQUIRED_FIELDS = [
     "id",
@@ -36,6 +37,18 @@ OUTPUT_FILE = PROJECT_ROOT / "src" / "data" / "events.json"
 CACHE_FILE = PROJECT_ROOT / "data" / ".geocode_cache.json"
 
 _geocode_cache = None
+
+
+def is_ci() -> bool:
+    """
+    title: Check if the script is running in a CI/CD environment.
+    returns:
+      type: bool
+    """
+    return any(
+        os.environ.get(env)
+        for env in ["GITHUB_ACTIONS", "NETLIFY", "CI", "VERCEL"]
+    )
 
 
 def get_cache() -> dict[str, Any]:
@@ -78,6 +91,11 @@ def geocode_location(location_str: str) -> tuple[float, float] | None:
     cache = get_cache()
     if location_str in cache:
         return (cache[location_str][0], cache[location_str][1])
+
+    # Skip network calls in CI/CD environments to keep builds fast and avoid rate limits
+    if is_ci():
+        print(f"  [CI] Skipping geocode for '{location_str}'")
+        return None
 
     print(f"  [Network] Fetching coordinates for '{location_str}'...")
     query = urllib.parse.quote(location_str)
@@ -122,7 +140,9 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
     # Validate date format
     if "date" in event:
         try:
-            datetime.strptime(event["date"], "%Y-%m-%d")
+            if isinstance(event["date"], datetime):
+                event["date"] = event["date"].strftime("%Y-%m-%d")
+            datetime.strptime(str(event["date"]), "%Y-%m-%d")
         except ValueError:
             errors.append(
                 f"Event #{index}: Invalid date format '{event['date']}' (expected YYYY-MM-DD)"
@@ -131,12 +151,14 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
     # Validate time format
     if "time" in event:
         try:
+            # Handle time objects if PyYAML parsed them
+            if not isinstance(event["time"], str):
+                event["time"] = event["time"].strftime("%H:%M")
             datetime.strptime(event["time"], "%H:%M")
         except ValueError:
             errors.append(
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
             )
-
     # Validate timezone
     if "timezone" in event:
         try:
@@ -145,7 +167,6 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
             errors.append(
                 f"Event #{index}: Invalid timezone '{event['timezone']}' (expected IANA format like 'America/Sao_Paulo')"
             )
-
     return errors
 
 
@@ -169,15 +190,84 @@ def convert_to_utc(event: dict[str, Any], index: int) -> tuple[str, str]:
         local_dt = datetime.strptime(
             f"{date_str} {time_str}", "%Y-%m-%d %H:%M"
         )
-
         tz = ZoneInfo(tz_str)
         local_aware = local_dt.replace(tzinfo=tz)
-
         utc_dt = local_aware.astimezone(ZoneInfo("UTC"))
 
         return utc_dt.isoformat().replace("+00:00", "Z"), ""
     except Exception as e:
         return "", f"Event #{index}: Failed to convert time to UTC: {str(e)}"
+
+
+def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
+    """
+    title: >-
+      Updates events.yaml by inserting lat/lng lines into the existing text.
+    parameters:
+      events_with_coords:
+        type: list[dict[str, Any]]
+    """
+    if not INPUT_FILE.exists():
+        return
+
+    with open(INPUT_FILE, "r", encoding="utf-8") as f:
+        original_content = f.read()
+
+    lines = original_content.splitlines(keepends=True)
+    final_output = []
+
+    # Track which events we've already updated in this pass
+    updated_ids = {str(e["id"]) for e in events_with_coords if "lat" in e}
+
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        final_output.append(line)
+
+        # Look for the start of an event: "  - id: \"X\"" or "  - id: 'X'"
+        if line.strip().startswith("- id:"):
+            # Extract the ID
+            event_id = line.strip().split(":", 1)[1].strip().strip("'\"")
+
+            if event_id in updated_ids:
+                # Find the event data
+                event_data = next(
+                    e for e in events_with_coords if str(e["id"]) == event_id
+                )
+
+                # Check if it already has coordinates in the text block
+                block_end = i + 1
+                has_lat = False
+                while block_end < len(lines):
+                    line_content = lines[block_end].strip()
+                    if not line_content or line_content.startswith("- id:"):
+                        break
+                    if line_content.startswith("lat:"):
+                        has_lat = True
+                    block_end += 1
+
+                if not has_lat:
+                    # Insert before the block ends or before an empty line
+                    # Determine indentation (match the 'id' key's indentation)
+                    id_indent = line[: line.find("- id:")]
+                    property_indent = id_indent + "    "
+
+                    # Wait, if id_indent is "  ", then id is at 4, title is at 4.
+                    # So property_indent should be id_indent + "  " to reach 4 spaces.
+                    # Actually, let's just use "    " directly as it matches the file.
+                    property_indent = "    "
+
+                    final_output.append(
+                        f"{property_indent}lat: {event_data['lat']}\n"
+                    )
+                    final_output.append(
+                        f"{property_indent}lng: {event_data['lng']}\n"
+                    )
+
+        i += 1
+
+    with open(INPUT_FILE, "w", encoding="utf-8") as f:
+        f.writelines(final_output)
 
 
 def main() -> None:
@@ -199,6 +289,9 @@ def main() -> None:
 
     events = data["events"]
     print(f"Found {len(events)} events")
+
+    # Track if we updated any events with new coordinates
+    new_coords_found = False
 
     # Validate all events
     all_errors = []
@@ -226,6 +319,7 @@ def main() -> None:
 
             if coords:
                 event["lat"], event["lng"] = coords
+                new_coords_found = True
 
     if all_errors:
         print("Validation errors:", file=sys.stderr)
@@ -235,7 +329,16 @@ def main() -> None:
 
     print("All events validated successfully")
 
+    # If we found new coordinates locally, save them back to the source YAML surgically
+    if new_coords_found and not is_ci():
+        print(
+            f"Surgically updating source file with new coordinates: {INPUT_FILE}"
+        )
+        update_yaml_surgically(events)
+        print("  Done.")
+
     save_cache()
+
     # Convert to UTC and generate output
     output_events = []
     conversion_errors = []
