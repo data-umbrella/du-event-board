@@ -107,9 +107,31 @@ export default function EventMap({
   onRadiusChange,
   notification,
   userCoords,
+  proximityActive,
 }) {
+  const [localRadius, setLocalRadius] = useState(searchRadius);
+
+  // Sync localRadius if searchRadius prop changes from outside
+  useEffect(() => {
+    setLocalRadius(searchRadius);
+  }, [searchRadius]);
+
   // Filter events with valid coords
   const mapEvents = events.filter((e) => e.lat && e.lng);
+
+  // Calculate events within radius for live display
+  const eventsInRadius = React.useMemo(() => {
+    if (!userCoords) return 0;
+    const radiusDeg = searchRadius / 111;
+    const maxDistSq = radiusDeg * radiusDeg;
+    return events.filter((e) => {
+      if (!e.lat || !e.lng) return false;
+      const d2 =
+        Math.pow(e.lat - userCoords.lat, 2) +
+        Math.pow(e.lng - userCoords.lng, 2);
+      return d2 <= maxDistSq;
+    }).length;
+  }, [events, userCoords, searchRadius]);
 
   // Choose tile layer based on theme
   const tileUrl =
@@ -154,7 +176,7 @@ export default function EventMap({
       >
         {/* Notification Toast */}
         <AnimatePresence>
-          {notification && (
+          {notification && notification.message && (
             <motion.div
               initial={{ opacity: 0, y: -20, x: "-50%" }}
               animate={{ opacity: 1, y: 0, x: "-50%" }}
@@ -164,13 +186,19 @@ export default function EventMap({
                 top: "20px",
                 left: "50%",
                 zIndex: 1001,
-                background: "rgba(220, 38, 38, 0.9)",
+                background:
+                  notification.type === "success"
+                    ? "rgba(16, 185, 129, 0.9)"
+                    : "rgba(220, 38, 38, 0.9)",
                 color: "white",
                 padding: "12px 24px",
                 borderRadius: "12px",
                 fontSize: "14px",
                 fontWeight: "600",
-                boxShadow: "0 8px 32px rgba(220, 38, 38, 0.3)",
+                boxShadow:
+                  notification.type === "success"
+                    ? "0 8px 32px rgba(16, 185, 129, 0.3)"
+                    : "0 8px 32px rgba(220, 38, 38, 0.3)",
                 backdropFilter: "blur(8px)",
                 pointerEvents: "none",
                 textAlign: "center",
@@ -185,7 +213,8 @@ export default function EventMap({
                   gap: "8px",
                 }}
               >
-                <span>⚠️</span> {notification}
+                <span>{notification.type === "success" ? "✅" : "⚠️"}</span>{" "}
+                {notification.message}
               </div>
             </motion.div>
           )}
@@ -209,7 +238,7 @@ export default function EventMap({
           className="map-control-panel"
         >
           <button
-            onClick={onNearMe}
+            onClick={() => onNearMe(localRadius)}
             className="map-near-me-btn-primary"
             style={{
               width: "100%",
@@ -253,18 +282,34 @@ export default function EventMap({
             >
               Search Radius
             </span>
-            <span
-              style={{
-                fontSize: "14px",
-                fontWeight: "700",
-                color: "var(--accent-primary)",
-                background: "var(--accent-glow)",
-                padding: "2px 8px",
-                borderRadius: "6px",
-              }}
-            >
-              {searchRadius}km
-            </span>
+            <div style={{ display: "flex", gap: "6px" }}>
+              {proximityActive && userCoords && (
+                <span
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    color: "var(--accent-primary)",
+                    background: "var(--accent-glow)",
+                    padding: "2px 8px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  {eventsInRadius} found
+                </span>
+              )}
+              <span
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "700",
+                  color: "var(--accent-primary)",
+                  background: "var(--accent-glow)",
+                  padding: "2px 8px",
+                  borderRadius: "6px",
+                }}
+              >
+                {searchRadius}km
+              </span>
+            </div>
           </div>
 
           <div
@@ -277,7 +322,7 @@ export default function EventMap({
             {RADIUS_PRESETS.map((preset) => (
               <button
                 key={preset}
-                onClick={() => onRadiusChange(preset)}
+                onClick={() => setLocalRadius(preset)}
                 style={{
                   flex: 1,
                   padding: "5px 0",
@@ -287,17 +332,17 @@ export default function EventMap({
                   cursor: "pointer",
                   transition: "all 0.2s",
                   border:
-                    searchRadius === preset
+                    localRadius === preset
                       ? "1px solid var(--accent-primary)"
                       : "1px solid var(--border-subtle)",
                   background:
-                    searchRadius === preset
+                    localRadius === preset
                       ? "var(--accent-primary)"
                       : "var(--bg-input)",
                   color:
-                    searchRadius === preset ? "#fff" : "var(--text-secondary)",
+                    localRadius === preset ? "#fff" : "var(--text-secondary)",
                   boxShadow:
-                    searchRadius === preset
+                    localRadius === preset
                       ? "0 0 10px rgba(124, 92, 252, 0.35)"
                       : "none",
                 }}
@@ -312,8 +357,8 @@ export default function EventMap({
             min="5"
             max="200"
             step="5"
-            value={searchRadius}
-            onChange={(e) => onRadiusChange(parseInt(e.target.value, 10))}
+            value={localRadius}
+            onChange={(e) => setLocalRadius(parseInt(e.target.value, 10))}
             style={{
               width: "100%",
               cursor: "pointer",
@@ -356,7 +401,7 @@ export default function EventMap({
             searchRadius={searchRadius}
           />
 
-          {userCoords && (
+          {proximityActive && userCoords && (
             <Circle
               center={[userCoords.lat, userCoords.lng]}
               radius={searchRadius * 1000}
