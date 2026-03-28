@@ -26,10 +26,11 @@ export default function App() {
   const [customDate, setCustomDate] = useState("");
   const [rangeStart, setRangeStart] = useState("");
   const [rangeEnd, setRangeEnd] = useState("");
+  const [sortOrder, setSortOrder]= useState("");
 
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
-
+  
     if (nextType !== "customDate") {
       setCustomDate("");
     }
@@ -131,6 +132,7 @@ export default function App() {
 
       return matchesSearch && matchesRegion && matchesCategory && matchesDate;
     });
+
   }, [
     searchTerm,
     selectedRegion,
@@ -140,6 +142,19 @@ export default function App() {
     rangeStart,
     rangeEnd,
   ]);
+
+  const sortedEvents = useMemo(() => {
+  return [...filteredEvents].sort((a, b) => {
+    const dateA = parseISODate(a.date)?.getTime() ?? Infinity;
+    const dateB = parseISODate(b.date)?.getTime() ?? Infinity;
+
+    if (sortOrder === "date-asc") return dateA - dateB;
+    if (sortOrder === "date-desc") return dateB - dateA;
+    if (sortOrder === "name") {return a.title.localeCompare(b.title);}
+    return 0;
+  });
+}, 
+    [filteredEvents, sortOrder]);
 
   return (
     <>
@@ -161,16 +176,18 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
       />
       <main className="main" id="main-content">
         <p className="main__results-info">
           Showing{" "}
-          <span className="main__results-count">{filteredEvents.length}</span>{" "}
+          <span className="main__results-count">{sortedEvents.length}</span>{" "}
           event{filteredEvents.length !== 1 ? "s" : ""}
         </p>
         <div className="events-grid" id="events-grid">
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map((event) => (
+          {sortedEvents.length > 0 ? (
+            sortedEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))
           ) : (

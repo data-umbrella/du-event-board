@@ -15,6 +15,8 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  sortOrder,
+  onSortOrderChange
 }) {
   return (
     <div className="search" id="search">
@@ -63,6 +65,20 @@ export default function SearchBar({
               ))}
             </select>
           </div>
+          <div className="search__select-wrapper">
+          <select
+            id="sort-select"
+            className="search__select"
+            value={sortOrder}
+            onChange={(e) => onSortOrderChange(e.target.value)}
+            aria-label="Sort events"
+          >
+          <option value="">Sort By</option>
+          <option value="date-asc">Date ↑</option>
+          <option value="date-desc">Date↓</option>
+          <option value="name">Name A-Z</option>
+        </select>
+        </div>
         </div>
 
         <div className="search__row search__row--date">
