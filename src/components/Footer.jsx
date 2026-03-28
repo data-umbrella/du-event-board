@@ -9,7 +9,7 @@ export default function Footer({ onNavigate }) {
         <div className="footer__brand">
           <img
             src="https://github.com/data-umbrella.png"
-            alt="Data Umbrella Logo"
+            alt="Data <Umbrella> Logo"
             className="footer__logo"
           />
           <span className="footer__company-name">Data Umbrella</span>
