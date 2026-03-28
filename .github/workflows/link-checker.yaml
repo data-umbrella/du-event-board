@@ -1,0 +1,58 @@
+name: 🛡️ Link Guardian (Weekly Check)
+
+on:
+  schedule:
+    # Runs at 00:00 every Sunday
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+    # Allows manual trigger for testing
+
+jobs:
+  link-checker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml requests
+
+      - name: Check for dead links
+        id: checker
+        continue-on-error: true
+        run: |
+          python scripts/check_dead_links.py
+
+      - name: Check if report file exists
+        id: check_file
+        run: |
+          if [ -f broken_links_report.md ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Issue if links are broken
+        if: steps.check_file.outputs.exists == 'true'
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "🚨 Broken Event Links Detected"
+          content-filepath: ./broken_links_report.md
+          labels: |
+            bug
+            broken-link
+            priority:high
+
+      - name: Fail if links were broken
+        if: steps.check_file.outputs.exists == 'true'
+        run: |
+          echo "❌ Broken links were found. An issue has been created."
+          exit 1
