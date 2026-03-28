@@ -7,6 +7,8 @@ import Footer from "./components/Footer";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 
+const FEATURED_STRIP_MAX = 3;
+
 function parseISODate(dateString) {
   if (!dateString) return null;
   const [year, month, day] = dateString.split("-").map(Number);
@@ -178,6 +180,30 @@ export default function App() {
     rangeEnd,
   ]);
 
+  const featuredEventsFiltered = useMemo(() => {
+    const list = filteredEvents.filter((e) => e.featured === true);
+    list.sort((a, b) => {
+      const ra = a.featured_rank ?? 0;
+      const rb = b.featured_rank ?? 0;
+      if (ra !== rb) return ra - rb;
+      const da = parseISODate(a.date)?.getTime() ?? 0;
+      const db = parseISODate(b.date)?.getTime() ?? 0;
+      return da - db;
+    });
+    return list;
+  }, [filteredEvents]);
+
+  const featuredStripEvents = useMemo(
+    () => featuredEventsFiltered.slice(0, FEATURED_STRIP_MAX),
+    [featuredEventsFiltered],
+  );
+
+  const scrollToEventsGrid = () => {
+    document
+      .getElementById("events-grid")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <>
       <Header
@@ -204,6 +230,46 @@ export default function App() {
         categories={categories}
       />
       <main className="main" id="main-content">
+        {viewMode === "list" && featuredStripEvents.length > 0 && (
+          <section
+            className="featured-strip"
+            aria-labelledby="featured-strip-heading"
+          >
+            <div className="featured-strip__header">
+              <h2
+                id="featured-strip-heading"
+                className="featured-strip__title"
+              >
+                Featured events
+              </h2>
+              {featuredEventsFiltered.length > FEATURED_STRIP_MAX && (
+                <button
+                  type="button"
+                  className="featured-strip__more"
+                  onClick={scrollToEventsGrid}
+                >
+                  More events
+                </button>
+              )}
+            </div>
+            <div
+              className="featured-strip__scroller"
+              role="list"
+              aria-label="Featured event cards"
+            >
+              {featuredStripEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="featured-strip__item"
+                  role="listitem"
+                >
+                  <EventCard event={event} compact />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <div
           style={{
             display: "flex",

@@ -32,6 +32,8 @@ events:
       - frontend
 
   - id: "3"
+    featured: true
+    featured_rank: 1
     lat: -25.4295963
     lng: -49.2712724
     title: "Open Source Friday - Curitiba"
@@ -48,6 +50,8 @@ events:
       - programming
 
   - id: "4"
+    featured: true
+    featured_rank: 2
     lat: -22.9110137
     lng: -43.2093727
     title: "Data Science Bootcamp - Rio de Janeiro"
@@ -112,6 +116,8 @@ events:
       - systems
 
   - id: "8"
+    featured: true
+    featured_rank: 3
     lat: -27.544562
     lng: -48.4999697
     title: "Community Hackathon - Florianópolis"

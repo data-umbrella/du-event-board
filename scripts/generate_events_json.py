@@ -158,7 +158,48 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
             )
 
+    # Optional featured / featured_rank (curated strip in the UI)
+    if "featured" in event:
+        if not isinstance(event["featured"], bool):
+            errors.append(
+                f"Event #{index}: 'featured' must be a boolean (YAML true/false), "
+                f"got {type(event['featured']).__name__}"
+            )
+    is_featured = event.get("featured") is True
+    if "featured_rank" in event:
+        if not is_featured:
+            errors.append(
+                f"Event #{index}: 'featured_rank' is only allowed when 'featured' is true"
+            )
+        else:
+            rank_val = event["featured_rank"]
+            if isinstance(rank_val, bool) or not isinstance(rank_val, int):
+                errors.append(
+                    f"Event #{index}: 'featured_rank' must be an integer, "
+                    f"got {type(rank_val).__name__}"
+                )
+            elif rank_val < 0:
+                errors.append(
+                    f"Event #{index}: 'featured_rank' must be >= 0, got {rank_val!r}"
+                )
+
     return errors
+
+
+def normalize_featured_fields(event: dict[str, Any]) -> None:
+    """
+    title: Keep JSON output consistent for optional featured fields.
+    summary: >-
+      Featured events get explicit rank (default 0). Non-featured entries
+      omit both keys so the frontend can use `featured === true` checks.
+    """
+    if event.get("featured") is True:
+        rank = event.get("featured_rank", 0)
+        event["featured"] = True
+        event["featured_rank"] = int(rank)
+    else:
+        event.pop("featured", None)
+        event.pop("featured_rank", None)
 
 
 def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
@@ -288,6 +329,9 @@ def main() -> None:
         for error in all_errors:
             print(f"  - {error}", file=sys.stderr)
         sys.exit(1)
+
+    for event in events:
+        normalize_featured_fields(event)
 
     print("All events validated successfully")
 
