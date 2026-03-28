@@ -733,7 +733,9 @@ body {
   border-radius: var(--radius-sm);
   padding: 0.4rem 0.9rem;
   cursor: pointer;
-  transition: background var(--transition-base), border-color var(--transition-base);
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base);
 }
 
 .featured-strip__more:hover {

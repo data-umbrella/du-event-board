@@ -190,8 +190,11 @@ def normalize_featured_fields(event: dict[str, Any]) -> None:
     """
     title: Keep JSON output consistent for optional featured fields.
     summary: >-
-      Featured events get explicit rank (default 0). Non-featured entries
-      omit both keys so the frontend can use `featured === true` checks.
+      Featured events get explicit rank (default 0). Non-featured entries omit
+      both keys so the frontend can use `featured === true` checks.
+    parameters:
+      event:
+        type: dict[str, Any]
     """
     if event.get("featured") is True:
         rank = event.get("featured_rank", 0)
