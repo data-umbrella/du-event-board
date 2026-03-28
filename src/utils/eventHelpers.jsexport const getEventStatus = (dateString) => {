@@ -1,0 +1,15 @@
+  if (!dateString) {
+    return { label: "TBD", color: "bg-gray-400 text-white" };
+  }
+
+  const eventDate = new Date(dateString);
+  const now = new Date();
+
+  if (isNaN(eventDate.getTime())) {
+    return { label: "Invalid", color: "bg-red-500 text-white" };
+  }
+
+  return eventDate >= now
+    ? { label: "Upcoming", color: "bg-green-500 text-white" }
+    : { label: "Past", color: "bg-gray-500 text-white" };
+};
