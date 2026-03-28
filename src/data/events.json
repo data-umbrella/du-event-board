@@ -11,6 +11,7 @@
     "region": "Porto Alegre",
     "category": "Technology",
     "url": "https://example.com/python-poa",
+    "capacity": 50,
     "tags": [
       "python",
       "programming",
@@ -29,6 +30,7 @@
     "region": "São Paulo",
     "category": "Technology",
     "url": "https://example.com/react-sp",
+    "capacity": 30,
     "tags": [
       "react",
       "javascript",
@@ -47,6 +49,7 @@
     "region": "Curitiba",
     "category": "Technology",
     "url": "https://example.com/oss-friday-cwb",
+    "capacity": 20,
     "tags": [
       "open-source",
       "community",
