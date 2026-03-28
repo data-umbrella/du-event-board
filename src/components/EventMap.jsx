@@ -6,6 +6,7 @@ import {
   Popup,
   useMap,
   ZoomControl,
+  Circle,
 } from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, ExternalLink, Locate, MapPin } from "lucide-react";
@@ -13,8 +14,8 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 // MarkerCluster styles
-import "react-leaflet-cluster/lib/assets/MarkerCluster.css";
-import "react-leaflet-cluster/lib/assets/MarkerCluster.Default.css";
+import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
+import "react-leaflet-cluster/dist/assets/MarkerCluster.Default.css";
 
 // Fix for default marker icons in React Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -27,29 +28,32 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-// Component to handle map bounds and automatic geolocation
-function MapController({ events }) {
+const RADIUS_PRESETS = [50, 100, 200];
+
+// Component to handle map bounds, automatic geolocation, and radius-based zooming
+function MapController({ events, userCoords, searchRadius }) {
   const map = useMap();
   const locationCircleRef = React.useRef(null);
-  const [hasLocated, setHasLocated] = useState(false);
+  const [hasLocatedInitial, setHasLocatedInitial] = useState(false);
 
+  // 1. Initial fit bounds and automatic geolocation on mount
   useEffect(() => {
-    // 1. Initial fit bounds to cover all events (if any)
-    if (events.length > 0 && !hasLocated) {
-      const bounds = L.latLngBounds(events.map((e) => [e.lat, e.lng]));
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 7 });
-    }
-
-    // 2. Automatically trigger geolocation on mount
-    if (!hasLocated) {
+    if (!userCoords && !hasLocatedInitial) {
+      // Fit to all events if no user location yet
+      if (events.length > 0) {
+        const bounds = L.latLngBounds(events.map((e) => [e.lat, e.lng]));
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 7 });
+      }
+      // Trigger auto-locate
       map.locate({ setView: true, maxZoom: 8 });
     }
 
     const onLocationFound = (e) => {
-      setHasLocated(true);
+      setHasLocatedInitial(true);
       if (locationCircleRef.current) {
         map.removeLayer(locationCircleRef.current);
       }
+      // Small indicator for the actual device location if pinpointed
       locationCircleRef.current = L.circle(e.latlng, {
         radius: e.accuracy,
         color: "var(--accent-primary)",
@@ -61,8 +65,8 @@ function MapController({ events }) {
 
     const onLocationError = (e) => {
       console.warn("Geolocation fallback: showing entire map view.");
-      setHasLocated(true);
-      if (events.length > 0) {
+      setHasLocatedInitial(true);
+      if (events.length > 0 && !userCoords) {
         const bounds = L.latLngBounds(events.map((e) => [e.lat, e.lng]));
         map.fitBounds(bounds, { padding: [50, 50], maxZoom: 7 });
       }
@@ -75,7 +79,22 @@ function MapController({ events }) {
       map.off("locationfound", onLocationFound);
       map.off("locationerror", onLocationError);
     };
-  }, [events, map, hasLocated]);
+  }, [events, map, userCoords, hasLocatedInitial]);
+
+  // 2. Zoom to userCoords when they change (e.g. "Find Near Me" button clicked)
+  useEffect(() => {
+    if (!userCoords) return;
+
+    // Manually compute bounding box from the radius
+    const latOffset = searchRadius / 111;
+    const lngOffset =
+      searchRadius / (111 * Math.cos((userCoords.lat * Math.PI) / 180));
+    const bounds = L.latLngBounds(
+      [userCoords.lat - latOffset, userCoords.lng - lngOffset],
+      [userCoords.lat + latOffset, userCoords.lng + lngOffset],
+    );
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 12 });
+  }, [userCoords, map]); // zoom only when userCoords changes
 
   return null;
 }
@@ -87,6 +106,7 @@ export default function EventMap({
   searchRadius = 50,
   onRadiusChange,
   notification,
+  userCoords,
 }) {
   // Filter events with valid coords
   const mapEvents = events.filter((e) => e.lat && e.lng);
@@ -193,7 +213,7 @@ export default function EventMap({
             className="map-near-me-btn-primary"
             style={{
               width: "100%",
-              marginBottom: "20px",
+              marginBottom: "16px",
               padding: "12px",
               borderRadius: "12px",
               background: "var(--accent-primary)",
@@ -218,7 +238,7 @@ export default function EventMap({
             style={{
               display: "flex",
               justifyContent: "space-between",
-              marginBottom: "10px",
+              marginBottom: "8px",
               alignItems: "center",
             }}
           >
@@ -246,6 +266,47 @@ export default function EventMap({
               {searchRadius}km
             </span>
           </div>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              marginBottom: "10px",
+            }}
+          >
+            {RADIUS_PRESETS.map((preset) => (
+              <button
+                key={preset}
+                onClick={() => onRadiusChange(preset)}
+                style={{
+                  flex: 1,
+                  padding: "5px 0",
+                  borderRadius: "8px",
+                  fontSize: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  border:
+                    searchRadius === preset
+                      ? "1px solid var(--accent-primary)"
+                      : "1px solid var(--border-subtle)",
+                  background:
+                    searchRadius === preset
+                      ? "var(--accent-primary)"
+                      : "var(--bg-input)",
+                  color:
+                    searchRadius === preset ? "#fff" : "var(--text-secondary)",
+                  boxShadow:
+                    searchRadius === preset
+                      ? "0 0 10px rgba(124, 92, 252, 0.35)"
+                      : "none",
+                }}
+              >
+                {preset}km
+              </button>
+            ))}
+          </div>
+
           <input
             type="range"
             min="5"
@@ -289,7 +350,26 @@ export default function EventMap({
           />
 
           <ZoomControl position="topright" />
-          <MapController events={mapEvents} />
+          <MapController
+            events={mapEvents}
+            userCoords={userCoords}
+            searchRadius={searchRadius}
+          />
+
+          {userCoords && (
+            <Circle
+              center={[userCoords.lat, userCoords.lng]}
+              radius={searchRadius * 1000}
+              pathOptions={{
+                color: "#7c5cfc",
+                fillColor: "#7c5cfc",
+                fillOpacity: 0.08,
+                weight: 2,
+                dashArray: "6 4",
+                opacity: 0.7,
+              }}
+            />
+          )}
 
           <MarkerClusterGroup chunkedLoading>
             {mapEvents.map((event) => (

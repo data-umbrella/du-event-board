@@ -38,6 +38,7 @@ export default function App() {
   const [radiusStr, setRadiusStr] = useUrlState("radius", "50");
   const searchRadius = parseInt(radiusStr, 10) || 50;
   const [mapNotification, setMapNotification] = useState(null);
+  const [userCoords, setUserCoords] = useState(null);
 
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
@@ -70,6 +71,7 @@ export default function App() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
+          setUserCoords({ lat: latitude, lng: longitude });
 
           // Find the nearest region within search radius
           let nearestRegion = null;
@@ -481,6 +483,7 @@ export default function App() {
             searchRadius={searchRadius}
             onRadiusChange={(val) => setRadiusStr(val.toString())}
             notification={mapNotification}
+            userCoords={userCoords}
           />
         )}
       </main>
