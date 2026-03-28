@@ -609,6 +609,165 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* ── Share menu trigger ───────────────────────────────────────────────────── */
+
+/* CHANGE: Wrapper — positioned so the panel can anchor relative to the button */
+.share-menu {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+}
+
+/* CHANGE: Ghost icon button — no background, matches card aesthetic */
+.share-menu__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  padding: 0;
+}
+
+.share-menu__trigger:hover,
+.share-menu__trigger:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  outline: none;
+}
+
+/* ── Share panel ─────────────────────────────────────────────────────────── */
+
+/* CHANGE: Panel appears below-left of the trigger button.
+   Uses the card's dark palette with a subtle border and shadow.
+   right: 0 keeps it flush with the card edge on all screen sizes. */
+.share-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 272px;
+  background: #1a1d2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.1rem 1rem 1rem;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: share-panel-in 0.15s ease;
+  /* Ensure it layers above other cards in the grid */
+  z-index: 100;
+}
+
+@keyframes share-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* CHANGE: "Share event" label at the top of the panel */
+.share-menu__heading {
+  margin: 0 0 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
+/* CHANGE: Four options in a single row, each with icon above label */
+.share-menu__options {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* CHANGE: Individual share option — icon circle + label stacked */
+.share-menu__option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.35rem 0;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.share-menu__option:hover,
+.share-menu__option:focus-visible {
+  background: rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+
+/* CHANGE: Circular icon container — platform colour applied via modifiers below */
+.share-menu__option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: #fff;
+  flex-shrink: 0;
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+
+.share-menu__option:hover .share-menu__option-icon {
+  transform: scale(1.08);
+  filter: brightness(1.1);
+}
+
+/* CHANGE: Platform-specific icon background colours */
+.share-menu__option-icon--linkedin {
+  background: #0a66c2;
+}
+
+.share-menu__option-icon--x {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.share-menu__option-icon--whatsapp {
+  background: #25d366;
+}
+
+.share-menu__option-icon--copy {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* CHANGE: Green check state when link is copied */
+.share-menu__option-icon--copied {
+  background: #16a34a;
+  border-color: transparent;
+}
+
+/* CHANGE: Small label text below each icon */
+.share-menu__option-label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
 .event-card__description {
   font-size: 0.9rem;
   color: var(--text-secondary);

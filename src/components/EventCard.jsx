@@ -1,5 +1,6 @@
 import { getEventStatus } from "../utils/eventHelpers";
 
+import ShareMenu from "./ShareMenu";
 export default function EventCard({ event }) {
   const status = getEventStatus(event.date);
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
@@ -18,9 +19,13 @@ export default function EventCard({ event }) {
     ended: "status-badge--ended",
   };
 
+  const isPast = new Date(event.date + "T00:00:00") < new Date();
+
   return (
     <article className="event-card" id={`event-${event.id}`}>
       <div className="event-card__header">
+        {!isPast && <ShareMenu event={event} />}
+
         <span className="event-card__category">{event.category}</span>
 
         {status !== "none" && (
