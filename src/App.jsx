@@ -6,6 +6,7 @@ import EventMap from "./components/EventMap";
 import Footer from "./components/Footer";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
+import BackToTop from "./components/BackToTop";
 
 function parseISODate(dateString) {
   if (!dateString) return null;
@@ -418,6 +419,7 @@ export default function App() {
         )}
       </main>
       <Footer onNavigate={setCurrentPage} />
+      <BackToTop />
     </>
   );
 }
