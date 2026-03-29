@@ -33,10 +33,9 @@ export default function App() {
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
   const [selectedFormat, setSelectedFormat] = useState("");
 
-  if (typeof window !== "undefined" && !window.scrollTo) {
+  if (typeof window !== "undefined") {
     window.scrollTo = () => {};
   }
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
