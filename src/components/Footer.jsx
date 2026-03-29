@@ -52,7 +52,9 @@ export default function Footer({ onNavigate }) {
             <button
               type="button"
               onClick={() =>
-                onNavigate ? onNavigate("events") : (window.location.href = "/")
+                onNavigate
+                  ? onNavigate("events")
+                  : (window.location.href = "/")
               }
               className="footer__internal-link"
             >
@@ -87,7 +89,9 @@ export default function Footer({ onNavigate }) {
             <button
               type="button"
               onClick={() =>
-                onNavigate ? onNavigate("events") : (window.location.href = "/")
+                onNavigate
+                  ? onNavigate("events")
+                  : (window.location.href = "/")
               }
               className="footer__internal-link"
             >
