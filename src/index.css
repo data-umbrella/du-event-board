@@ -442,6 +442,26 @@ body {
   color: var(--text-primary);
 }
 
+.search__clear-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(244, 114, 182, 0.1);
+  border: 1px solid rgba(244, 114, 182, 0.3);
+  border-radius: var(--radius-md);
+  color: #f472b6;
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin-left: auto;
+}
+
+.search__clear-btn:hover {
+  background: rgba(244, 114, 182, 0.2);
+  border-color: rgba(244, 114, 182, 0.5);
+  transform: translateY(-1px);
+}
+
 /* ===================================
    Main Content
    =================================== */

@@ -15,7 +15,14 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  onClearFilters,
 }) {
+  const hasActiveFilters =
+    searchTerm !== "" ||
+    selectedRegion !== "" ||
+    selectedCategory !== "" ||
+    dateFilterType !== "all";
+
   return (
     <div className="search" id="search">
       <div className="search__container">
@@ -165,6 +172,16 @@ export default function SearchBar({
                 style={{ width: "160px" }}
               />
             </div>
+          )}
+
+          {hasActiveFilters && (
+            <button
+              className="search__clear-btn"
+              onClick={onClearFilters}
+              aria-label="Clear all filters"
+            >
+              Clear Filters
+            </button>
           )}
         </div>
       </div>

@@ -137,6 +137,8 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
 
     # Validate date format
     if "date" in event:
+        if not isinstance(event["date"], str):
+            event["date"] = str(event["date"])
         try:
             if isinstance(event["date"], datetime):
                 event["date"] = event["date"].strftime("%Y-%m-%d")
@@ -148,6 +150,8 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
 
     # Validate time format
     if "time" in event:
+        if not isinstance(event["time"], str):
+            event["time"] = str(event["time"])
         try:
             # Handle time objects if PyYAML parsed them
             if not isinstance(event["time"], str):
