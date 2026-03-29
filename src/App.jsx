@@ -303,8 +303,9 @@ export default function App() {
                 viewMode === "list" ? "view-toggle__button--active" : ""
               }`}
               onClick={() => setViewMode("list")}
+              aria-label="List"
             >
-              <span aria-hidden="true">List</span>
+              <span>List</span>
             </button>
             <button
               type="button"
@@ -312,8 +313,9 @@ export default function App() {
                 viewMode === "map" ? "view-toggle__button--active" : ""
               }`}
               onClick={() => setViewMode("map")}
+              aria-label="Map"
             >
-              <span aria-hidden="true">Map</span>
+              <span>Map</span>
             </button>
           </div>
         </section>
