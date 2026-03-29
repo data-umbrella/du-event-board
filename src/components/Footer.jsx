@@ -1,4 +1,3 @@
-import React from "react";
 import { ExternalLink, Github, Twitter } from "lucide-react";
 
 export default function Footer({ onNavigate }) {
@@ -42,6 +41,7 @@ export default function Footer({ onNavigate }) {
         <div className="footer__links">
           <div className="footer__column">
             <button
+              type="button"
               onClick={() =>
                 onNavigate ? onNavigate("about") : (window.location.href = "/")
               }
@@ -50,6 +50,7 @@ export default function Footer({ onNavigate }) {
               About Us
             </button>
             <button
+              type="button"
               onClick={() =>
                 onNavigate
                   ? onNavigate("events")
@@ -68,10 +69,11 @@ export default function Footer({ onNavigate }) {
               rel="noopener noreferrer"
               className="footer__external-link"
             >
-              Donate{" "}
+              Donate
               <ExternalLink size={14} className="footer__external-icon" />
             </a>
             <button
+              type="button"
               onClick={() =>
                 onNavigate
                   ? onNavigate("sponsors")
@@ -85,6 +87,7 @@ export default function Footer({ onNavigate }) {
 
           <div className="footer__column">
             <button
+              type="button"
               onClick={() =>
                 onNavigate
                   ? onNavigate("events")
@@ -100,7 +103,7 @@ export default function Footer({ onNavigate }) {
               rel="noopener noreferrer"
               className="footer__external-link"
             >
-              Data Umbrella{" "}
+              Data Umbrella
               <ExternalLink size={14} className="footer__external-icon" />
             </a>
           </div>

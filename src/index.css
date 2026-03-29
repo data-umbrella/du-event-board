@@ -960,6 +960,10 @@ body {
   .footer__column a {
     justify-content: center;
   }
+
+  .map-container {
+    height: 520px;
+  }
 }
 
 @media (max-width: 480px) {

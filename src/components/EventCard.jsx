@@ -1,15 +1,20 @@
-import { getEventStatus } from "../utils/eventHelpers";
+import { formatEventDateRange, getEventStatus } from "../utils/eventHelpers";
+
+function toLabel(value) {
+  return value
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
 
 export default function EventCard({ event }) {
-  const status = getEventStatus(event.date);
-  const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
-    "en-US",
-    {
-      weekday: "short",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
+  const status = getEventStatus(
+    event.start_date || event.date,
+    event.end_date,
+  );
+  const formattedDate = formatEventDateRange(
+    event.start_date || event.date,
+    event.end_date,
   );
 
   const statusMap = {
@@ -31,7 +36,30 @@ export default function EventCard({ event }) {
         )}
       </div>
 
-      <h2 className="event-card__title">{event.title}</h2>
+      <div className="event-card__identity">
+        {event.organizer_logo && (
+          <img
+            className="event-card__logo"
+            src={event.organizer_logo}
+            alt={`${event.organizer_name || event.title} logo`}
+          />
+        )}
+
+        <div>
+          {event.organizer_name && (
+            <p className="event-card__organizer">{event.organizer_name}</p>
+          )}
+          <h2 className="event-card__title">{event.title}</h2>
+        </div>
+      </div>
+
+      <div className="event-card__pill-row" aria-label="Event metadata">
+        <span className="event-card__pill">{toLabel(event.event_type)}</span>
+        <span className="event-card__pill event-card__pill--muted">
+          {toLabel(event.cost)}
+        </span>
+      </div>
+
       <p className="event-card__description">{event.description}</p>
 
       <div className="event-card__meta">
@@ -45,7 +73,9 @@ export default function EventCard({ event }) {
         </div>
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📍</span>
-          <span>{event.location}</span>
+          <span>
+            {event.location} • {event.region}, {event.state}, {event.country}
+          </span>
         </div>
       </div>
 

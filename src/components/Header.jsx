@@ -3,6 +3,7 @@ export default function Header({ theme, onToggleTheme, onNavigate }) {
     <header className="header" id="header">
       <div className="header__controls">
         <button
+          type="button"
           onClick={() =>
             onNavigate ? onNavigate("events") : (window.location.href = "/")
           }
@@ -12,11 +13,12 @@ export default function Header({ theme, onToggleTheme, onNavigate }) {
         </button>
 
         <button
+          type="button"
           className="theme-toggle"
           onClick={onToggleTheme}
           aria-label="Toggle Theme"
         >
-          {theme === "dark" ? "☀️" : "🌙"}
+          {theme === "dark" ? "Light" : "Dark"}
         </button>
       </div>
 

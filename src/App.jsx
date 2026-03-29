@@ -6,24 +6,30 @@ import EventMap from "./components/EventMap";
 import Footer from "./components/Footer";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
+import {
+  parseISODate,
+  startOfDay,
+  eventOverlapsRange,
+} from "./utils/eventHelpers";
 
-function parseISODate(dateString) {
-  if (!dateString) return null;
-  const [year, month, day] = dateString.split("-").map(Number);
-  if (!year || !month || !day) return null;
-  return new Date(year, month - 1, day);
-}
-
-function startOfDay(date) {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-  return normalized;
+function buildUniqueOptions(items) {
+  return [...new Set(items.filter(Boolean))].sort((left, right) =>
+    left.localeCompare(right),
+  );
 }
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
+  const [selectedCountry, setSelectedCountry] = useUrlState("country", "");
+  const [selectedState, setSelectedState] = useUrlState("state", "");
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
+  const [selectedTag, setSelectedTag] = useUrlState("tag", "");
+  const [selectedEventType, setSelectedEventType] = useUrlState(
+    "eventType",
+    "",
+  );
+  const [selectedCost, setSelectedCost] = useUrlState("cost", "");
   const [currentPage, setCurrentPage] = useUrlState("page", "events");
   const [viewMode, setViewMode] = useUrlState("view", "list");
 
@@ -37,7 +43,6 @@ export default function App() {
   }, [currentPage]);
 
   const [theme, setTheme] = useState(() => {
-    // Check if we are in a browser and if localStorage.getItem actually exists
     if (
       typeof window !== "undefined" &&
       window.localStorage &&
@@ -55,7 +60,6 @@ export default function App() {
       document.body.classList.remove("light-theme");
     }
 
-    // This line "records" the choice in the browser
     if (typeof localStorage !== "undefined" && localStorage.setItem) {
       localStorage.setItem("theme", theme);
     }
@@ -77,21 +81,53 @@ export default function App() {
     }
   };
 
-  const regions = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.region))];
-    return unique.sort();
-  }, []);
+  const countries = useMemo(
+    () => buildUniqueOptions(events.map((event) => event.country)),
+    [],
+  );
 
-  const categories = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.category))];
-    return unique.sort();
-  }, []);
+  const states = useMemo(() => {
+    const visibleEvents = selectedCountry
+      ? events.filter((event) => event.country === selectedCountry)
+      : events;
+
+    return buildUniqueOptions(visibleEvents.map((event) => event.state));
+  }, [selectedCountry]);
+
+  const regions = useMemo(() => {
+    const visibleEvents = selectedState
+      ? events.filter((event) => event.state === selectedState)
+      : selectedCountry
+        ? events.filter((event) => event.country === selectedCountry)
+        : events;
+
+    return buildUniqueOptions(visibleEvents.map((event) => event.region));
+  }, [selectedCountry, selectedState]);
+
+  const categories = useMemo(
+    () => buildUniqueOptions(events.map((event) => event.category)),
+    [],
+  );
+
+  const hashtags = useMemo(
+    () => buildUniqueOptions(events.flatMap((event) => event.tags || [])),
+    [],
+  );
+
+  const eventTypes = useMemo(
+    () => buildUniqueOptions(events.map((event) => event.event_type)),
+    [],
+  );
+
+  const costs = useMemo(
+    () => buildUniqueOptions(events.map((event) => event.cost)),
+    [],
+  );
 
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
 
     const today = startOfDay(new Date());
-
     const weekStart = new Date(today);
     const dayIndex = (today.getDay() + 6) % 7;
     weekStart.setDate(today.getDate() - dayIndex);
@@ -108,41 +144,53 @@ export default function App() {
     const selectedRangeEnd = parseISODate(rangeEnd);
 
     return events.filter((event) => {
-      const eventDate = parseISODate(event.date);
-      if (!eventDate) return false;
+      const eventStart = parseISODate(event.start_date || event.date);
+      const eventEnd = parseISODate(
+        event.end_date || event.start_date || event.date,
+      );
 
-      // Text search: title, description, tags
+      if (!eventStart || !eventEnd) return false;
+
       const matchesSearch =
         !term ||
         event.title.toLowerCase().includes(term) ||
         event.description.toLowerCase().includes(term) ||
+        event.region.toLowerCase().includes(term) ||
+        event.state.toLowerCase().includes(term) ||
+        event.country.toLowerCase().includes(term) ||
+        event.event_type.toLowerCase().includes(term) ||
+        event.cost.toLowerCase().includes(term) ||
         (event.tags &&
           event.tags.some((tag) => tag.toLowerCase().includes(term)));
 
-      // Region filter
+      const matchesCountry =
+        !selectedCountry || event.country === selectedCountry;
+      const matchesState = !selectedState || event.state === selectedState;
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
-
-      // Category filter
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
+      const matchesTag =
+        !selectedTag || (event.tags && event.tags.includes(selectedTag));
+      const matchesEventType =
+        !selectedEventType || event.event_type === selectedEventType;
+      const matchesCost = !selectedCost || event.cost === selectedCost;
 
-      // Date filter
       let matchesDate = true;
 
       switch (dateFilterType) {
         case "upcoming":
-          matchesDate = eventDate >= today;
+          matchesDate = eventEnd >= today;
           break;
         case "thisWeek":
-          matchesDate = eventDate >= weekStart && eventDate <= weekEnd;
+          matchesDate = eventOverlapsRange(event, weekStart, weekEnd);
           break;
         case "thisMonth":
-          matchesDate = eventDate >= monthStart && eventDate <= monthEnd;
+          matchesDate = eventOverlapsRange(event, monthStart, monthEnd);
           break;
         case "customDate":
-          matchesDate =
-            !selectedCustomDate ||
-            eventDate.getTime() === selectedCustomDate.getTime();
+          matchesDate = selectedCustomDate
+            ? eventOverlapsRange(event, selectedCustomDate, selectedCustomDate)
+            : true;
           break;
         case "customRange":
           if (
@@ -154,24 +202,37 @@ export default function App() {
             break;
           }
 
-          if (selectedRangeStart && eventDate < selectedRangeStart) {
-            matchesDate = false;
-          }
-
-          if (selectedRangeEnd && eventDate > selectedRangeEnd) {
-            matchesDate = false;
-          }
+          matchesDate = eventOverlapsRange(
+            event,
+            selectedRangeStart,
+            selectedRangeEnd,
+          );
           break;
         default:
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return (
+        matchesSearch &&
+        matchesCountry &&
+        matchesState &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesTag &&
+        matchesEventType &&
+        matchesCost &&
+        matchesDate
+      );
     });
   }, [
     searchTerm,
+    selectedCountry,
+    selectedState,
     selectedRegion,
     selectedCategory,
+    selectedTag,
+    selectedEventType,
+    selectedCost,
     dateFilterType,
     customDate,
     rangeStart,
@@ -188,10 +249,27 @@ export default function App() {
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
+        selectedCountry={selectedCountry}
+        onCountryChange={(nextCountry) => {
+          setSelectedCountry(nextCountry);
+          setSelectedState("");
+          setSelectedRegion("");
+        }}
+        selectedState={selectedState}
+        onStateChange={(nextState) => {
+          setSelectedState(nextState);
+          setSelectedRegion("");
+        }}
         selectedRegion={selectedRegion}
         onRegionChange={setSelectedRegion}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        selectedTag={selectedTag}
+        onTagChange={setSelectedTag}
+        selectedEventType={selectedEventType}
+        onEventTypeChange={setSelectedEventType}
+        selectedCost={selectedCost}
+        onCostChange={setSelectedCost}
         dateFilterType={dateFilterType}
         onDateFilterTypeChange={handleDateFilterTypeChange}
         customDate={customDate}
@@ -200,23 +278,17 @@ export default function App() {
         onRangeStartChange={setRangeStart}
         rangeEnd={rangeEnd}
         onRangeEndChange={setRangeEnd}
+        countries={countries}
+        states={states}
         regions={regions}
         categories={categories}
+        hashtags={hashtags}
+        eventTypes={eventTypes}
+        costs={costs}
       />
       <main className="main" id="main-content">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "1.5rem",
-            paddingLeft: "0.25rem",
-          }}
-        >
-          <p
-            className="main__results-info"
-            style={{ marginBottom: 0, paddingLeft: 0 }}
-          >
+        <section className="results-toolbar" aria-label="Results summary">
+          <p className="main__results-info">
             Showing{" "}
             <span className="main__results-count">
               {filteredEvents.length}
@@ -224,94 +296,27 @@ export default function App() {
             event{filteredEvents.length !== 1 ? "s" : ""}
           </p>
 
-          <div
-            className="view-toggle"
-            style={{
-              display: "flex",
-              gap: "0.5rem",
-              background: "var(--bg-input)",
-              padding: "0.3rem",
-              borderRadius: "12px",
-              border: "1px solid var(--border-subtle)",
-            }}
-          >
+          <div className="view-toggle">
             <button
+              type="button"
+              className={`view-toggle__button ${
+                viewMode === "list" ? "view-toggle__button--active" : ""
+              }`}
               onClick={() => setViewMode("list")}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: "8px",
-                background:
-                  viewMode === "list"
-                    ? "var(--accent-primary)"
-                    : "transparent",
-                color: viewMode === "list" ? "#fff" : "var(--text-muted)",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "13px",
-                fontWeight: "bold",
-                transition: "all 0.2s",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="8" y1="6" x2="21" y2="6"></line>
-                <line x1="8" y1="12" x2="21" y2="12"></line>
-                <line x1="8" y1="18" x2="21" y2="18"></line>
-                <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                <line x1="3" y1="18" x2="3.01" y2="18"></line>
-              </svg>
-              List
+              <span aria-hidden="true">List</span>
             </button>
             <button
+              type="button"
+              className={`view-toggle__button ${
+                viewMode === "map" ? "view-toggle__button--active" : ""
+              }`}
               onClick={() => setViewMode("map")}
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: "8px",
-                background:
-                  viewMode === "map" ? "var(--accent-primary)" : "transparent",
-                color: viewMode === "map" ? "#fff" : "var(--text-muted)",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "13px",
-                fontWeight: "bold",
-                transition: "all 0.2s",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
-                <line x1="9" y1="3" x2="9" y2="21"></line>
-                <line x1="15" y1="3" x2="15" y2="21"></line>
-              </svg>
-              Map
+              <span aria-hidden="true">Map</span>
             </button>
           </div>
-        </div>
+        </section>
 
         {viewMode === "list" ? (
           <div className="events-grid" id="events-grid">
@@ -321,7 +326,7 @@ export default function App() {
               ))
             ) : (
               <div className="empty-state" id="empty-state">
-                <div className="empty-state__icon">🔎</div>
+                <div className="empty-state__icon">Search</div>
                 <h2 className="empty-state__title">No events found</h2>
                 <p className="empty-state__description">
                   Try adjusting your search terms or filters to find events

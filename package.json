@@ -4,14 +4,14 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "predev": "python3 scripts/generate_events_json.py",
+    "predev": "python scripts/generate_events_json.py",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "test": "vitest run",
     "generate": "python scripts/generate_events_json.py",
-    "prebuild": "python3 scripts/generate_events_json.py"
+    "prebuild": "python scripts/generate_events_json.py"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",
