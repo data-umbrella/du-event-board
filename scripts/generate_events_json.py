@@ -47,7 +47,8 @@ def is_ci() -> bool:
       type: bool
     """
     return any(
-        os.environ.get(env) for env in ["GITHUB_ACTIONS", "NETLIFY", "CI", "VERCEL"]
+        os.environ.get(env)
+        for env in ["GITHUB_ACTIONS", "NETLIFY", "CI", "VERCEL"]
     )
 
 
@@ -101,7 +102,9 @@ def geocode_location(location_str: str) -> tuple[float, float] | None:
     query = urllib.parse.quote(location_str)
     url = f"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1"
 
-    req = urllib.request.Request(url, headers={"User-Agent": "DU-Event-Board-App/1.0"})
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "DU-Event-Board-App/1.0"}
+    )
     try:
         time.sleep(1.1)  # Respect OpenStreetMap Nominatim usage policy
         with urllib.request.urlopen(req) as response:
@@ -218,8 +221,12 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
 
                 if not has_lat:
                     property_indent = "    "
-                    final_output.append(f"{property_indent}lat: {event_data['lat']}\n")
-                    final_output.append(f"{property_indent}lng: {event_data['lng']}\n")
+                    final_output.append(
+                        f"{property_indent}lat: {event_data['lat']}\n"
+                    )
+                    final_output.append(
+                        f"{property_indent}lng: {event_data['lng']}\n"
+                    )
 
         i += 1
 
@@ -288,7 +295,9 @@ def main() -> None:
 
     # If we found new coordinates locally, save them back to the source YAML surgically
     if new_coords_found and not is_ci():
-        print(f"Surgically updating source file with new coordinates: {INPUT_FILE}")
+        print(
+            f"Surgically updating source file with new coordinates: {INPUT_FILE}"
+        )
         update_yaml_surgically(events)
         print("  Done.")
 
