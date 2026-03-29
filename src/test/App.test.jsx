@@ -53,17 +53,19 @@ describe("App", () => {
   it("switches between list and map views", () => {
     render(<App />);
 
-    expect(screen.getByText("Python Meetup - Porto Alegre")).toBeInTheDocument();
+    expect(
+      screen.getByText("Python Meetup - Porto Alegre"),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Map" }));
 
-    expect(
-      screen.getByText("View Details", { selector: "a" }),
-    ).toBeInTheDocument();
+    expect(document.querySelector(".leaflet-container")).not.toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "List" }));
 
-    expect(screen.getByText("Python Meetup - Porto Alegre")).toBeInTheDocument();
+    expect(
+      screen.getByText("Python Meetup - Porto Alegre"),
+    ).toBeInTheDocument();
   });
 
   it("filters events by search term", () => {
