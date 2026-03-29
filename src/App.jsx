@@ -33,12 +33,13 @@ export default function App() {
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
   const [selectedFormat, setSelectedFormat] = useState("");
 
-  useEffect(() => {
-    try {
-      window.scrollTo(0, 0);
-    } catch (e) {}
-  }, [currentPage]);
+  if (typeof window !== "undefined" && !window.scrollTo) {
+    window.scrollTo = () => {};
+  }
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
     if (
