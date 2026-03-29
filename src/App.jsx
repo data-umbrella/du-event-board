@@ -34,7 +34,9 @@ export default function App() {
   const [selectedFormat, setSelectedFormat] = useState("");
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    try {
+      window.scrollTo(0, 0);
+    } catch (e) {}
   }, [currentPage]);
 
   const [theme, setTheme] = useState(() => {
