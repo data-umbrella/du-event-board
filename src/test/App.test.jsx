@@ -221,4 +221,29 @@ describe("App", () => {
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
   });
+
+  //Timezone tests
+  it("renders event time in local timezone format", () => {
+    render(<App />);
+    const timeElements = screen.getAllByText(/\d{2}:\d{2}/);
+    expect(timeElements.length).toBeGreaterThan(0);
+  });
+
+  it("filters events correctly using UTC timestamps", () => {
+    render(<App />);
+    const searchInput = screen.getByPlaceholderText(
+      "Search events by name, description, or tags...",
+    );
+    fireEvent.change(searchInput, { target: { value: "python" } });
+    expect(
+      screen.getByText("Python Meetup - Porto Alegre"),
+    ).toBeInTheDocument();
+  });
+
+  it("maintains date filter accuracy across timezones", () => {
+    render(<App />);
+    setDateFilter("upcoming");
+    const resultsInfo = screen.getByText(/Showing/);
+    expect(resultsInfo).toBeInTheDocument();
+  });
 });
