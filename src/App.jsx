@@ -305,7 +305,7 @@ export default function App() {
               onClick={() => setViewMode("list")}
               aria-label="List"
             >
-              <span>List</span>
+              List
             </button>
             <button
               type="button"
@@ -315,7 +315,7 @@ export default function App() {
               onClick={() => setViewMode("map")}
               aria-label="Map"
             >
-              <span>Map</span>
+              Map
             </button>
           </div>
         </section>
