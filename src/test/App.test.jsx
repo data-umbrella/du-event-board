@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "../App";
 
+import events from "../data/events.json";
+
 describe("App", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -45,7 +47,7 @@ describe("App", () => {
     render(<App />);
     const resultsInfo = screen.getByText(/Showing/);
     expect(resultsInfo).toBeInTheDocument();
-    expect(resultsInfo.textContent).toContain("8");
+    expect(resultsInfo.textContent).toContain(String(events.length));
     expect(resultsInfo.textContent).toContain("events");
   });
 
