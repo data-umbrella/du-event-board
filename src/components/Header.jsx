@@ -25,7 +25,7 @@ export default function Header({ theme, onToggleTheme, onNavigate }) {
       <div className="header__content">
         <div className="header__brand">
           <img
-            src="/du-event-board/DU_logo.png"
+            src="https://github.com/data-umbrella.png"
             alt="Data Umbrella Logo"
             className="header__logo-img"
           />
