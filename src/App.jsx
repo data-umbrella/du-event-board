@@ -34,9 +34,10 @@ export default function App() {
   const [selectedFormat, setSelectedFormat] = useState("");
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (typeof window !== "undefined" && "scrollTo" in window) {
+      window.scrollTo(0, 0);
+    }
   }, [currentPage]);
-
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
     if (
