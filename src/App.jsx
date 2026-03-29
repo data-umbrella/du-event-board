@@ -31,6 +31,7 @@ export default function App() {
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+  const [selectedFormat, setSelectedFormat] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -202,6 +203,8 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        selectedFormat
+        onFormatChange={setSelectedFormat}
       />
       <main className="main" id="main-content">
         <div

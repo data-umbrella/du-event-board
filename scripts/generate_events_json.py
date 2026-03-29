@@ -28,6 +28,9 @@ REQUIRED_FIELDS = [
     "region",
     "category",
 ]
+
+VALID_FORMATS = ["in-person", "online", "hybrid"]
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 INPUT_FILE = PROJECT_ROOT / "data" / "events.yaml"
@@ -44,8 +47,7 @@ def is_ci() -> bool:
       type: bool
     """
     return any(
-        os.environ.get(env)
-        for env in ["GITHUB_ACTIONS", "NETLIFY", "CI", "VERCEL"]
+        os.environ.get(env) for env in ["GITHUB_ACTIONS", "NETLIFY", "CI", "VERCEL"]
     )
 
 
@@ -99,9 +101,7 @@ def geocode_location(location_str: str) -> tuple[float, float] | None:
     query = urllib.parse.quote(location_str)
     url = f"https://nominatim.openstreetmap.org/search?q={query}&format=json&limit=1"
 
-    req = urllib.request.Request(
-        url, headers={"User-Agent": "DU-Event-Board-App/1.0"}
-    )
+    req = urllib.request.Request(url, headers={"User-Agent": "DU-Event-Board-App/1.0"})
     try:
         time.sleep(1.1)  # Respect OpenStreetMap Nominatim usage policy
         with urllib.request.urlopen(req) as response:
@@ -158,6 +158,14 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
             )
 
+    # Validate format field if present (optional field)
+    if "format" in event and event["format"] is not None:
+        if event["format"] not in VALID_FORMATS:
+            errors.append(
+                f"Event #{index}: Invalid format '{event['format']}' "
+                f"(expected one of: {', '.join(VALID_FORMATS)})"
+            )
+
     return errors
 
 
@@ -209,22 +217,9 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
                     block_end += 1
 
                 if not has_lat:
-                    # Insert before the block ends or before an empty line
-                    # Determine indentation (match the 'id' key's indentation)
-                    id_indent = line[: line.find("- id:")]
-                    property_indent = id_indent + "    "
-
-                    # Wait, if id_indent is "  ", then id is at 4, title is at 4.
-                    # So property_indent should be id_indent + "  " to reach 4 spaces.
-                    # Actually, let's just use "    " directly as it matches the file.
                     property_indent = "    "
-
-                    final_output.append(
-                        f"{property_indent}lat: {event_data['lat']}\n"
-                    )
-                    final_output.append(
-                        f"{property_indent}lng: {event_data['lng']}\n"
-                    )
+                    final_output.append(f"{property_indent}lat: {event_data['lat']}\n")
+                    final_output.append(f"{property_indent}lng: {event_data['lng']}\n")
 
         i += 1
 
@@ -293,9 +288,7 @@ def main() -> None:
 
     # If we found new coordinates locally, save them back to the source YAML surgically
     if new_coords_found and not is_ci():
-        print(
-            f"Surgically updating source file with new coordinates: {INPUT_FILE}"
-        )
+        print(f"Surgically updating source file with new coordinates: {INPUT_FILE}")
         update_yaml_surgically(events)
         print("  Done.")
 

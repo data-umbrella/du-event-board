@@ -1427,3 +1427,30 @@ body {
     padding: 3rem 1rem;
   }
 }
+
+.search__format-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.search__format-chip {
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+.search__format-chip--active {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+.event-card__format-badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+}
