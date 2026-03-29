@@ -465,6 +465,43 @@ body {
   font-weight: 600;
 }
 
+.results-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.view-toggle {
+  display: inline-flex;
+  gap: 0.4rem;
+  background: var(--bg-input);
+  padding: 0.3rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+}
+
+.view-toggle__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: all var(--transition-base);
+}
+
+.view-toggle__button--active {
+  background: var(--accent-primary);
+  color: #fff;
+}
+
 /* ===================================
    Event Grid
    =================================== */
@@ -694,6 +731,72 @@ body {
 
 .event-card__link:hover .event-card__link-arrow {
   transform: translateX(3px);
+}
+
+.map-container {
+  height: 650px;
+  width: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  margin-bottom: 2rem;
+}
+
+.map-container__frame {
+  height: 100%;
+  width: 100%;
+  background: var(--bg-primary);
+}
+
+.map-popup {
+  min-width: 220px;
+}
+
+.map-popup__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.map-popup__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.map-popup__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  color: #555;
+  margin-bottom: 0.6rem;
+}
+
+.map-popup__description {
+  font-size: 0.88rem;
+  margin: 0 0 1rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+.map-popup__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  text-decoration: none;
+  background-color: #7c5cfc;
+  color: white;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 /* ===================================
