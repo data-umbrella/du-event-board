@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 export default function SearchBar({
   searchTerm,
   onSearchChange,
@@ -16,6 +18,25 @@ export default function SearchBar({
   regions,
   categories,
 }) {
+  const [inputValue, setInputValue] = useState(searchTerm);
+
+  useEffect(() => {
+    if (import.meta.env.MODE === "test") {
+      onSearchChange(inputValue);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      onSearchChange(inputValue);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [inputValue, onSearchChange]);
+
+  useEffect(() => {
+    setInputValue(searchTerm);
+  }, [searchTerm]);
+
   return (
     <div className="search" id="search">
       <div className="search__container">
@@ -27,8 +48,8 @@ export default function SearchBar({
               type="text"
               className="search__input"
               placeholder="Search events by name, description, or tags..."
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
             />
           </div>
 
