@@ -71,6 +71,7 @@ export default function App() {
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
 
+    // Clear values from date modes that are no longer active.
     if (nextType !== "customDate") {
       setCustomDate("");
     }
@@ -198,6 +199,7 @@ export default function App() {
             selectedRangeEnd &&
             selectedRangeStart > selectedRangeEnd
           ) {
+            // Keep invalid ranges from accidentally matching everything.
             matchesDate = false;
             break;
           }

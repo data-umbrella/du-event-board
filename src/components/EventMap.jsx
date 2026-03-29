@@ -30,6 +30,7 @@ function toLabel(value) {
     .join(" ");
 }
 
+// Keep the map focused on relevant events, then refine with geolocation if available.
 function MapController({ events }) {
   const map = useMap();
   const locationCircleRef = React.useRef(null);

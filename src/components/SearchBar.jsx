@@ -39,6 +39,7 @@ export default function SearchBar({
   eventTypes,
   costs,
 }) {
+  // Show a quick visual guard when the user picks an inverted range.
   const isInvalidRange =
     dateFilterType === "customRange" &&
     rangeStart &&
