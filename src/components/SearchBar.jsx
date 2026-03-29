@@ -191,6 +191,7 @@ export default function SearchBar({
                 }}
                 className="search__date-input search__select"
                 value={rangeStart}
+                max={rangeEnd || undefined}
                 onChange={(event) => {
                   if (dateFilterType !== "customRange") {
                     onDateFilterTypeChange("customRange");
@@ -212,6 +213,7 @@ export default function SearchBar({
                 }}
                 className="search__date-input search__select"
                 value={rangeEnd}
+                min={rangeStart || undefined}
                 onChange={(event) => {
                   if (dateFilterType !== "customRange") {
                     onDateFilterTypeChange("customRange");
