@@ -1,5 +1,12 @@
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import React, { useEffect, useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  ZoomControl,
+} from "react-leaflet";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, ExternalLink, MapPin } from "lucide-react";
 import L from "leaflet";
@@ -23,18 +30,70 @@ function toLabel(value) {
     .join(" ");
 }
 
-export default function EventMap({ events }) {
-  const firstMappedEvent = events.find((event) => event.lat && event.lng);
-  const mapCenter = firstMappedEvent
-    ? [firstMappedEvent.lat, firstMappedEvent.lng]
-    : [-14.235, -51.925];
+function MapController({ events }) {
+  const map = useMap();
+  const locationCircleRef = React.useRef(null);
+  const [hasLocated, setHasLocated] = useState(false);
 
+  useEffect(() => {
+    if (events.length > 0 && !hasLocated) {
+      const bounds = L.latLngBounds(
+        events.map((event) => [event.lat, event.lng]),
+      );
+      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 7 });
+    }
+
+    if (!hasLocated) {
+      map.locate({ setView: true, maxZoom: 8 });
+    }
+
+    const onLocationFound = (event) => {
+      setHasLocated(true);
+
+      if (locationCircleRef.current) {
+        map.removeLayer(locationCircleRef.current);
+      }
+
+      locationCircleRef.current = L.circle(event.latlng, {
+        radius: event.accuracy,
+        color: "var(--accent-primary)",
+        fillColor: "var(--accent-primary)",
+        fillOpacity: 0.1,
+        weight: 1,
+      }).addTo(map);
+    };
+
+    const onLocationError = () => {
+      console.warn("Geolocation fallback: showing entire map view.");
+      setHasLocated(true);
+
+      if (events.length > 0) {
+        const bounds = L.latLngBounds(
+          events.map((event) => [event.lat, event.lng]),
+        );
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 7 });
+      }
+    };
+
+    map.on("locationfound", onLocationFound);
+    map.on("locationerror", onLocationError);
+
+    return () => {
+      map.off("locationfound", onLocationFound);
+      map.off("locationerror", onLocationError);
+    };
+  }, [events, map, hasLocated]);
+
+  return null;
+}
+
+export default function EventMap({ events }) {
   const mapEvents = events.filter((event) => event.lat && event.lng);
 
   if (mapEvents.length === 0) {
     return (
       <div className="empty-state" id="empty-state">
-        <div className="empty-state__icon">🗺️</div>
+        <div className="empty-state__icon">Map</div>
         <h2 className="empty-state__title">No locations found</h2>
         <p className="empty-state__description">
           None of the filtered events have map coordinates available.
@@ -42,6 +101,9 @@ export default function EventMap({ events }) {
       </div>
     );
   }
+
+  const initialCenter = [20, 0];
+  const initialZoom = 2;
 
   return (
     <AnimatePresence>
@@ -53,8 +115,9 @@ export default function EventMap({ events }) {
         className="map-container"
       >
         <MapContainer
-          center={mapCenter}
-          zoom={4}
+          center={initialCenter}
+          zoom={initialZoom}
+          zoomControl={false}
           className="map-container__frame"
         >
           <TileLayer
@@ -65,6 +128,9 @@ export default function EventMap({ events }) {
               '<a href="https://carto.com/attributions">CARTO</a>'
             }
           />
+
+          <ZoomControl position="topright" />
+          <MapController events={mapEvents} />
 
           {mapEvents.map((event) => (
             <Marker key={event.id} position={[event.lat, event.lng]}>

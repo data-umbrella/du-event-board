@@ -39,6 +39,12 @@ export default function SearchBar({
   eventTypes,
   costs,
 }) {
+  const isInvalidRange =
+    dateFilterType === "customRange" &&
+    rangeStart &&
+    rangeEnd &&
+    rangeStart > rangeEnd;
+
   return (
     <div className="search" id="search">
       <div className="search__container">
@@ -189,7 +195,9 @@ export default function SearchBar({
                 onBlur={(event) => {
                   if (!event.target.value) event.target.type = "text";
                 }}
-                className="search__date-input search__select"
+                className={`search__date-input search__select ${
+                  isInvalidRange ? "search__date-input--invalid" : ""
+                }`}
                 value={rangeStart}
                 max={rangeEnd || undefined}
                 onChange={(event) => {
@@ -211,7 +219,9 @@ export default function SearchBar({
                 onBlur={(event) => {
                   if (!event.target.value) event.target.type = "text";
                 }}
-                className="search__date-input search__select"
+                className={`search__date-input search__select ${
+                  isInvalidRange ? "search__date-input--invalid" : ""
+                }`}
                 value={rangeEnd}
                 min={rangeStart || undefined}
                 onChange={(event) => {
@@ -222,6 +232,11 @@ export default function SearchBar({
                 }}
                 aria-label="Range end date"
               />
+              {isInvalidRange && (
+                <div className="search__error-message">
+                  <span>Start date cannot be after end date</span>
+                </div>
+              )}
             </div>
           )}
         </div>

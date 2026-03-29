@@ -345,6 +345,7 @@ body {
   gap: 0.5rem;
   flex: 1 1 320px;
   min-width: 280px;
+  position: relative; /* Anchor for absolute error message */
 }
 
 .search__date-input {
@@ -366,6 +367,58 @@ body {
   background-color: var(--bg-input-focus);
   border-color: var(--border-accent);
   box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.search__date-input--invalid {
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  background-color: rgba(239, 68, 68, 0.05) !important;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2) !important;
+}
+
+.search__error-message {
+  color: #ef4444; /* Standard red for accessibility */
+  font-size: 0.81rem;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  background: rgba(10, 10, 26, 0.98);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 8px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  position: absolute;
+  top: Calc(100% + 12px);
+  left: 0;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  opacity: 1; /* Always visible in invalid state */
+  transform: translateY(0);
+}
+
+.search__error-message::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 15px;
+  width: 12px;
+  height: 12px;
+  background: rgba(10, 10, 26, 0.98);
+  border-left: 1px solid rgba(239, 68, 68, 0.4);
+  border-top: 1px solid rgba(239, 68, 68, 0.4);
+  transform: rotate(45deg);
+}
+
+.light-theme .search__error-message {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.light-theme .search__error-message::before {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .search__date-input::-webkit-calendar-picker-indicator {
@@ -1004,8 +1057,72 @@ body {
   }
 }
 
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 .event-card {
   animation: fadeInUp 0.5s ease backwards;
+}
+
+/* ===================================
+   Leaflet Custom Styles
+   =================================== */
+.leaflet-bar {
+  border: 1px solid var(--border-subtle) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.leaflet-bar button,
+.leaflet-bar a {
+  background-color: var(--bg-secondary) !important;
+  color: var(--accent-primary) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.leaflet-bar button:hover,
+.leaflet-bar a:hover {
+  background-color: var(--bg-input-focus) !important;
+  color: var(--accent-secondary) !important;
+}
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  font-weight: bold !important;
+}
+
+.premium-popup .leaflet-popup-content-wrapper {
+  background: white !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.premium-popup .leaflet-popup-content {
+  margin: 0 !important;
+  padding: 20px !important;
+}
+
+.premium-popup .leaflet-popup-tip {
+  background: white !important;
+}
+
+.premium-popup .leaflet-popup-close-button {
+  color: #999 !important;
+  padding: 10px !important;
 }
 
 .event-card:nth-child(1) {
