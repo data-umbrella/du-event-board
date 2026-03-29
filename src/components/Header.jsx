@@ -1,14 +1,26 @@
-export default function Header({ theme, onToggleTheme }) {
+export default function Header({ theme, onToggleTheme, onNavigate }) {
   return (
     <header className="header" id="header">
-      {/* Theme toggle button  */}
-      <button
-        className="theme-toggle"
-        onClick={onToggleTheme}
-        aria-label="Toggle Theme"
-      >
-        {theme === "dark" ? "☀️" : "🌙"}
-      </button>
+      <div className="header__controls">
+        <button
+          type="button"
+          onClick={() =>
+            onNavigate ? onNavigate("events") : (window.location.href = "/")
+          }
+          className="header__nav-btn"
+        >
+          Events
+        </button>
+
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={onToggleTheme}
+          aria-label="Toggle Theme"
+        >
+          {theme === "dark" ? "Light" : "Dark"}
+        </button>
+      </div>
 
       <div className="header__content">
         <div className="header__brand">

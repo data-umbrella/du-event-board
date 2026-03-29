@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import EventMap from "./components/EventMap";
+import Footer from "./components/Footer";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import {
@@ -29,12 +30,17 @@ export default function App() {
     "",
   );
   const [selectedCost, setSelectedCost] = useUrlState("cost", "");
+  const [currentPage, setCurrentPage] = useUrlState("page", "events");
   const [viewMode, setViewMode] = useUrlState("view", "list");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
 
   const [theme, setTheme] = useState(() => {
     if (
@@ -235,7 +241,11 @@ export default function App() {
 
   return (
     <>
-      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <Header
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onNavigate={setCurrentPage}
+      />
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -294,8 +304,7 @@ export default function App() {
               }`}
               onClick={() => setViewMode("list")}
             >
-              <span aria-hidden="true">≣</span>
-              List
+              <span aria-hidden="true">List</span>
             </button>
             <button
               type="button"
@@ -304,8 +313,7 @@ export default function App() {
               }`}
               onClick={() => setViewMode("map")}
             >
-              <span aria-hidden="true">⌖</span>
-              Map
+              <span aria-hidden="true">Map</span>
             </button>
           </div>
         </section>
@@ -318,7 +326,7 @@ export default function App() {
               ))
             ) : (
               <div className="empty-state" id="empty-state">
-                <div className="empty-state__icon">🔎</div>
+                <div className="empty-state__icon">Search</div>
                 <h2 className="empty-state__title">No events found</h2>
                 <p className="empty-state__description">
                   Try adjusting your search terms or filters to find events
@@ -331,18 +339,7 @@ export default function App() {
           <EventMap events={filteredEvents} />
         )}
       </main>
-      <footer className="footer">
-        <p>
-          DU Event Board — Built with love by the community.{" "}
-          <a
-            href="https://github.com/osl-incubator/du-event-board"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Contribute on GitHub
-          </a>
-        </p>
-      </footer>
+      <Footer onNavigate={setCurrentPage} />
     </>
   );
 }
