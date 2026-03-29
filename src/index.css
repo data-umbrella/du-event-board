@@ -293,7 +293,7 @@ body {
    Search Bar
    =================================== */
 .search {
-  max-width: 900px;
+  max-width: 1200px;
   margin: -1.5rem auto 2rem;
   padding: 0 1.5rem;
   position: relative;
@@ -325,6 +325,10 @@ body {
 
 .search__row--primary .search__select-wrapper {
   flex: 0 0 180px;
+}
+
+.search__row .search__select-wrapper {
+  flex: 1 1 180px;
 }
 
 .search__row--date {
@@ -367,6 +371,13 @@ body {
 .search__date-input::-webkit-calendar-picker-indicator {
   opacity: 0.85;
   cursor: pointer;
+}
+
+.search__date-separator {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .search__input-wrapper {
