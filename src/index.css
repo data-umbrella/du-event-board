@@ -77,6 +77,11 @@
   --accent-secondary: #8b5cf6;
 
   --gradient-hero: linear-gradient(135deg, #e2e8f0 0%, #edf2f7 100%);
+  --gradient-card: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.04) 0%,
+    rgba(139, 92, 246, 0.02) 100%
+  );
   --border-subtle: rgba(0, 0, 0, 0.1);
   --border-accent: rgba(99, 102, 241, 0.4);
 }
@@ -545,7 +550,7 @@ body {
 .events-list__month-heading {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--accent-primary);
   letter-spacing: -0.01em;
   padding-bottom: 0.5rem;
   margin-bottom: 0.25rem;
@@ -565,10 +570,10 @@ body {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1.25rem;
-  background: var(--bg-card);
+  background: var(--gradient-card);
   border: 1px solid var(--border-subtle);
   border-radius: 100px;
-  transition: all var(--transition-base);
+  transition: all var(--transition-slow);
   cursor: default;
   overflow: hidden;
   min-height: 48px;
@@ -577,7 +582,8 @@ body {
 .event-list-row:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-accent);
-  box-shadow: var(--shadow-sm), 0 0 20px rgba(124, 92, 252, 0.08);
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+  transform: translateX(6px);
 }
 
 .event-list-row__title-wrap {
@@ -586,9 +592,9 @@ body {
 }
 
 .event-list-row__title {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--accent-secondary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
@@ -632,7 +638,7 @@ span.event-list-row__title {
 
 .event-list-row__date {
   font-size: 0.82rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   white-space: nowrap;
   min-width: 100px;
   text-align: right;
