@@ -4,6 +4,12 @@ import App from "../App";
 
 import events from "../data/events.json";
 
+vi.mock("../components/EventMap", () => ({
+  default: ({ events: mapEvents }) => (
+    <div data-testid="event-map-marker-count">Markers: {mapEvents.length}</div>
+  ),
+}));
+
 describe("App", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -220,5 +226,24 @@ describe("App", () => {
     });
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
+  });
+
+  it("passes the filtered event set to map view", () => {
+    render(<App />);
+
+    const regionSelect = screen.getByDisplayValue("All Regions");
+    fireEvent.change(regionSelect, { target: { value: "Porto Alegre" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Map" }));
+
+    expect(screen.getByTestId("event-map-marker-count")).toHaveTextContent(
+      "Markers: 2",
+    );
+
+    fireEvent.change(regionSelect, { target: { value: "" } });
+
+    expect(screen.getByTestId("event-map-marker-count")).toHaveTextContent(
+      `Markers: ${events.length}`,
+    );
   });
 });

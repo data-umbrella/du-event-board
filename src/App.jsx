@@ -417,7 +417,10 @@ export default function App() {
             )}
           </div>
         ) : (
-          <EventMap events={filteredEvents} />
+          <EventMap
+            key={filteredEvents.map((event) => event.id).join("|")}
+            events={filteredEvents}
+          />
         )}
       </main>
 
