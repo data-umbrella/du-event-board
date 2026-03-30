@@ -1,3 +1,10 @@
+const FORMAT_OPTIONS = [
+  { value: "", label: "All Formats" },
+  { value: "in-person", label: "📍 In-Person" },
+  { value: "online", label: "🌐 Online" },
+  { value: "hybrid", label: "🔀 Hybrid" },
+];
+
 export default function SearchBar({
   searchTerm,
   onSearchChange,
@@ -5,6 +12,8 @@ export default function SearchBar({
   onRegionChange,
   selectedCategory,
   onCategoryChange,
+  selectedFormat,
+  onFormatChange,
   dateFilterType,
   onDateFilterTypeChange,
   customDate,
@@ -25,6 +34,7 @@ export default function SearchBar({
   return (
     <div className="search" id="search">
       <div className="search__container">
+        {/* Row 1: Search + Region + Category */}
         <div className="search__row search__row--primary">
           <div className="search__input-wrapper">
             <span className="search__icon">🔍</span>
@@ -71,6 +81,31 @@ export default function SearchBar({
           </div>
         </div>
 
+        {/* Row 2: Format filter chips */}
+        <div className="search__row search__row--format">
+          <div
+            className="search__format-chips"
+            role="group"
+            aria-label="Filter by format"
+          >
+            {FORMAT_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                className={`search__format-chip${
+                  selectedFormat === option.value
+                    ? " search__format-chip--active"
+                    : ""
+                }`}
+                onClick={() => onFormatChange(option.value)}
+                aria-pressed={selectedFormat === option.value}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 3: Date filters */}
         <div
           className="search__row search__row--date"
           style={{
@@ -80,11 +115,7 @@ export default function SearchBar({
             gap: "0.75rem",
           }}
         >
-          <div
-            className={
-              "search__select-wrapper search__select-wrapper--date-type"
-            }
-          >
+          <div className="search__select-wrapper search__select-wrapper--date-type">
             <select
               id="date-filter-select"
               className="search__select"

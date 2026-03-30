@@ -1,5 +1,11 @@
 import { getEventStatus } from "../utils/eventHelpers";
 
+const FORMAT_CONFIG = {
+  "in-person": { label: "In-Person", icon: "📍" },
+  online: { label: "Online", icon: "🌐" },
+  hybrid: { label: "Hybrid", icon: "🔀" },
+};
+
 export default function EventCard({ event }) {
   const status = getEventStatus(event.date);
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
@@ -18,17 +24,27 @@ export default function EventCard({ event }) {
     ended: "status-badge--ended",
   };
 
+  const formatInfo = event.format ? FORMAT_CONFIG[event.format] : null;
+
   return (
     <article className="event-card" id={`event-${event.id}`}>
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
-
-        {status !== "none" && (
-          <div className={`status-badge ${statusMap[status]}`}>
-            {status === "live" && <span className="live-dot" />}
-            {status === "live" ? "Live Now" : status}
-          </div>
-        )}
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          {formatInfo && (
+            <span
+              className={`event-card__format-badge event-card__format-badge--${event.format}`}
+            >
+              {formatInfo.icon} {formatInfo.label}
+            </span>
+          )}
+          {status !== "none" && (
+            <div className={`status-badge ${statusMap[status]}`}>
+              {status === "live" && <span className="live-dot" />}
+              {status === "live" ? "Live Now" : status}
+            </div>
+          )}
+        </div>
       </div>
 
       <h2 className="event-card__title">{event.title}</h2>
