@@ -9,6 +9,7 @@ events:
     location: "TechHub Coworking, Rua da República 433, Porto Alegre"
     region: "Porto Alegre"
     category: "Technology"
+    format: in-person
     url: "https://example.com/python-poa"
     tags:
       - python
@@ -25,6 +26,7 @@ events:
     location: "InovaBR Hub, Av. Paulista 1578, São Paulo"
     region: "São Paulo"
     category: "Technology"
+    format: hybrid
     url: "https://example.com/react-sp"
     tags:
       - react
@@ -41,6 +43,7 @@ events:
     location: "Espaço Digital, Rua XV de Novembro 700, Curitiba"
     region: "Curitiba"
     category: "Technology"
+    format: online
     url: "https://example.com/oss-friday-cwb"
     tags:
       - open-source
@@ -57,6 +60,7 @@ events:
     location: "Lab Analytics, Rua Visconde de Pirajá 330, Rio de Janeiro"
     region: "Rio de Janeiro"
     category: "Education"
+    format: in-person
     url: "https://example.com/ds-bootcamp-rj"
     tags:
       - data-science
@@ -73,6 +77,7 @@ events:
     location: "MG Tech Center, Av. Afonso Pena 1500, Belo Horizonte"
     region: "Belo Horizonte"
     category: "Technology"
+    format: hybrid
     url: "https://example.com/devops-bh"
     tags:
       - devops
@@ -89,6 +94,7 @@ events:
     location: "Design Lab POA, Rua Mostardeiro 120, Porto Alegre"
     region: "Porto Alegre"
     category: "Design"
+    format: in-person
     url: "https://example.com/ux-workshop-poa"
     tags:
       - design
@@ -105,6 +111,7 @@ events:
     location: "Hacker House SP, Rua Augusta 2690, São Paulo"
     region: "São Paulo"
     category: "Technology"
+    format: online
     url: "https://example.com/rust-intro-sp"
     tags:
       - rust
@@ -121,6 +128,7 @@ events:
     location: "ACATE, Rodovia SC-401 600, Florianópolis"
     region: "Florianópolis"
     category: "Community"
+    format: hybrid
     url: "https://example.com/hackathon-floripa"
     tags:
       - hackathon

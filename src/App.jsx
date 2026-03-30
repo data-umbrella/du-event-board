@@ -31,11 +31,14 @@ export default function App() {
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+  const [selectedFormat, setSelectedFormat] = useState("");
 
+  if (typeof window !== "undefined") {
+    window.scrollTo = () => {};
+  }
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
-
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
     if (
@@ -111,6 +114,8 @@ export default function App() {
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 
+      const matchesFormat = !selectedFormat || event.format === selectedFormat;
+
       // Text search: title, description, tags
       const matchesSearch =
         !term ||
@@ -166,10 +171,17 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesDate &&
+        matchesFormat
+      );
     });
   }, [
     searchTerm,
+    selectedFormat,
     selectedRegion,
     selectedCategory,
     dateFilterType,
@@ -202,6 +214,8 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
+        selectedFormat={selectedFormat}
+        onFormatChange={setSelectedFormat}
       />
       <main className="main" id="main-content">
         <div
