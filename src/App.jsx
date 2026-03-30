@@ -33,6 +33,9 @@ export default function App() {
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
   const [selectedFormat, setSelectedFormat] = useState("");
 
+  if (typeof window !== "undefined") {
+    window.scrollTo = () => {};
+  }
   useEffect(() => {
     try {
       window.scrollTo(0, 0);
@@ -180,6 +183,7 @@ export default function App() {
     });
   }, [
     searchTerm,
+    selectedFormat,
     selectedRegion,
     selectedCategory,
     dateFilterType,
