@@ -20,6 +20,7 @@ export default function EventCard({ event }) {
 
   return (
     <article className="event-card" id={`event-${event.id}`}>
+      {/* Header */}
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 
