@@ -39,21 +39,30 @@ export default function AboutUs() {
       name: "Yoline Banerjee",
       role: "Software Engineer",
       org: "SPEC",
-      links: {},
-      image: "https://github.com/yoline.png",
+      links: {
+        github: "https://github.com/YolineB",
+        linkedin: "https://www.linkedin.com/in/yolineb/",
+      },
+      image: "https://github.com/yolineb.png",
     },
     {
       name: "Victoria Lo",
       role: "Software Engineer",
       org: "SPEC",
-      links: {},
+      links: {
+        github: "https://github.com/victoriaklo",
+        linkedin: "https://www.linkedin.com/in/victoria-lo/",
+      },
       image: "https://github.com/victorialo.png",
     },
     {
       name: "Crystal Shamsi",
       role: "Software Engineer",
       org: "SPEC",
-      links: {},
+      links: {
+        github: "https://github.com/crystallynnvoss",
+        linkedin: "https://www.linkedin.com/in/crystalshamsi/",
+      },
       image: "https://github.com/crystalshamsi.png",
     },
   ];
