@@ -20,6 +20,15 @@ function startOfDay(date) {
   return normalized;
 }
 
+function StaticPage({ title, description }) {
+  return (
+    <section className="empty-state">
+      <h2 className="empty-state__title">{title}</h2>
+      <p className="empty-state__description">{description}</p>
+    </section>
+  );
+}
+
 export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
@@ -177,6 +186,82 @@ export default function App() {
     rangeStart,
     rangeEnd,
   ]);
+
+  if (currentPage === "about") {
+    return (
+      <>
+        <Header
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onNavigate={setCurrentPage}
+        />
+        <main className="main" id="main-content">
+          <StaticPage
+            title="About Data Umbrella"
+            description="Data Umbrella is a global community for data science, open source, and inclusive learning."
+          />
+        </main>
+        <Footer onNavigate={setCurrentPage} />
+      </>
+    );
+  }
+
+  if (currentPage === "faqs") {
+    return (
+      <>
+        <Header
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onNavigate={setCurrentPage}
+        />
+        <main className="main" id="main-content">
+          <StaticPage
+            title="Frequently Asked Questions"
+            description="FAQs page placeholder. Add common questions and answers here."
+          />
+        </main>
+        <Footer onNavigate={setCurrentPage} />
+      </>
+    );
+  }
+
+  if (currentPage === "sponsors") {
+    return (
+      <>
+        <Header
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onNavigate={setCurrentPage}
+        />
+        <main className="main" id="main-content">
+          <StaticPage
+            title="Sponsors"
+            description="Sponsors page placeholder. Add sponsor details and partnership information here."
+          />
+        </main>
+        <Footer onNavigate={setCurrentPage} />
+      </>
+    );
+  }
+
+  if (currentPage === "contact") {
+    return (
+      <>
+        <Header
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onNavigate={setCurrentPage}
+        />
+        <main className="main" id="main-content">
+          <StaticPage
+            title="Contact Us"
+            description="Contact page placeholder. Add contact form or support details here."
+          />
+        </main>
+        <Footer onNavigate={setCurrentPage} />
+      </>
+    );
+  }
 
   return (
     <>

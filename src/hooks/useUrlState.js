@@ -8,6 +8,16 @@ export function useUrlState(key, initialValue) {
   });
 
   useEffect(() => {
+    const onPopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      setValue(params.get(key) || initialValue);
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, [key, initialValue]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
     if (value && value !== initialValue) {
