@@ -203,6 +203,7 @@ export default function App() {
         regions={regions}
         categories={categories}
       />
+
       <main className="main" id="main-content">
         <div
           style={{
@@ -334,6 +335,7 @@ export default function App() {
           <EventMap events={filteredEvents} />
         )}
       </main>
+
       <Footer onNavigate={setCurrentPage} />
     </>
   );
