@@ -53,7 +53,7 @@ export default function AboutUs() {
         github: "https://github.com/victoriaklo",
         linkedin: "https://www.linkedin.com/in/victoria-lo/",
       },
-      image: "https://github.com/victorialo.png",
+      image: "https://github.com/victoriaklo.png",
     },
     {
       name: "Crystal Shamsi",
@@ -63,7 +63,7 @@ export default function AboutUs() {
         github: "https://github.com/crystallynnvoss",
         linkedin: "https://www.linkedin.com/in/crystalshamsi/",
       },
-      image: "https://github.com/crystalshamsi.png",
+      image: "https://github.com/crystallynnvoss.png",
     },
   ];
 
