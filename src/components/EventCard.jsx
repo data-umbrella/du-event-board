@@ -11,7 +11,7 @@ export default function EventCard({ event }) {
       year: "numeric",
       month: "long",
       day: "numeric",
-    }
+    },
   );
 
   const statusMap = {
@@ -56,6 +56,16 @@ export default function EventCard({ event }) {
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon">📍</span>
           <span>{event.location || "Location TBD"}</span>
+        </div>
+
+        {/* ✅ Capacity (fixed tests + safer logic) */}
+        <div className="event-card__meta-item">
+          <span className="event-card__meta-icon">👥</span>
+          <span>
+            {typeof event.capacity === "number"
+              ? `${event.capacity} spots`
+              : "Unlimited"}
+          </span>
         </div>
       </div>
 
