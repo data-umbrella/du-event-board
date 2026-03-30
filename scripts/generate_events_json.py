@@ -12,7 +12,7 @@ import sys
 import time
 import urllib.request
 import urllib.parse
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime
 from pathlib import Path
 
@@ -49,7 +49,7 @@ def is_ci() -> bool:
     )
 
 
-def get_cache() -> dict[str, Any]:
+def get_cache() -> Dict[str, Any]:
     """
     title: Retrieve the geocode cache dictionary from disk.
     returns:
@@ -74,14 +74,14 @@ def save_cache() -> None:
             json.dump(_geocode_cache, f, indent=2)
 
 
-def geocode_location(location_str: str) -> tuple[float, float] | None:
+def geocode_location(location_str: str) -> Optional[Tuple[float, float]]:
     """
     title: Uses Nominatim API to get lat/long for a location string.
     parameters:
       location_str:
         type: str
     returns:
-      type: tuple[float, float] | None
+      type: Optional[Tuple[float, float]]
     """
     if not location_str or location_str.lower() == "online":
         return None
@@ -118,7 +118,7 @@ def geocode_location(location_str: str) -> tuple[float, float] | None:
     return None
 
 
-def validate_event(event: dict[str, Any], index: int) -> list[str]:
+def validate_event(event: Dict[str, Any], index: int) -> List[str]:
     """
     title: Validate a single event entry.
     parameters:
@@ -161,7 +161,7 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
     return errors
 
 
-def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
+def update_yaml_surgically(events_with_coords: List[Dict[str, Any]]) -> None:
     """
     title: >-
       Updates events.yaml by inserting lat/lng lines into the existing text.

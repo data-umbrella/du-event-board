@@ -44,6 +44,7 @@ export default function SearchBar({
               className="search__select"
               value={selectedRegion}
               onChange={(e) => onRegionChange(e.target.value)}
+              aria-label="Region filter"
             >
               <option value="">All Regions</option>
               {regions.map((region) => (
@@ -60,6 +61,7 @@ export default function SearchBar({
               className="search__select"
               value={selectedCategory}
               onChange={(e) => onCategoryChange(e.target.value)}
+              aria-label="Category filter"
             >
               <option value="">All Categories</option>
               {categories.map((category) => (
