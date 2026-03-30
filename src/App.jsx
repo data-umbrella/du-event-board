@@ -80,12 +80,12 @@ export default function App() {
   const regions = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.region))];
     return unique.sort();
-  }, []);
+  }, [events]);
 
   const categories = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.category))];
     return unique.sort();
-  }, []);
+  }, [events]);
 
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
