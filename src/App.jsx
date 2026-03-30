@@ -113,6 +113,8 @@ export default function App() {
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 
+      const matchesFormat = !selectedFormat || event.format === selectedFormat;
+
       // Text search: title, description, tags
       const matchesSearch =
         !term ||
@@ -168,7 +170,13 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return (
+        matchesSearch &&
+        matchesRegion &&
+        matchesCategory &&
+        matchesDate &&
+        matchesFormat
+      );
     });
   }, [
     searchTerm,
@@ -178,6 +186,7 @@ export default function App() {
     customDate,
     rangeStart,
     rangeEnd,
+    selectedFormat,
   ]);
 
   return (
@@ -204,7 +213,7 @@ export default function App() {
         onRangeEndChange={setRangeEnd}
         regions={regions}
         categories={categories}
-        selectedFormat
+        selectedFormat={selectedFormat}
         onFormatChange={setSelectedFormat}
       />
       <main className="main" id="main-content">
