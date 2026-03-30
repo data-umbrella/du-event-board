@@ -252,8 +252,6 @@ describe("App", () => {
     });
 
     expect(screen.getByLabelText("Region filter").value).toBe("");
-    expect(
-      screen.getByText("React Workshop - São Paulo"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
   });
 });

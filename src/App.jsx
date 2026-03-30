@@ -27,13 +27,9 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "", {
     history: "push",
   });
-  const [selectedCategory, setSelectedCategory] = useUrlState(
-    "category",
-    "",
-    {
-      history: "push",
-    },
-  );
+  const [selectedCategory, setSelectedCategory] = useUrlState("category", "", {
+    history: "push",
+  });
   const [currentPage, setCurrentPage] = useUrlState("page", "events", {
     history: "push",
   });
