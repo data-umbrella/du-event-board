@@ -53,7 +53,7 @@ def get_cache() -> Dict[str, Any]:
     """
     title: Retrieve the geocode cache dictionary from disk.
     returns:
-      type: dict[str, Any]
+      type: Dict[str, Any]
     """
     global _geocode_cache
     if _geocode_cache is None:
@@ -123,11 +123,11 @@ def validate_event(event: Dict[str, Any], index: int) -> List[str]:
     title: Validate a single event entry.
     parameters:
       event:
-        type: dict[str, Any]
+        type: Dict[str, Any]
       index:
         type: int
     returns:
-      type: list[str]
+      type: List[str]
     """
     errors = []
 
@@ -167,7 +167,7 @@ def update_yaml_surgically(events_with_coords: List[Dict[str, Any]]) -> None:
       Updates events.yaml by inserting lat/lng lines into the existing text.
     parameters:
       events_with_coords:
-        type: list[dict[str, Any]]
+        type: List[Dict[str, Any]]
     """
     if not INPUT_FILE.exists():
         return
