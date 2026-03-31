@@ -98,7 +98,6 @@ export default function App() {
     setRangeEnd("");
   };
 
-
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
 
@@ -119,24 +118,25 @@ export default function App() {
     const selectedRangeStart = parseISODate(rangeStart);
     const selectedRangeEnd = parseISODate(rangeEnd);
 
-
     return events.filter((event) => {
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 
       // Text search: title, description, tags
       const matchesSearch =
-      !term ||
-      String(event.title || "")
-        .toLowerCase()
-        .includes(term) ||
-      String(event.description || "")
-        .toLowerCase()
-        .includes(term) ||
-      (Array.isArray(event.tags) &&
-        event.tags.some((tag) =>
-          String(tag || "").toLowerCase().includes(term)
-        ));
+        !term ||
+        String(event.title || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(event.description || "")
+          .toLowerCase()
+          .includes(term) ||
+        (Array.isArray(event.tags) &&
+          event.tags.some((tag) =>
+            String(tag || "")
+              .toLowerCase()
+              .includes(term),
+          ));
 
       // Region filter
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
@@ -387,74 +387,76 @@ export default function App() {
           </div>
         </div>
 
-       {viewMode === "grid" ? (
-        <div className="events-grid" id="events-grid">
-          {filteredEvents && filteredEvents.length > 0 ?(
-            filteredEvents.map((event) => (
-              <EventCard key={event.id} event={event} viewMode="grid" />
-            ))
-          ) : (
-            <div className="empty-state" id="empty-state">
-              <div className="empty-state__icon">🔎</div>
-              <h2 className="empty-state__title">No events found</h2>
-              <button
-                onClick={resetFilters}
-                style={{
-                  marginTop: "10px",
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                }}
-              >
-                Reset Filters
-              </button>
+        {viewMode === "grid" ? (
+          <div className="events-grid" id="events-grid">
+            {filteredEvents && filteredEvents.length > 0 ? (
+              filteredEvents.map((event) => (
+                <EventCard key={event.id} event={event} viewMode="grid" />
+              ))
+            ) : (
+              <div className="empty-state" id="empty-state">
+                <div className="empty-state__icon">🔎</div>
+                <h2 className="empty-state__title">No events found</h2>
+                <button
+                  onClick={resetFilters}
+                  style={{
+                    marginTop: "10px",
+                    padding: "8px 16px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Reset Filters
+                </button>
 
-              <p className="empty-state__description">
-                Try adjusting your search terms or filters to find events near you.
-              </p>
-            </div>
-          )}
-        </div>
-      ) : viewMode === "list" ? (
-        <div className="events-list" id="events-list">
-          {filteredEvents && filteredEvents.length > 0 ? (
-            Object.entries(groupedEvents).map(([month, monthEvents]) => (
-              <div key={month} className="events-list__month-group">
-                <h3 className="events-list__month-heading">{month}</h3>
-                <div className="events-list__month-rows">
-                  {monthEvents.map((event) => (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                      viewMode="list"
-                    />
-                  ))}
-                </div>
+                <p className="empty-state__description">
+                  Try adjusting your search terms or filters to find events
+                  near you.
+                </p>
               </div>
-            ))
-          ) : (
-            <div className="empty-state" id="empty-state">
-              <div className="empty-state__icon">🔎</div>
-              <h2 className="empty-state__title">No events found</h2>
-              <button
-               onClick={resetFilters}
-                style={{
-                  marginTop: "10px",
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                }}
-              >
-                Reset Filters
-              </button>
+            )}
+          </div>
+        ) : viewMode === "list" ? (
+          <div className="events-list" id="events-list">
+            {filteredEvents && filteredEvents.length > 0 ? (
+              Object.entries(groupedEvents).map(([month, monthEvents]) => (
+                <div key={month} className="events-list__month-group">
+                  <h3 className="events-list__month-heading">{month}</h3>
+                  <div className="events-list__month-rows">
+                    {monthEvents.map((event) => (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        viewMode="list"
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state" id="empty-state">
+                <div className="empty-state__icon">🔎</div>
+                <h2 className="empty-state__title">No events found</h2>
+                <button
+                  onClick={resetFilters}
+                  style={{
+                    marginTop: "10px",
+                    padding: "8px 16px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Reset Filters
+                </button>
 
-              <p className="empty-state__description">
-                Try adjusting your search terms or filters to find events near you.
-              </p>
-            </div>
-          )}
-        </div>
-      ) : (
-        <EventMap events={filteredEvents} />
-      )}
+                <p className="empty-state__description">
+                  Try adjusting your search terms or filters to find events
+                  near you.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <EventMap events={filteredEvents} />
+        )}
       </main>
       <Footer onNavigate={setCurrentPage} />
       <BackToTop />
