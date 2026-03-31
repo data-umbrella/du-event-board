@@ -40,7 +40,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
             <div
               className={`status-badge ${statusMap[status]} event-list-row__status`}
             >
-              {status === "live" && <span className="live-dot" />}
+              {status === "live" && <span className="live-dot" aria-hidden="true" />}
               {status === "live" ? "Live" : status}
             </div>
           )}
@@ -58,7 +58,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
 
         {status !== "none" && (
           <div className={`status-badge ${statusMap[status]}`}>
-            {status === "live" && <span className="live-dot" />}
+            {status === "live" && <span className="live-dot" aria-hidden="true" />}
             {status === "live" ? "Live Now" : status}
           </div>
         )}
@@ -104,9 +104,10 @@ export default function EventCard({ event, viewMode = "grid" }) {
           className="event-card__link"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={`Learn more about ${event.title}`}
         >
           Learn more
-          <span className="event-card__link-arrow">→</span>
+          <span className="event-card__link-arrow" aria-hidden="true">→</span>
         </a>
       )}
     </article>

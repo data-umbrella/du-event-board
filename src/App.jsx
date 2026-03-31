@@ -232,6 +232,8 @@ export default function App() {
         >
           <p
             className="main__results-info"
+            aria-live="polite"
+            aria-atomic="true"
             style={{ marginBottom: 0, paddingLeft: 0 }}
           >
             Showing{" "}
@@ -243,6 +245,8 @@ export default function App() {
 
           <div
             className="view-toggle"
+            role="group"
+            aria-label="View mode"
             style={{
               display: "flex",
               gap: "0.5rem",
@@ -254,6 +258,7 @@ export default function App() {
           >
             <button
               onClick={() => setViewMode("grid")}
+              aria-pressed={viewMode === "grid"}
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "8px",
@@ -292,6 +297,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setViewMode("list")}
+              aria-pressed={viewMode === "list"}
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "8px",
@@ -332,6 +338,7 @@ export default function App() {
             </button>
             <button
               onClick={() => setViewMode("map")}
+              aria-pressed={viewMode === "map"}
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "8px",
