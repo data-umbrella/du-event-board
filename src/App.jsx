@@ -27,7 +27,7 @@ export default function App() {
   const [currentPage, setCurrentPage] = useUrlState("page", "events");
   const [viewMode, setViewMode] = useUrlState("view", "grid");
 
-  const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
+  const [dateFilterType, setDateFilterType] = useUrlState("dateType", "upcoming");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
