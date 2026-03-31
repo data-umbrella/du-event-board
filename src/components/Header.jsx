@@ -16,7 +16,7 @@ export default function Header({ theme, onToggleTheme, onNavigate }) {
           onClick={onToggleTheme}
           aria-label="Toggle Theme"
         >
-          {theme === "dark" ? "☀️" : "🌙"}
+          {theme === "dark" ? "🌞" : "🌛"}
         </button>
       </div>
 
