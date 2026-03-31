@@ -27,7 +27,9 @@ export default function SearchBar({
       <div className="search__container">
         <div className="search__row search__row--primary">
           <div className="search__input-wrapper">
-            <span className="search__icon" aria-hidden="true">🔍</span>
+            <span className="search__icon" aria-hidden="true">
+              🔍
+            </span>
             <input
               id="search-input"
               type="text"
