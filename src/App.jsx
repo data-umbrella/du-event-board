@@ -396,7 +396,7 @@ export default function App() {
           ) : (
             <div className="empty-state" id="empty-state">
               <div className="empty-state__icon">🔎</div>
-              <h2 className="empty-state__title">No events match your filters</h2>
+              <h2 className="empty-state__title">No events found</h2>
               <button
                 onClick={resetFilters}
                 style={{
@@ -434,8 +434,7 @@ export default function App() {
           ) : (
             <div className="empty-state" id="empty-state">
               <div className="empty-state__icon">🔎</div>
-              <h2 className="empty-state__title">No events match your filters</h2>
-
+              <h2 className="empty-state__title">No events found</h2>
               <button
                onClick={resetFilters}
                 style={{
