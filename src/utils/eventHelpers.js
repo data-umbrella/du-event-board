@@ -1,84 +1,36 @@
-export function parseISODate(dateString) {
-  if (!dateString) return null;
+const parseDate = (value) => {
+  if (!value) return null;
+  const dateString = String(value);
+  const date = new Date(`${dateString}T00:00:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
 
-  const [year, month, day] = dateString.split("-").map(Number);
-  if (!year || !month || !day) return null;
+export const getEventStatus = (eventOrDate) => {
+  if (!eventOrDate) return "none";
 
-  return new Date(year, month - 1, day);
-}
+  let startDate = null;
+  let endDate = null;
 
-export function startOfDay(date) {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-  return normalized;
-}
-
-export function formatEventDateRange(startDate, endDate) {
-  const start = parseISODate(startDate);
-  const end = parseISODate(endDate || startDate);
-
-  if (!start || !end) return "Date unavailable";
-
-  const formatOptions = {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  };
-
-  if (start.getTime() === end.getTime()) {
-    return start.toLocaleDateString("en-US", {
-      weekday: "short",
-      ...formatOptions,
-    });
+  if (typeof eventOrDate === "string") {
+    startDate = parseDate(eventOrDate);
+    endDate = startDate;
+  } else if (typeof eventOrDate === "object") {
+    startDate = parseDate(eventOrDate.startDate || eventOrDate.date);
+    endDate = parseDate(eventOrDate.endDate || eventOrDate.date);
   }
 
-  if (
-    start.getFullYear() === end.getFullYear() &&
-    start.getMonth() === end.getMonth()
-  ) {
-    return `${start.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-    })} - ${end.toLocaleDateString("en-US", {
-      day: "numeric",
-      year: "numeric",
-    })}`;
-  }
+  if (!startDate || !endDate) return "none";
 
-  const formattedStart = start.toLocaleDateString("en-US", formatOptions);
-  const formattedEnd = end.toLocaleDateString("en-US", formatOptions);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  return `${formattedStart} - ${formattedEnd}`;
-}
+  if (today > endDate) return "ended";
 
-export function eventOverlapsRange(event, rangeStart, rangeEnd) {
-  const eventStart = parseISODate(event.start_date || event.date);
-  const eventEnd = parseISODate(
-    event.end_date || event.start_date || event.date,
-  );
+  if (today >= startDate && today <= endDate) return "live";
 
-  if (!eventStart || !eventEnd) return false;
-  if (rangeStart && eventEnd < rangeStart) return false;
-  if (rangeEnd && eventStart > rangeEnd) return false;
-
-  return true;
-}
-
-export function getEventStatus(startDate, endDate) {
-  if (!startDate) return "none";
-
-  const today = startOfDay(new Date());
-  const eventStart = parseISODate(startDate);
-  const eventEnd = parseISODate(endDate || startDate);
-
-  if (!eventStart || !eventEnd) return "none";
-  if (eventEnd < today) return "ended";
-  if (eventStart <= today && eventEnd >= today) return "live";
-
-  const diffTime = eventStart - today;
+  const diffTime = startDate - today;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   if (diffDays > 0 && diffDays <= 3) return "upcoming";
-
   return "none";
 }

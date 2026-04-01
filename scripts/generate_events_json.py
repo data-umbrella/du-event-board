@@ -22,19 +22,19 @@ REQUIRED_FIELDS = [
     "id",
     "title",
     "description",
-    "start_date",
-    "end_date",
     "time",
     "location",
     "region",
     "state",
     "country",
     "category",
-    "event_type",
+    "eventType",
     "cost",
+    "startDate",
+    "endDate",
 ]
-ALLOWED_EVENT_TYPES = {"online", "in-person", "hybrid"}
-ALLOWED_COSTS = {"free", "paid"}
+EVENT_TYPES = {"online", "in-person", "hybrid"}
+COST_OPTIONS = {"free", "paid"}
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 INPUT_FILE = PROJECT_ROOT / "data" / "events.yaml"
@@ -142,33 +142,56 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
     """
     errors = []
 
+    # If YAML includes a simple date field, mirror it into start/end date.
+    if "date" in event and event.get("date") and not event.get("startDate"):
+        event["startDate"] = event["date"]
+    if "date" in event and event.get("date") and not event.get("endDate"):
+        event["endDate"] = event["date"]
+
     for field in REQUIRED_FIELDS:
         if field not in event or not event[field]:
             errors.append(f"Event #{index}: Missing required field '{field}'")
 
-    parsed_dates: dict[str, datetime] = {}
-    for field in ["start_date", "end_date"]:
+    # Validate date fields
+    for field in ("startDate", "endDate"): 
         if field in event:
             try:
                 if isinstance(event[field], datetime):
                     event[field] = event[field].strftime("%Y-%m-%d")
-                parsed_dates[field] = datetime.strptime(
-                    str(event[field]), "%Y-%m-%d"
-                )
+                datetime.strptime(str(event[field]), "%Y-%m-%d")
             except ValueError:
                 errors.append(
-                    f"Event #{index}: Invalid {field} format "
-                    f"'{event[field]}' (expected YYYY-MM-DD)"
+                    f"Event #{index}: Invalid {field} format '{event[field]}' (expected YYYY-MM-DD)"
                 )
 
-    if (
-        "start_date" in parsed_dates
-        and "end_date" in parsed_dates
-        and parsed_dates["end_date"] < parsed_dates["start_date"]
-    ):
-        errors.append(
-            f"Event #{index}: end_date must be on or after start_date"
-        )
+    # Ensure start/end range is valid
+    if "startDate" in event and "endDate" in event:
+        try:
+            start = datetime.strptime(str(event["startDate"]), "%Y-%m-%d")
+            end = datetime.strptime(str(event["endDate"]), "%Y-%m-%d")
+            if start > end:
+                errors.append(
+                    f"Event #{index}: startDate '{event['startDate']}' must be before or equal to endDate '{event['endDate']}'"
+                )
+        except ValueError:
+            pass
+
+    # Validate event type and cost metadata
+    if "eventType" in event and event["eventType"]:
+        if str(event["eventType"]).lower() not in EVENT_TYPES:
+            errors.append(
+                f"Event #{index}: Invalid eventType '{event['eventType']}' (expected one of {sorted(EVENT_TYPES)})"
+            )
+        else:
+            event["eventType"] = str(event["eventType"]).lower()
+
+    if "cost" in event and event["cost"]:
+        if str(event["cost"]).lower() not in COST_OPTIONS:
+            errors.append(
+                f"Event #{index}: Invalid cost '{event['cost']}' (expected one of {sorted(COST_OPTIONS)})"
+            )
+        else:
+            event["cost"] = str(event["cost"]).lower()
 
     if "time" in event:
         try:

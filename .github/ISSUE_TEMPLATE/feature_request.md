@@ -1,10 +1,16 @@
 ---
 name: Feature Request
 about: Suggest an idea for du-event-board
-title: "[FEATURE]"
+title: "[FEATURE] "
 labels: enhancement
 assignees: ""
 ---
+
+### Title
+
+Provide a concise feature title. Start with `[FEATURE]` and then add the specific request, for example:
+
+`[FEATURE] Add title field to feature request template`
 
 ### Description
 

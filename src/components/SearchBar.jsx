@@ -15,10 +15,12 @@ export default function SearchBar({
   onStateChange,
   selectedRegion,
   onRegionChange,
+  selectedCountry,
+  onCountryChange,
+  selectedState,
+  onStateChange,
   selectedCategory,
   onCategoryChange,
-  selectedTag,
-  onTagChange,
   selectedEventType,
   onEventTypeChange,
   selectedCost,
@@ -34,10 +36,11 @@ export default function SearchBar({
   countries,
   states,
   regions,
+  countries,
+  states,
   categories,
-  hashtags,
   eventTypes,
-  costs,
+  costOptions,
 }) {
   // Show a quick visual guard when the user picks an inverted range.
   const isInvalidRange =
@@ -56,7 +59,7 @@ export default function SearchBar({
               id="search-input"
               type="text"
               className="search__input"
-              placeholder="Search events, places, formats, or hashtags..."
+              placeholder="Search events by name, description, or hashtag..."
               value={searchTerm}
               onChange={(event) => onSearchChange(event.target.value)}
             />
@@ -153,8 +156,83 @@ export default function SearchBar({
           </div>
         </div>
 
-        <div className="search__row search__row--date">
-          <div className="search__select-wrapper search__select-wrapper--date-type">
+        <div className="search__row search__row--secondary" style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+          <div className="search__select-wrapper">
+            <select
+              id="country-select"
+              className="search__select"
+              value={selectedCountry}
+              onChange={(e) => onCountryChange(e.target.value)}
+            >
+              <option value="">All Countries</option>
+              {countries.map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="search__select-wrapper">
+            <select
+              id="state-select"
+              className="search__select"
+              value={selectedState}
+              onChange={(e) => onStateChange(e.target.value)}
+            >
+              <option value="">All States / Provinces</option>
+              {states.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="search__select-wrapper">
+            <select
+              id="type-select"
+              className="search__select"
+              value={selectedEventType}
+              onChange={(e) => onEventTypeChange(e.target.value)}
+            >
+              <option value="">All Types</option>
+              {eventTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="search__select-wrapper">
+            <select
+              id="cost-select"
+              className="search__select"
+              value={selectedCost}
+              onChange={(e) => onCostChange(e.target.value)}
+            >
+              <option value="">All Costs</option>
+              {costOptions.map((cost) => (
+                <option key={cost} value={cost}>
+                  {cost}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div
+          className="search__row search__row--date"
+          style={{
+            alignItems: "center",
+            flexWrap: "wrap",
+            display: "flex",
+            gap: "0.75rem",
+          }}
+        >
+          <div
+            className={
+              "search__select-wrapper search__select-wrapper--date-type"
+            }
+          >
             <select
               id="date-filter-select"
               className="search__select"

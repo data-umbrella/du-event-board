@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
 import EventMap from "./components/EventMap";
-import Footer from "./components/Footer";
+import EventCalendar from "./components/EventCalendar";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import {
@@ -37,6 +37,11 @@ export default function App() {
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+  const [selectedCountry, setSelectedCountry] = useUrlState("country", "");
+  const [selectedState, setSelectedState] = useUrlState("state", "");
+  const [selectedEventType, setSelectedEventType] = useUrlState("eventType", "");
+  const [selectedCost, setSelectedCost] = useUrlState("cost", "");
+  const [featuredExpanded, setFeaturedExpanded] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -125,6 +130,35 @@ export default function App() {
     [],
   );
 
+  const countries = useMemo(() => {
+    const unique = [...new Set(events.map((e) => e.country || "Brazil"))];
+    return unique.sort();
+  }, []);
+
+  const states = useMemo(() => {
+    const unique = [...new Set(events.map((e) => e.state || ""))].filter(Boolean);
+    return unique.sort();
+  }, []);
+
+  const eventTypes = useMemo(() => {
+    const unique = [...new Set(events.map((e) => e.eventType || "in-person"))];
+    return unique.sort();
+  }, []);
+
+  const costOptions = useMemo(() => {
+    const unique = [...new Set(events.map((e) => e.cost || "free"))];
+    return unique.sort();
+  }, []);
+
+  const featuredEvents = useMemo(
+    () => events.filter((event) => event.featured),
+    [],
+  );
+
+  const displayedFeatured = featuredExpanded
+    ? featuredEvents
+    : featuredEvents.slice(0, 3);
+
   const filteredEvents = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
 
@@ -145,11 +179,8 @@ export default function App() {
     const selectedRangeEnd = parseISODate(rangeEnd);
 
     return events.filter((event) => {
-      const eventStart = parseISODate(event.start_date || event.date);
-      const eventEnd = parseISODate(
-        event.end_date || event.start_date || event.date,
-      );
-
+      const eventStart = parseISODate(event.startDate || event.date);
+      const eventEnd = parseISODate(event.endDate || event.date);
       if (!eventStart || !eventEnd) return false;
 
       const matchesSearch =
@@ -168,6 +199,16 @@ export default function App() {
         !selectedCountry || event.country === selectedCountry;
       const matchesState = !selectedState || event.state === selectedState;
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
+
+      // Country filter
+      const matchesCountry =
+        !selectedCountry ||
+        (event.country || "Brazil") === selectedCountry;
+
+      // State/province filter
+      const matchesState = !selectedState || event.state === selectedState;
+
+      // Category filter
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
       const matchesTag =
@@ -176,6 +217,12 @@ export default function App() {
         !selectedEventType || event.event_type === selectedEventType;
       const matchesCost = !selectedCost || event.cost === selectedCost;
 
+      // Event type and cost filters
+      const matchesEventType =
+        !selectedEventType || event.eventType === selectedEventType;
+      const matchesCost = !selectedCost || event.cost === selectedCost;
+
+      // Date filter using event range overlap
       let matchesDate = true;
 
       switch (dateFilterType) {
@@ -183,15 +230,16 @@ export default function App() {
           matchesDate = eventEnd >= today;
           break;
         case "thisWeek":
-          matchesDate = eventOverlapsRange(event, weekStart, weekEnd);
+          matchesDate = eventEnd >= weekStart && eventStart <= weekEnd;
           break;
         case "thisMonth":
-          matchesDate = eventOverlapsRange(event, monthStart, monthEnd);
+          matchesDate = eventEnd >= monthStart && eventStart <= monthEnd;
           break;
         case "customDate":
-          matchesDate = selectedCustomDate
-            ? eventOverlapsRange(event, selectedCustomDate, selectedCustomDate)
-            : true;
+          matchesDate =
+            !selectedCustomDate ||
+            (eventStart <= selectedCustomDate &&
+              eventEnd >= selectedCustomDate);
           break;
         case "customRange":
           if (
@@ -204,11 +252,13 @@ export default function App() {
             break;
           }
 
-          matchesDate = eventOverlapsRange(
-            event,
-            selectedRangeStart,
-            selectedRangeEnd,
-          );
+          if (selectedRangeStart && eventEnd < selectedRangeStart) {
+            matchesDate = false;
+          }
+
+          if (selectedRangeEnd && eventStart > selectedRangeEnd) {
+            matchesDate = false;
+          }
           break;
         default:
           matchesDate = true;
@@ -216,11 +266,10 @@ export default function App() {
 
       return (
         matchesSearch &&
+        matchesRegion &&
         matchesCountry &&
         matchesState &&
-        matchesRegion &&
         matchesCategory &&
-        matchesTag &&
         matchesEventType &&
         matchesCost &&
         matchesDate
@@ -232,7 +281,8 @@ export default function App() {
     selectedState,
     selectedRegion,
     selectedCategory,
-    selectedTag,
+    selectedCountry,
+    selectedState,
     selectedEventType,
     selectedCost,
     dateFilterType,
@@ -264,10 +314,12 @@ export default function App() {
         }}
         selectedRegion={selectedRegion}
         onRegionChange={setSelectedRegion}
+        selectedCountry={selectedCountry}
+        onCountryChange={setSelectedCountry}
+        selectedState={selectedState}
+        onStateChange={setSelectedState}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
-        selectedTag={selectedTag}
-        onTagChange={setSelectedTag}
         selectedEventType={selectedEventType}
         onEventTypeChange={setSelectedEventType}
         selectedCost={selectedCost}
@@ -283,11 +335,51 @@ export default function App() {
         countries={countries}
         states={states}
         regions={regions}
+        countries={countries}
+        states={states}
         categories={categories}
-        hashtags={hashtags}
         eventTypes={eventTypes}
-        costs={costs}
+        costOptions={costOptions}
       />
+      {featuredEvents.length > 0 && (
+        <section className="featured-events" style={{ marginBottom: "2rem" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            <div>
+              <h2 style={{ margin: 0 }}>Featured Events</h2>
+              <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)" }}>
+                Highlighted event suggestions for your next meetup or hackathon.
+              </p>
+            </div>
+            {featuredEvents.length > 3 && (
+              <button
+                onClick={() => setFeaturedExpanded((prev) => !prev)}
+                style={{
+                  border: "1px solid var(--border-subtle)",
+                  background: "transparent",
+                  color: "var(--text)",
+                  borderRadius: "999px",
+                  padding: "0.6rem 1rem",
+                  cursor: "pointer",
+                }}
+              >
+                {featuredExpanded ? "Show less" : `More (${featuredEvents.length})`}
+              </button>
+            )}
+          </div>
+          <div className="events-grid" id="featured-events-grid">
+            {displayedFeatured.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </section>
+      )}
       <main className="main" id="main-content">
         <section className="results-toolbar" aria-label="Results summary">
           <p className="main__results-info">
@@ -319,6 +411,43 @@ export default function App() {
             >
               Map
             </button>
+            <button
+              onClick={() => setViewMode("calendar")}
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                background:
+                  viewMode === "calendar"
+                    ? "var(--accent-primary)"
+                    : "transparent",
+                color: viewMode === "calendar" ? "#fff" : "var(--text-muted)",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: "bold",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <line x1="8" y1="4" x2="8" y2="22"></line>
+              </svg>
+              Calendar
+            </button>
           </div>
         </section>
 
@@ -339,8 +468,10 @@ export default function App() {
               </div>
             )}
           </div>
-        ) : (
+        ) : viewMode === "map" ? (
           <EventMap events={filteredEvents} />
+        ) : (
+          <EventCalendar events={filteredEvents} />
         )}
       </main>
       <Footer onNavigate={setCurrentPage} />

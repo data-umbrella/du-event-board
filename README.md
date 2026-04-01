@@ -18,24 +18,35 @@ automatically built and deployed via GitHub Actions when changes are merged to
 
 ## Adding a New Event
 
-Edit `data/events.yaml` and add a new entry:
+Edit `data/events.yaml` and add a new entry.
+
+The project now supports richer metadata fields:
+- `eventType`: `online`, `in-person`, or `hybrid`
+- `cost`: `free` or `paid`
+- `startDate` and `endDate` for multi-day events
+- `country` and `state` for geographic search
+- `organizationLogo` for an optional organizer logo
+- `featured` to highlight events at the top of the page
+
+Example event:
 
 ```yaml
 - id: "9"
   title: "Your Event Name"
   description: "A brief description of the event."
-  start_date: "2026-05-01"
-  end_date: "2026-05-01"
+  date: "2026-05-01"
+  startDate: "2026-05-01"
+  endDate: "2026-05-02"
   time: "18:00"
   location: "Venue Name, City"
   region: "City Name"
-  state: "State or Province"
-  country: "Country Name"
+  state: "State / Province"
+  country: "Country"
   category: "Technology"
-  event_type: "online"
+  eventType: "in-person"
   cost: "free"
-  organizer_name: "Organizer Name"
-  organizer_logo: "/DU_logo.png"
+  organizationLogo: "https://example.com/logo.png"
+  featured: true
   url: "https://example.com/your-event"
   tags:
     - tag1
