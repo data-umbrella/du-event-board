@@ -250,7 +250,9 @@ export default function App() {
             style={{ marginBottom: 0, paddingLeft: 0 }}
           >
             Showing{" "}
-            <span className="main__results-count">{filteredEvents.length}</span>{" "}
+            <span className="main__results-count">
+              {filteredEvents.length}
+            </span>{" "}
             event{filteredEvents.length !== 1 ? "s" : ""}
           </p>
 
@@ -374,8 +376,8 @@ export default function App() {
                 <div className="empty-state__icon">🔎</div>
                 <h2 className="empty-state__title">No events found</h2>
                 <p className="empty-state__description">
-                  Try adjusting your search terms or filters to find events near
-                  you.
+                  Try adjusting your search terms or filters to find events
+                  near you.
                 </p>
               </div>
             )}
