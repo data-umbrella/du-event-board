@@ -1,18 +1,6 @@
-function renderOptions(options) {
-  return options.map((option) => (
-    <option key={option} value={option}>
-      {option}
-    </option>
-  ));
-}
-
 export default function SearchBar({
   searchTerm,
   onSearchChange,
-  selectedCountry,
-  onCountryChange,
-  selectedState,
-  onStateChange,
   selectedRegion,
   onRegionChange,
   selectedCountry,
@@ -33,8 +21,6 @@ export default function SearchBar({
   onRangeStartChange,
   rangeEnd,
   onRangeEndChange,
-  countries,
-  states,
   regions,
   countries,
   states,
@@ -42,13 +28,6 @@ export default function SearchBar({
   eventTypes,
   costOptions,
 }) {
-  // Show a quick visual guard when the user picks an inverted range.
-  const isInvalidRange =
-    dateFilterType === "customRange" &&
-    rangeStart &&
-    rangeEnd &&
-    rangeStart > rangeEnd;
-
   return (
     <div className="search" id="search">
       <div className="search__container">
@@ -61,32 +40,8 @@ export default function SearchBar({
               className="search__input"
               placeholder="Search events by name, description, or hashtag..."
               value={searchTerm}
-              onChange={(event) => onSearchChange(event.target.value)}
+              onChange={(e) => onSearchChange(e.target.value)}
             />
-          </div>
-
-          <div className="search__select-wrapper">
-            <select
-              id="country-select"
-              className="search__select"
-              value={selectedCountry}
-              onChange={(event) => onCountryChange(event.target.value)}
-            >
-              <option value="">All Countries</option>
-              {renderOptions(countries)}
-            </select>
-          </div>
-
-          <div className="search__select-wrapper">
-            <select
-              id="state-select"
-              className="search__select"
-              value={selectedState}
-              onChange={(event) => onStateChange(event.target.value)}
-            >
-              <option value="">All States / Provinces</option>
-              {renderOptions(states)}
-            </select>
           </div>
 
           <div className="search__select-wrapper">
@@ -94,38 +49,12 @@ export default function SearchBar({
               id="region-select"
               className="search__select"
               value={selectedRegion}
-              onChange={(event) => onRegionChange(event.target.value)}
+              onChange={(e) => onRegionChange(e.target.value)}
             >
               <option value="">All Regions</option>
-              {renderOptions(regions)}
-            </select>
-          </div>
-        </div>
-
-        <div className="search__row">
-          <div className="search__select-wrapper">
-            <select
-              id="category-select"
-              className="search__select"
-              value={selectedCategory}
-              onChange={(event) => onCategoryChange(event.target.value)}
-            >
-              <option value="">All Categories</option>
-              {renderOptions(categories)}
-            </select>
-          </div>
-
-          <div className="search__select-wrapper">
-            <select
-              id="hashtag-select"
-              className="search__select"
-              value={selectedTag}
-              onChange={(event) => onTagChange(event.target.value)}
-            >
-              <option value="">All Hashtags</option>
-              {hashtags.map((tag) => (
-                <option key={tag} value={tag}>
-                  #{tag}
+              {regions.map((region) => (
+                <option key={region} value={region}>
+                  {region}
                 </option>
               ))}
             </select>
@@ -133,25 +62,17 @@ export default function SearchBar({
 
           <div className="search__select-wrapper">
             <select
-              id="event-type-select"
+              id="category-select"
               className="search__select"
-              value={selectedEventType}
-              onChange={(event) => onEventTypeChange(event.target.value)}
+              value={selectedCategory}
+              onChange={(e) => onCategoryChange(e.target.value)}
             >
-              <option value="">All Formats</option>
-              {renderOptions(eventTypes)}
-            </select>
-          </div>
-
-          <div className="search__select-wrapper">
-            <select
-              id="cost-select"
-              className="search__select"
-              value={selectedCost}
-              onChange={(event) => onCostChange(event.target.value)}
-            >
-              <option value="">All Costs</option>
-              {renderOptions(costs)}
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -237,7 +158,7 @@ export default function SearchBar({
               id="date-filter-select"
               className="search__select"
               value={dateFilterType}
-              onChange={(event) => onDateFilterTypeChange(event.target.value)}
+              onChange={(e) => onDateFilterTypeChange(e.target.value)}
               aria-label="Date filter"
             >
               <option value="all">All Dates</option>
@@ -256,66 +177,68 @@ export default function SearchBar({
                 type="date"
                 className="search__date-input search__select"
                 value={customDate}
-                onChange={(event) => onCustomDateChange(event.target.value)}
+                onChange={(e) => onCustomDateChange(e.target.value)}
                 aria-label="Custom date"
               />
             </div>
           )}
 
           {dateFilterType !== "customDate" && (
-            <div className="search__date-group">
+            <div
+              className="search__date-group"
+              style={{
+                display: "flex",
+                gap: "0.75rem",
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
+            >
               <input
                 id="range-start-input"
                 type={rangeStart ? "date" : "text"}
                 placeholder="Start Date"
-                onFocus={(event) => {
-                  event.target.type = "date";
+                onFocus={(e) => {
+                  e.target.type = "date";
                 }}
-                onBlur={(event) => {
-                  if (!event.target.value) event.target.type = "text";
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
                 }}
-                className={`search__date-input search__select ${
-                  isInvalidRange ? "search__date-input--invalid" : ""
-                }`}
+                className="search__date-input search__select"
                 value={rangeStart}
-                max={rangeEnd || undefined}
-                onChange={(event) => {
-                  if (dateFilterType !== "customRange") {
+                onChange={(e) => {
+                  if (dateFilterType !== "customRange")
                     onDateFilterTypeChange("customRange");
-                  }
-                  onRangeStartChange(event.target.value);
+                  onRangeStartChange(e.target.value);
                 }}
                 aria-label="Range start date"
+                style={{ width: "160px" }}
               />
-              <span className="search__date-separator">to</span>
+              <span
+                className="search__date-separator"
+                style={{ color: "var(--text-muted)" }}
+              >
+                —
+              </span>
               <input
                 id="range-end-input"
                 type={rangeEnd ? "date" : "text"}
                 placeholder="End Date"
-                onFocus={(event) => {
-                  event.target.type = "date";
+                onFocus={(e) => {
+                  e.target.type = "date";
                 }}
-                onBlur={(event) => {
-                  if (!event.target.value) event.target.type = "text";
+                onBlur={(e) => {
+                  if (!e.target.value) e.target.type = "text";
                 }}
-                className={`search__date-input search__select ${
-                  isInvalidRange ? "search__date-input--invalid" : ""
-                }`}
+                className="search__date-input search__select"
                 value={rangeEnd}
-                min={rangeStart || undefined}
-                onChange={(event) => {
-                  if (dateFilterType !== "customRange") {
+                onChange={(e) => {
+                  if (dateFilterType !== "customRange")
                     onDateFilterTypeChange("customRange");
-                  }
-                  onRangeEndChange(event.target.value);
+                  onRangeEndChange(e.target.value);
                 }}
                 aria-label="Range end date"
+                style={{ width: "160px" }}
               />
-              {isInvalidRange && (
-                <div className="search__error-message">
-                  <span>Start date cannot be after end date</span>
-                </div>
-              )}
             </div>
           )}
         </div>

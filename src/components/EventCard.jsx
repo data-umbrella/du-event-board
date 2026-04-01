@@ -1,11 +1,4 @@
-import { formatEventDateRange, getEventStatus } from "../utils/eventHelpers";
-
-function toLabel(value) {
-  return value
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
+import { getEventStatus } from "../utils/eventHelpers";
 
 const formatEventDateRange = (startDate, endDate) => {
   if (!startDate && !endDate) return "Date unavailable";

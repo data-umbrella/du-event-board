@@ -6,31 +6,24 @@ import EventMap from "./components/EventMap";
 import EventCalendar from "./components/EventCalendar";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
-import {
-  parseISODate,
-  startOfDay,
-  eventOverlapsRange,
-} from "./utils/eventHelpers";
 
-function buildUniqueOptions(items) {
-  return [...new Set(items.filter(Boolean))].sort((left, right) =>
-    left.localeCompare(right),
-  );
+function parseISODate(dateString) {
+  if (!dateString) return null;
+  const [year, month, day] = dateString.split("-").map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+}
+
+function startOfDay(date) {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
 }
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
-  const [selectedCountry, setSelectedCountry] = useUrlState("country", "");
-  const [selectedState, setSelectedState] = useUrlState("state", "");
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
-  const [selectedTag, setSelectedTag] = useUrlState("tag", "");
-  const [selectedEventType, setSelectedEventType] = useUrlState(
-    "eventType",
-    "",
-  );
-  const [selectedCost, setSelectedCost] = useUrlState("cost", "");
-  const [currentPage, setCurrentPage] = useUrlState("page", "events");
   const [viewMode, setViewMode] = useUrlState("view", "list");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
@@ -43,11 +36,8 @@ export default function App() {
   const [selectedCost, setSelectedCost] = useUrlState("cost", "");
   const [featuredExpanded, setFeaturedExpanded] = useState(false);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [currentPage]);
-
   const [theme, setTheme] = useState(() => {
+    // Check if we are in a browser and if localStorage.getItem actually exists
     if (
       typeof window !== "undefined" &&
       window.localStorage &&
@@ -65,6 +55,7 @@ export default function App() {
       document.body.classList.remove("light-theme");
     }
 
+    // This line "records" the choice in the browser
     if (typeof localStorage !== "undefined" && localStorage.setItem) {
       localStorage.setItem("theme", theme);
     }
@@ -76,7 +67,6 @@ export default function App() {
   const handleDateFilterTypeChange = (nextType) => {
     setDateFilterType(nextType);
 
-    // Clear values from date modes that are no longer active.
     if (nextType !== "customDate") {
       setCustomDate("");
     }
@@ -87,48 +77,15 @@ export default function App() {
     }
   };
 
-  const countries = useMemo(
-    () => buildUniqueOptions(events.map((event) => event.country)),
-    [],
-  );
-
-  const states = useMemo(() => {
-    const visibleEvents = selectedCountry
-      ? events.filter((event) => event.country === selectedCountry)
-      : events;
-
-    return buildUniqueOptions(visibleEvents.map((event) => event.state));
-  }, [selectedCountry]);
-
   const regions = useMemo(() => {
-    const visibleEvents = selectedState
-      ? events.filter((event) => event.state === selectedState)
-      : selectedCountry
-        ? events.filter((event) => event.country === selectedCountry)
-        : events;
+    const unique = [...new Set(events.map((e) => e.region))];
+    return unique.sort();
+  }, []);
 
-    return buildUniqueOptions(visibleEvents.map((event) => event.region));
-  }, [selectedCountry, selectedState]);
-
-  const categories = useMemo(
-    () => buildUniqueOptions(events.map((event) => event.category)),
-    [],
-  );
-
-  const hashtags = useMemo(
-    () => buildUniqueOptions(events.flatMap((event) => event.tags || [])),
-    [],
-  );
-
-  const eventTypes = useMemo(
-    () => buildUniqueOptions(events.map((event) => event.event_type)),
-    [],
-  );
-
-  const costs = useMemo(
-    () => buildUniqueOptions(events.map((event) => event.cost)),
-    [],
-  );
+  const categories = useMemo(() => {
+    const unique = [...new Set(events.map((e) => e.category))];
+    return unique.sort();
+  }, []);
 
   const countries = useMemo(() => {
     const unique = [...new Set(events.map((e) => e.country || "Brazil"))];
@@ -163,6 +120,7 @@ export default function App() {
     const term = searchTerm.toLowerCase().trim();
 
     const today = startOfDay(new Date());
+
     const weekStart = new Date(today);
     const dayIndex = (today.getDay() + 6) % 7;
     weekStart.setDate(today.getDate() - dayIndex);
@@ -183,21 +141,15 @@ export default function App() {
       const eventEnd = parseISODate(event.endDate || event.date);
       if (!eventStart || !eventEnd) return false;
 
+      // Text search: title, description, tags
       const matchesSearch =
         !term ||
         event.title.toLowerCase().includes(term) ||
         event.description.toLowerCase().includes(term) ||
-        event.region.toLowerCase().includes(term) ||
-        event.state.toLowerCase().includes(term) ||
-        event.country.toLowerCase().includes(term) ||
-        event.event_type.toLowerCase().includes(term) ||
-        event.cost.toLowerCase().includes(term) ||
         (event.tags &&
           event.tags.some((tag) => tag.toLowerCase().includes(term)));
 
-      const matchesCountry =
-        !selectedCountry || event.country === selectedCountry;
-      const matchesState = !selectedState || event.state === selectedState;
+      // Region filter
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
 
       // Country filter
@@ -211,11 +163,6 @@ export default function App() {
       // Category filter
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
-      const matchesTag =
-        !selectedTag || (event.tags && event.tags.includes(selectedTag));
-      const matchesEventType =
-        !selectedEventType || event.event_type === selectedEventType;
-      const matchesCost = !selectedCost || event.cost === selectedCost;
 
       // Event type and cost filters
       const matchesEventType =
@@ -247,7 +194,6 @@ export default function App() {
             selectedRangeEnd &&
             selectedRangeStart > selectedRangeEnd
           ) {
-            // Keep invalid ranges from accidentally matching everything.
             matchesDate = false;
             break;
           }
@@ -277,8 +223,6 @@ export default function App() {
     });
   }, [
     searchTerm,
-    selectedCountry,
-    selectedState,
     selectedRegion,
     selectedCategory,
     selectedCountry,
@@ -293,25 +237,10 @@ export default function App() {
 
   return (
     <>
-      <Header
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        onNavigate={setCurrentPage}
-      />
+      <Header theme={theme} onToggleTheme={toggleTheme} />
       <SearchBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        selectedCountry={selectedCountry}
-        onCountryChange={(nextCountry) => {
-          setSelectedCountry(nextCountry);
-          setSelectedState("");
-          setSelectedRegion("");
-        }}
-        selectedState={selectedState}
-        onStateChange={(nextState) => {
-          setSelectedState(nextState);
-          setSelectedRegion("");
-        }}
         selectedRegion={selectedRegion}
         onRegionChange={setSelectedRegion}
         selectedCountry={selectedCountry}
@@ -332,8 +261,6 @@ export default function App() {
         onRangeStartChange={setRangeStart}
         rangeEnd={rangeEnd}
         onRangeEndChange={setRangeEnd}
-        countries={countries}
-        states={states}
         regions={regions}
         countries={countries}
         states={states}
@@ -381,8 +308,19 @@ export default function App() {
         </section>
       )}
       <main className="main" id="main-content">
-        <section className="results-toolbar" aria-label="Results summary">
-          <p className="main__results-info">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1.5rem",
+            paddingLeft: "0.25rem",
+          }}
+        >
+          <p
+            className="main__results-info"
+            style={{ marginBottom: 0, paddingLeft: 0 }}
+          >
             Showing{" "}
             <span className="main__results-count">
               {filteredEvents.length}
@@ -390,25 +328,90 @@ export default function App() {
             event{filteredEvents.length !== 1 ? "s" : ""}
           </p>
 
-          <div className="view-toggle">
+          <div
+            className="view-toggle"
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              background: "var(--bg-input)",
+              padding: "0.3rem",
+              borderRadius: "12px",
+              border: "1px solid var(--border-subtle)",
+            }}
+          >
             <button
-              type="button"
-              className={`view-toggle__button ${
-                viewMode === "list" ? "view-toggle__button--active" : ""
-              }`}
               onClick={() => setViewMode("list")}
-              aria-label="List"
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                background:
+                  viewMode === "list"
+                    ? "var(--accent-primary)"
+                    : "transparent",
+                color: viewMode === "list" ? "#fff" : "var(--text-muted)",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: "bold",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
               List
             </button>
             <button
-              type="button"
-              className={`view-toggle__button ${
-                viewMode === "map" ? "view-toggle__button--active" : ""
-              }`}
               onClick={() => setViewMode("map")}
-              aria-label="Map"
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                background:
+                  viewMode === "map" ? "var(--accent-primary)" : "transparent",
+                color: viewMode === "map" ? "#fff" : "var(--text-muted)",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: "bold",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
             >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+                <line x1="15" y1="3" x2="15" y2="21"></line>
+              </svg>
               Map
             </button>
             <button
@@ -449,7 +452,7 @@ export default function App() {
               Calendar
             </button>
           </div>
-        </section>
+        </div>
 
         {viewMode === "list" ? (
           <div className="events-grid" id="events-grid">
@@ -459,7 +462,7 @@ export default function App() {
               ))
             ) : (
               <div className="empty-state" id="empty-state">
-                <div className="empty-state__icon">Search</div>
+                <div className="empty-state__icon">🔎</div>
                 <h2 className="empty-state__title">No events found</h2>
                 <p className="empty-state__description">
                   Try adjusting your search terms or filters to find events
@@ -474,7 +477,18 @@ export default function App() {
           <EventCalendar events={filteredEvents} />
         )}
       </main>
-      <Footer onNavigate={setCurrentPage} />
+      <footer className="footer">
+        <p>
+          DU Event Board — Built with ❤️ by the community.{" "}
+          <a
+            href="https://github.com/osl-incubator/du-event-board"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Contribute on GitHub
+          </a>
+        </p>
+      </footer>
     </>
   );
 }
