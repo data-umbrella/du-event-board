@@ -674,6 +674,8 @@ span.event-list-row__title {
   position: relative;
   overflow: hidden;
   cursor: default;
+  display: flex;
+  flex-direction: column;
 }
 
 .event-card::before {
@@ -868,6 +870,8 @@ span.event-list-row__title {
   background: rgba(124, 92, 252, 0.08);
   border: 1px solid rgba(124, 92, 252, 0.15);
   transition: all var(--transition-base);
+  margin-top: auto;
+  align-self: flex-start;
 }
 
 .event-card__link:hover {
