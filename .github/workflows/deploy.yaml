@@ -30,17 +30,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install PyYAML
-        run: pip install pyyaml
-
-      - name: Generate events.json from YAML
-        run: python scripts/generate_events_json.py
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
