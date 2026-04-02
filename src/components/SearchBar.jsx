@@ -114,7 +114,7 @@ export default function SearchBar({
             </div>
           )}
 
-          {dateFilterType !== "customDate" && (
+          {dateFilterType === "customRange" && (
             <div
               className="search__date-group"
               style={{
@@ -140,8 +140,6 @@ export default function SearchBar({
                 value={rangeStart}
                 max={rangeEnd || undefined}
                 onChange={(e) => {
-                  if (dateFilterType !== "customRange")
-                    onDateFilterTypeChange("customRange");
                   onRangeStartChange(e.target.value);
                 }}
                 aria-label="Range start date"
@@ -169,8 +167,6 @@ export default function SearchBar({
                 value={rangeEnd}
                 min={rangeStart || undefined}
                 onChange={(e) => {
-                  if (dateFilterType !== "customRange")
-                    onDateFilterTypeChange("customRange");
                   onRangeEndChange(e.target.value);
                 }}
                 aria-label="Range end date"
@@ -188,4 +184,3 @@ export default function SearchBar({
     </div>
   );
 }
-
