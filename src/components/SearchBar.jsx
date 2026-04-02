@@ -205,7 +205,6 @@ export default function SearchBar({
             </div>
           )}
 
-          {/* Clear Filters Button */}
           {hasActiveFilters && (
             <button
               type="button"
