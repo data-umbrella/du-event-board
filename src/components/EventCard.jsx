@@ -1,11 +1,15 @@
 import { getEventStatus } from "../utils/eventHelpers";
+
 import { Link } from "react-router-dom";
 export default function EventCard({ event }) {
+
+
+export default function EventCard({ event, viewMode = "grid" }) {
+
   const status = getEventStatus(event.date);
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
     {
-      weekday: "short",
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -18,6 +22,40 @@ export default function EventCard({ event }) {
     ended: "status-badge--ended",
   };
 
+  if (viewMode === "list") {
+    return (
+      <article className="event-list-row" id={`event-${event.id}`}>
+        <div className="event-list-row__title-wrap">
+          {event.url ? (
+            <a
+              href={event.url}
+              className="event-list-row__title"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {event.title}
+            </a>
+          ) : (
+            <span className="event-list-row__title">{event.title}</span>
+          )}
+        </div>
+        <div className="event-list-row__right">
+          <span className="event-list-row__category">{event.category}</span>
+          {status !== "none" && (
+            <div
+              className={`status-badge ${statusMap[status]} event-list-row__status`}
+            >
+              {status === "live" && <span className="live-dot" />}
+              {status === "live" ? "Live" : status}
+            </div>
+          )}
+          <span className="event-list-row__date">{formattedDate}</span>
+        </div>
+      </article>
+    );
+  }
+
+  // Grid view (default)
   return (
     <Link
       to={`/event/${event.id}`}
@@ -40,6 +78,32 @@ export default function EventCard({ event }) {
             <span className="event-card__meta-icon">📍</span>
             <span>{event.location}</span>
           </div>
+
+        )}
+      </div>
+
+      <h2 className="event-card__title">{event.title}</h2>
+      <p className="event-card__description">{event.description}</p>
+
+      <div className="event-card__meta">
+        <div className="event-card__meta-item">
+          <span className="event-card__meta-icon" aria-hidden="true">
+            📅
+          </span>
+          <span>{formattedDate}</span>
+        </div>
+        <div className="event-card__meta-item">
+          <span className="event-card__meta-icon" aria-hidden="true">
+            🕐
+          </span>
+          <span>{event.time}</span>
+        </div>
+        <div className="event-card__meta-item">
+          <span className="event-card__meta-icon" aria-hidden="true">
+            📍
+          </span>
+          <span>{event.location}</span>
+
         </div>
 
         {event.tags && event.tags.length > 0 && (
