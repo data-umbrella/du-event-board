@@ -19,10 +19,8 @@ export default function EventCard({ event, viewMode = "grid" }) {
     ended: "status-badge--ended",
   };
 
-
   const hasSocials =
     event.socials && Object.values(event.socials).some(Boolean);
-
 
   if (viewMode === "list") {
     return (
@@ -87,19 +85,16 @@ export default function EventCard({ event, viewMode = "grid" }) {
         </div>
 
         <div className="event-card__meta-item">
-
           <span className="event-card__meta-icon">🕐</span>
           <span>{event.time || "Time TBD"}</span>
-=======
+          =======
           <span className="event-card__meta-icon" aria-hidden="true">
             🕐
           </span>
           <span>{event.time}</span>
-
         </div>
 
         <div className="event-card__meta-item">
-
           <span className="event-card__meta-icon">📍</span>
           <span>{event.location || "Location TBD"}</span>
         </div>
@@ -112,13 +107,12 @@ export default function EventCard({ event, viewMode = "grid" }) {
               ? `${event.capacity} spots`
               : "Unlimited"}
           </span>
-=======
+          =======
           <span className="event-card__meta-icon" aria-hidden="true">
             📍
           </span>
           <span>{event.location}</span>
- 
-    </div>
+        </div>
       </div>
 
       {event.tags && event.tags.length > 0 && (
