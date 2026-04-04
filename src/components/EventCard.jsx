@@ -4,14 +4,13 @@ import { FaGlobe, FaTwitter, FaLinkedin } from "react-icons/fa";
 export default function EventCard({ event, viewMode = "grid" }) {
   const status = getEventStatus(event.date);
 
-  const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
-  );
+  const formattedDate = event.date
+    ? new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Date TBD";
 
   const statusMap = {
     live: "status-badge--live",
@@ -22,6 +21,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
   const hasSocials =
     event.socials && Object.values(event.socials).some(Boolean);
 
+  // ✅ LIST VIEW
   if (viewMode === "list") {
     return (
       <article className="event-list-row" id={`event-${event.id}`}>
@@ -39,24 +39,28 @@ export default function EventCard({ event, viewMode = "grid" }) {
             <span className="event-list-row__title">{event.title}</span>
           )}
         </div>
+
         <div className="event-list-row__right">
           <span className="event-list-row__category">{event.category}</span>
+
           {status !== "none" && (
             <div
               className={`status-badge ${statusMap[status]} event-list-row__status`}
             >
               {status === "live" && <span className="live-dot" />}
-              {status === "live" ? "Live" : status}
+              {status === "live"
+                ? "Live"
+                : status.charAt(0).toUpperCase() + status.slice(1)}
             </div>
           )}
+
           <span className="event-list-row__date">{formattedDate}</span>
         </div>
       </article>
     );
   }
 
-  // Grid view (default)
-
+  // ✅ GRID VIEW
   return (
     <article className="event-card" id={`event-${event.id}`}>
       <div className="event-card__header">
@@ -65,7 +69,9 @@ export default function EventCard({ event, viewMode = "grid" }) {
         {status !== "none" && (
           <div className={`status-badge ${statusMap[status]}`}>
             {status === "live" && <span className="live-dot" />}
-            {status === "live" ? "Live Now" : status}
+            {status === "live"
+              ? "Live Now"
+              : status.charAt(0).toUpperCase() + status.slice(1)}
           </div>
         )}
       </div>
@@ -77,6 +83,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
       </p>
 
       <div className="event-card__meta">
+        {/* Date */}
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon" aria-hidden="true">
             📅
@@ -84,38 +91,37 @@ export default function EventCard({ event, viewMode = "grid" }) {
           <span>{formattedDate}</span>
         </div>
 
+        {/* Time */}
         <div className="event-card__meta-item">
-          <span className="event-card__meta-icon">🕐</span>
-          <span>{event.time || "Time TBD"}</span>
-          =======
           <span className="event-card__meta-icon" aria-hidden="true">
             🕐
           </span>
-          <span>{event.time}</span>
+          <span>{event.time || "Time TBD"}</span>
         </div>
 
+        {/* Location */}
         <div className="event-card__meta-item">
-          <span className="event-card__meta-icon">📍</span>
+          <span className="event-card__meta-icon" aria-hidden="true">
+            📍
+          </span>
           <span>{event.location || "Location TBD"}</span>
         </div>
 
-        {/* ✅ Capacity (fixed tests + safer logic) */}
+        {/* Capacity */}
         <div className="event-card__meta-item">
-          <span className="event-card__meta-icon">👥</span>
+          <span className="event-card__meta-icon" aria-hidden="true">
+            👥
+          </span>
           <span>
             {typeof event.capacity === "number"
               ? `${event.capacity} spots`
               : "Unlimited"}
           </span>
-          =======
-          <span className="event-card__meta-icon" aria-hidden="true">
-            📍
-          </span>
-          <span>{event.location}</span>
         </div>
       </div>
 
-      {event.tags && event.tags.length > 0 && (
+      {/* Tags */}
+      {event.tags?.length > 0 && (
         <div className="event-card__tags">
           {event.tags.map((tag, index) => (
             <span key={`${tag}-${index}`} className="event-card__tag">
@@ -125,6 +131,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
         </div>
       )}
 
+      {/* Actions */}
       <div className="event-card__actions">
         {event.url && (
           <a
@@ -133,8 +140,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Learn more
-            <span className="event-card__link-arrow">→</span>
+            Learn more <span className="event-card__link-arrow">→</span>
           </a>
         )}
 
@@ -146,7 +152,6 @@ export default function EventCard({ event, viewMode = "grid" }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Website"
-                title="Website"
                 className="event-card__social-link"
               >
                 <FaGlobe />
@@ -159,7 +164,6 @@ export default function EventCard({ event, viewMode = "grid" }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter"
-                title="Twitter"
                 className="event-card__social-link"
               >
                 <FaTwitter />
@@ -172,7 +176,6 @@ export default function EventCard({ event, viewMode = "grid" }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                title="LinkedIn"
                 className="event-card__social-link"
               >
                 <FaLinkedin />
