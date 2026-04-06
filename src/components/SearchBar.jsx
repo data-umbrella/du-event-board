@@ -48,12 +48,15 @@ export default function SearchBar({
       <div className="search__container">
         <div className="search__row search__row--primary">
           <div className="search__input-wrapper">
-            <span className="search__icon">🔍</span>
+            <span className="search__icon" aria-hidden="true">
+              🔍
+            </span>
             <input
               id="search-input"
               type="text"
               className="search__input"
               placeholder="Search events by name, description, or tags..."
+              aria-label="Search events"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
             />
@@ -65,6 +68,7 @@ export default function SearchBar({
               className="search__select"
               value={selectedRegion}
               onChange={(e) => onRegionChange(e.target.value)}
+              aria-label="Filter by region"
             >
               <option value="">All Regions</option>
               {regions.map((region) => (
@@ -81,6 +85,7 @@ export default function SearchBar({
               className="search__select"
               value={selectedCategory}
               onChange={(e) => onCategoryChange(e.target.value)}
+              aria-label="Filter by category"
             >
               <option value="">All Categories</option>
               {categories.map((category) => (
