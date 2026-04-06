@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "predev": "python3 scripts/generate_events_json.py || python scripts/generate_events_json.py",
+    "predev": "python scripts/generate_events_json.py",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
