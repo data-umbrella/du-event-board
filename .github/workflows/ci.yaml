@@ -97,13 +97,21 @@ jobs:
       - name: Install PyYAML
         run: pip install pyyaml
 
-      - name: Validate and generate events
+      - name: Backup committed events.json
+        run: cp src/data/events.json src/data/events.json.committed
+
+      - name: Validate and re-generate events.json
         run: python scripts/generate_events_json.py
 
       - name: Verify generated JSON matches committed JSON
         run: |
-          if ! diff -q src/data/events.json src/data/events.json.bak 2>/dev/null; then
-            echo "✅ events.json generated successfully"
+          if diff -q src/data/events.json src/data/events.json.committed > /dev/null; then
+            echo "✅ events.json is up to date"
+          else
+            echo "❌ events.json is out of sync with events.yaml!"
+            echo "Please run 'npm run generate' and commit the updated src/data/events.json"
+            diff src/data/events.json src/data/events.json.committed
+            exit 1
           fi
 
   semantic-pr-title:
