@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
@@ -36,6 +36,13 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
+  const [radiusStr, setRadiusStr] = useUrlState("radius", "50");
+  const searchRadius = parseInt(radiusStr, 10) || 50;
+  const [mapNotification, setMapNotification] = useState(null);
+  const [userCoords, setUserCoords] = useState(null);
+  const [proximityActive, setProximityActive] = useState(false);
+
+  // (Proximity reset logic removed to keep the visual indicator stable during search)
 
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
@@ -61,6 +68,91 @@ export default function App() {
       localStorage.setItem("theme", theme);
     }
   }, [theme]);
+
+  // Geolocation "Near Me" Logic
+  const handleNearMe = useCallback(
+    (targetRadius) => {
+      if (typeof navigator !== "undefined" && navigator.geolocation) {
+        // Use the passed radius or fallback to current searchRadius
+        const activeRadius = targetRadius || searchRadius;
+
+        // If a new radius was explicitly passed, sync it to global state
+        if (targetRadius && targetRadius !== searchRadius) {
+          setRadiusStr(targetRadius.toString());
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserCoords({ lat: latitude, lng: longitude });
+
+            // Use the current filtered events list to count nearby matches for accurate feedback
+            const currentFiltered = events.filter((e) => {
+              // Same logic as filteredEvents useMemo but for the specific moment of calculation
+              const eventDate = parseISODate(e.date);
+              if (!eventDate) return false;
+              const matchesSearch =
+                !searchTerm ||
+                e.title
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase().trim()) ||
+                e.description
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase().trim());
+              const matchesRegion =
+                !selectedRegion || e.region === selectedRegion;
+              const matchesCategory =
+                !selectedCategory || e.category === selectedCategory;
+              // Date matching simplified for the quick count
+              return matchesSearch && matchesRegion && matchesCategory;
+            });
+
+            let count = 0;
+            const radiusDeg = activeRadius / 111;
+            const maxDistSq = radiusDeg * radiusDeg;
+
+            currentFiltered.forEach((event) => {
+              if (event.lat && event.lng) {
+                const d2 =
+                  Math.pow(event.lat - latitude, 2) +
+                  Math.pow(event.lng - longitude, 2);
+
+                if (d2 <= maxDistSq) {
+                  count++;
+                }
+              }
+            });
+
+            setProximityActive(true);
+            setMapNotification({
+              message: `Found ${count} event${count !== 1 ? "s" : ""} within ${activeRadius}km!`,
+              type: "success",
+            });
+            setTimeout(() => setMapNotification(null), 5000);
+          },
+          (error) => {
+            console.debug("Geolocation was denied or failed:", error);
+            setMapNotification({
+              message: "Location access denied or failed.",
+              type: "error",
+            });
+            setTimeout(() => setMapNotification(null), 5000);
+          },
+          { timeout: 10000 },
+        );
+      }
+    },
+    [searchRadius, setSelectedRegion, setRadiusStr],
+  );
+
+  useEffect(() => {
+    // Only attempt to auto-locate if no region is currently selected
+    if (!selectedRegion) {
+      // handleNearMe(); // Disabled automatic geolocation on load
+    }
+    // We only want this once on mount/load if empty
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleTheme = () =>
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
@@ -415,7 +507,16 @@ export default function App() {
             )}
           </div>
         ) : (
-          <EventMap events={filteredEvents} />
+          <EventMap
+            events={filteredEvents}
+            theme={theme}
+            onNearMe={handleNearMe}
+            searchRadius={searchRadius}
+            onRadiusChange={(val) => setRadiusStr(val.toString())}
+            notification={mapNotification}
+            userCoords={userCoords}
+            proximityActive={proximityActive}
+          />
         )}
       </main>
       <Footer onNavigate={setCurrentPage} />
