@@ -24,15 +24,15 @@ export default function EventDetail() {
     ended: "status-badge--ended",
   };
 
-  const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
-    "en-US",
-    {
-      weekday: "short",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
-  );
+  const formattedDate =
+    event.date && !isNaN(new Date(event.date))
+      ? new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {
+          weekday: "short",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })
+      : "Date TBD";
 
   return (
     <div style={{ maxWidth: "900px", margin: "2rem auto", padding: "1rem" }}>
