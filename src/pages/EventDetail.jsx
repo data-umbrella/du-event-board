@@ -111,43 +111,6 @@ export default function EventDetail() {
         </div>
 
         {/* 🔗 CTA BUTTON */}
-        {event.url && (
-          <a
-            href={event.url}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              display: "inline-block",
-              marginTop: "2rem",
-              padding: "12px 18px",
-              background: "#8b5cf6",
-              color: "white",
-              borderRadius: "10px",
-              textDecoration: "none",
-              fontWeight: "bold",
-              transition: "0.2s ease",
-              cursor: "pointer",
-            }}
-            onMouseOver={(e) => {
-              e.target.style.opacity = "0.8";
-              e.target.style.transform = "scale(1.03)";
-            }}
-            onMouseOut={(e) => {
-              e.target.style.opacity = "1";
-              e.target.style.transform = "scale(1)";
-            }}
-            onFocus={(e) => {
-              e.target.style.opacity = "0.8";
-              e.target.style.transform = "scale(1.03)";
-            }}
-            onBlur={(e) => {
-              e.target.style.opacity = "1";
-              e.target.style.transform = "scale(1)";
-            }}
-          >
-            Join / Register →
-          </a>
-        )}
       </div>
     </div>
   );
