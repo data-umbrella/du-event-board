@@ -11,7 +11,14 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0 });
+    if (
+      typeof window !== "undefined" &&
+      typeof window.scrollTo === "function"
+    ) {
+      try {
+        window.scrollTo({ top: 0 });
+      } catch {}
+    }
   }, [pathname]);
 
   return null;
@@ -19,9 +26,15 @@ function ScrollToTop() {
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") || "dark";
-    }
+    try {
+      if (
+        typeof window !== "undefined" &&
+        window.localStorage &&
+        typeof window.localStorage.getItem === "function"
+      ) {
+        return window.localStorage.getItem("theme") || "dark";
+      }
+    } catch {}
     return "dark";
   });
 
@@ -32,7 +45,15 @@ export default function App() {
       document.body.classList.remove("light-theme");
     }
 
-    localStorage.setItem("theme", theme);
+    try {
+      if (
+        typeof window !== "undefined" &&
+        window.localStorage &&
+        typeof window.localStorage.setItem === "function"
+      ) {
+        window.localStorage.setItem("theme", theme);
+      }
+    } catch {}
   }, [theme]);
 
   const toggleTheme = () =>
