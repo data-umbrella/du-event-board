@@ -87,8 +87,8 @@ export default function Footer({ onNavigate }) {
             <button
               onClick={() =>
                 onNavigate
-                  ? onNavigate("events")
-                  : (window.location.href = "/")
+                  ? onNavigate("contact")
+                  : (window.location.href = "/contact")
               }
               className="footer__internal-link"
             >

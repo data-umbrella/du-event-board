@@ -6,6 +6,7 @@ import EventMap from "./components/EventMap";
 import Footer from "./components/Footer";
 import AboutUs from "./components/AboutUs";
 import Sponsors from "./components/Sponsors";
+import Contact from "./components/Contact";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import BackToTop from "./components/BackToTop";
@@ -468,6 +469,8 @@ export default function App() {
         <AboutUs />
       ) : currentPage === "sponsors" ? (
         <Sponsors />
+      ) : currentPage === "contact" ? (
+        <Contact />
       ) : null}
       <Footer onNavigate={setCurrentPage} />
       <BackToTop />
