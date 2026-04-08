@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import Fuse from "fuse.js";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import EventCard from "./components/EventCard";
@@ -9,6 +10,20 @@ import Sponsors from "./components/Sponsors";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import BackToTop from "./components/BackToTop";
+
+const fuseOptions = {
+  keys: [
+    { name: "title", weight: 0.9 },
+    { name: "tags", weight: 0.7 },
+    { name: "description", weight: 0.4 },
+  ],
+  threshold: 0.3,
+  location: 0,
+  distance: 100,
+  minMatchCharLength: 1,
+};
+
+const fuse = new Fuse(events, fuseOptions);
 
 function parseISODate(dateString) {
   if (!dateString) return null;
@@ -120,25 +135,49 @@ export default function App() {
     const selectedRangeStart = parseISODate(rangeStart);
     const selectedRangeEnd = parseISODate(rangeEnd);
 
-    return events.filter((event) => {
+    const baseEvents = (() => {
+      if (!term) return events;
+
+      // 1. Exact Substring/Prefix matches always come first
+      const exactMatches = events
+        .map((event) => {
+          let score = 0;
+          const title = event.title.toLowerCase();
+          const description = event.description.toLowerCase();
+          const tags = event.tags
+            ? event.tags.map((t) => t.toLowerCase())
+            : [];
+
+          if (title.startsWith(term)) score += 100;
+          else if (title.includes(term)) score += 50;
+
+          if (tags.some((t) => t.startsWith(term))) score += 30;
+          else if (tags.some((t) => t.includes(term))) score += 10;
+
+          if (description.includes(term)) score += 5;
+
+          return { ...event, _score: score };
+        })
+        .filter((event) => event._score > 0)
+        .sort((a, b) => b._score - a._score);
+
+      // 2. Fuzzy matches for longer queries to handle typos
+      // Only do fuzzy if term is long enough AND if we didn't find many exact matches
+      if (term.length >= 3) {
+        const fuzzyResults = fuse
+          .search(term)
+          .map((r) => r.item)
+          .filter((item) => !exactMatches.find((e) => e.id === item.id));
+
+        return [...exactMatches, ...fuzzyResults];
+      }
+
+      return exactMatches;
+    })();
+
+    return baseEvents.filter((event) => {
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
-
-      // Text search: title, description, tags
-      const matchesSearch =
-        !term ||
-        String(event.title || "")
-          .toLowerCase()
-          .includes(term) ||
-        String(event.description || "")
-          .toLowerCase()
-          .includes(term) ||
-        (Array.isArray(event.tags) &&
-          event.tags.some((tag) =>
-            String(tag || "")
-              .toLowerCase()
-              .includes(term),
-          ));
 
       // Region filter
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
@@ -187,7 +226,7 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesSearch && matchesRegion && matchesCategory && matchesDate;
+      return matchesRegion && matchesCategory && matchesDate;
     });
   }, [
     searchTerm,
