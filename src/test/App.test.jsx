@@ -50,9 +50,7 @@ describe("App", () => {
     expect(
       screen.getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText("React Workshop - São Paulo"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
   });
 
   it("shows the total events count", () => {

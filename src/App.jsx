@@ -246,27 +246,23 @@ export default function App() {
     rangeEnd,
   ]);
 
-const sortedEvents = useMemo(() => {
-  if (!sortOrder || sortOrder === "default") {
-    return filteredEvents; // keep original order
-  }
+  const sortedEvents = useMemo(() => {
+    if (!sortOrder || sortOrder === "default") {
+      return filteredEvents; // keep original order
+    }
 
-  const eventsCopy = [...filteredEvents];
+    const eventsCopy = [...filteredEvents];
 
-  if (sortOrder === "date") {
-    return eventsCopy.sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
-  }
+    if (sortOrder === "date") {
+      return eventsCopy.sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
 
-  if (sortOrder === "name") {
-    return eventsCopy.sort((a, b) =>
-      a.title.localeCompare(b.title)
-    );
-  }
+    if (sortOrder === "name") {
+      return eventsCopy.sort((a, b) => a.title.localeCompare(b.title));
+    }
 
-  return filteredEvents;
-}, [filteredEvents, sortOrder]);
+    return filteredEvents;
+  }, [filteredEvents, sortOrder]);
 
   const groupedEvents = useMemo(() => {
     if (viewMode !== "list") return null;
