@@ -179,19 +179,16 @@ export default function App() {
       const eventDate = parseISODate(event.date);
       if (!eventDate) return false;
 
-<<<<<<< HEAD
       // Region filter
-=======
       const matchesSearch =
-        !term ||
-        String(event.title || "").toLowerCase().includes(term) ||
-        String(event.description || "").toLowerCase().includes(term) ||
-        (Array.isArray(event.tags) &&
-          event.tags.some((tag) =>
-            String(tag || "").toLowerCase().includes(term),
-          ));
+      !term ||
+      String(event.title || "").toLowerCase().includes(term) ||
+      String(event.description || "").toLowerCase().includes(term) ||
+      (Array.isArray(event.tags) &&
+      event.tags.some((tag) =>
+      String(tag).toLowerCase().includes(term)
+      ));
 
->>>>>>> dff1bae (Add event sorting functionality with date and name options)
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
       const matchesCategory =
         !selectedCategory || event.category === selectedCategory;
