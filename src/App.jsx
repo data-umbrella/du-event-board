@@ -28,12 +28,16 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
   const [currentPage, setCurrentPage] = useUrlState("page", "events");
+
   const [viewMode, setViewMode] = useUrlState("view", "grid");
+
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+
+  const [viewMode, setViewMode] = useUrlState("view", "grid");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -223,6 +227,98 @@ export default function App() {
         onToggleTheme={toggleTheme}
         onNavigate={setCurrentPage}
       />
+
+      <SearchBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedRegion={selectedRegion}
+        onRegionChange={setSelectedRegion}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        dateFilterType={dateFilterType}
+        onDateFilterTypeChange={handleDateFilterTypeChange}
+        customDate={customDate}
+        onCustomDateChange={setCustomDate}
+        rangeStart={rangeStart}
+        onRangeStartChange={setRangeStart}
+        rangeEnd={rangeEnd}
+        onRangeEndChange={setRangeEnd}
+        regions={regions}
+        categories={categories}
+      />
+      <main className="main" id="main-content">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "1.5rem",
+            paddingLeft: "0.25rem",
+          }}
+        >
+          <p
+            className="main__results-info"
+            style={{ marginBottom: 0, paddingLeft: 0 }}
+          >
+            Showing{" "}
+            <span className="main__results-count">
+              {filteredEvents.length}
+            </span>{" "}
+            event{filteredEvents.length !== 1 ? "s" : ""}
+          </p>
+
+          <div
+            className="view-toggle"
+            style={{
+              display: "flex",
+              gap: "0.5rem",
+              background: "var(--bg-input)",
+              padding: "0.3rem",
+              borderRadius: "12px",
+              border: "1px solid var(--border-subtle)",
+            }}
+          >
+            <button
+              onClick={() => setViewMode("grid")}
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                background:
+                  viewMode === "grid"
+                    ? "var(--accent-primary)"
+                    : "transparent",
+                color: viewMode === "grid" ? "#fff" : "var(--text-muted)",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: "bold",
+                transition: "all 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+
       {currentPage === "events" ? (
         <>
           <SearchBar
@@ -246,6 +342,7 @@ export default function App() {
           <main className="main" id="main-content">
             <div
               className="view-header"
+
               style={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -276,6 +373,59 @@ export default function App() {
                   border: "1px solid var(--border-subtle)",
                 }}
               >
+
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+                <line x1="15" y1="3" x2="15" y2="21"></line>
+              </svg>
+              Map
+            </button>
+          </div>
+        </div>
+
+        {viewMode === "grid" ? (
+          <div className="events-grid" id="events-grid">
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map((event) => (
+                <EventCard key={event.id} event={event} viewMode="grid" />
+              ))
+            ) : (
+              <div className="empty-state" id="empty-state">
+                <div className="empty-state__icon">🔎</div>
+                <h2 className="empty-state__title">No events found</h2>
+                <p className="empty-state__description">
+                  Try adjusting your search terms or filters to find events
+                  near you.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : viewMode === "list" ? (
+          <div className="events-list" id="events-list">
+            {filteredEvents.length > 0 ? (
+              Object.entries(groupedEvents).map(([month, monthEvents]) => (
+                <div key={month} className="events-list__month-group">
+                  <h3 className="events-list__month-heading">{month}</h3>
+                  <div className="events-list__month-rows">
+                    {monthEvents.map((event) => (
+                      <EventCard
+                        key={event.id}
+                        event={event}
+                        viewMode="list"
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="empty-state" id="empty-state">
+                <div className="empty-state__icon">🔎</div>
+                <h2 className="empty-state__title">No events found</h2>
+                <p className="empty-state__description">
+                  Try adjusting your search terms or filters to find events
+                  near you.
+                </p>
+
                 <button
                   onClick={() => setViewMode("grid")}
                   style={{
@@ -391,6 +541,7 @@ export default function App() {
                   </svg>
                   Map
                 </button>
+
               </div>
             </div>
 
