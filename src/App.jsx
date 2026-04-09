@@ -24,16 +24,34 @@ function startOfDay(date) {
 }
 
 export default function App() {
-  const [searchTerm, setSearchTerm] = useUrlState("search", "");
-  const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
-  const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
-  const [currentPage, setCurrentPage] = useUrlState("page", "events");
-  const [viewMode, setViewMode] = useUrlState("view", "grid");
+  const [searchTerm, setSearchTerm] = useUrlState("search", "", {
+    history: "replace",
+  });
+  const [selectedRegion, setSelectedRegion] = useUrlState("region", "", {
+    history: "push",
+  });
+  const [selectedCategory, setSelectedCategory] = useUrlState("category", "", {
+    history: "push",
+  });
+  const [currentPage, setCurrentPage] = useUrlState("page", "events", {
+    history: "push",
+  });
+  const [viewMode, setViewMode] = useUrlState("view", "grid", {
+    history: "push",
+  });
 
-  const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
-  const [customDate, setCustomDate] = useUrlState("customDate", "");
-  const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
-  const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+  const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all", {
+    history: "push",
+  });
+  const [customDate, setCustomDate] = useUrlState("customDate", "", {
+    history: "push",
+  });
+  const [rangeStart, setRangeStart] = useUrlState("rangeStart", "", {
+    history: "push",
+  });
+  const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "", {
+    history: "push",
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
