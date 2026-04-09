@@ -3,6 +3,7 @@ import { getEventStatus } from "../utils/eventHelpers";
 export default function EventCard({ event, viewMode = "grid" }) {
   const status = getEventStatus(event.date);
 
+  // Safely format the date
   const formattedDate = event.date
     ? new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {
         weekday: "short",
@@ -18,7 +19,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
     ended: "status-badge--ended",
   };
 
-  // List view
+  // --- List View Rendering ---
   if (viewMode === "list") {
     return (
       <article className="event-list-row" id={`event-${event.id}`}>
@@ -55,10 +56,9 @@ export default function EventCard({ event, viewMode = "grid" }) {
     );
   }
 
-  // Grid view
+  // --- Grid View Rendering (Default) ---
   return (
     <article className="event-card" id={`event-${event.id}`}>
-      {/* Header */}
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 

@@ -25,12 +25,13 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
   const [currentPage, setCurrentPage] = useUrlState("page", "events");
-  const [viewMode, setViewMode] = useUrlState("view", "grid");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+
+  const [viewMode, setViewMode] = useUrlState("view", "grid");
 
   useEffect(() => {
     window.scrollTo(0, 0);
