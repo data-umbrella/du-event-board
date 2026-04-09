@@ -8,12 +8,6 @@ export default function Sponsors() {
       logo: "/du-event-board/ChanZuckerberg.png",
       url: "https://chanzuckerberg.com/",
     },
-    {
-      name: "Digital Ocean",
-      fullName: "Digital Ocean",
-      logo: "/du-event-board/Digitalocean.png",
-      url: "https://www.digitalocean.com/",
-    },
   ];
 
   return (

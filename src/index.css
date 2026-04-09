@@ -1348,8 +1348,8 @@ span.event-list-row__title {
 }
 
 .about-us__card-logo {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
   margin-bottom: 2rem;
   border-radius: var(--radius-md);
@@ -1563,14 +1563,16 @@ span.event-list-row__title {
 
 .sponsors__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 2.5rem;
   justify-content: center;
   align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .sponsor-card {
-  padding: 3rem;
+  padding: 2.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1579,6 +1581,8 @@ span.event-list-row__title {
   border-radius: var(--radius-lg);
   background: var(--bg-card);
   transition: all var(--transition-base);
+  max-width: 400px;
+  width: 100%;
 }
 
 .sponsor-card:hover {

@@ -15,56 +15,6 @@ export default function AboutUs() {
       },
       image: "https://github.com/reshamas.png",
     },
-    {
-      name: "Joe Torreggiani",
-      role: "Project Executive",
-      org: "SPEC",
-      links: {
-        github: "https://github.com/jtorreggiani",
-        linkedin: "https://www.linkedin.com/in/joetorreggiani/",
-      },
-      image: "https://github.com/jtorreggiani.png",
-    },
-    {
-      name: "Ilia de Leon",
-      role: "Design Lead",
-      org: "SPEC",
-      links: {
-        github: "https://github.com/iliadeleon",
-        linkedin: "https://www.linkedin.com/in/iliadeleon/",
-      },
-      image: "https://github.com/iliadeleon.png",
-    },
-    {
-      name: "Yoline Banerjee",
-      role: "Software Engineer",
-      org: "SPEC",
-      links: {
-        github: "https://github.com/YolineB",
-        linkedin: "https://www.linkedin.com/in/yolineb/",
-      },
-      image: "https://github.com/yolineb.png",
-    },
-    {
-      name: "Victoria Lo",
-      role: "Software Engineer",
-      org: "SPEC",
-      links: {
-        github: "https://github.com/victoriaklo",
-        linkedin: "https://www.linkedin.com/in/victoria-lo/",
-      },
-      image: "https://github.com/victoriaklo.png",
-    },
-    {
-      name: "Crystal Shamsi",
-      role: "Software Engineer",
-      org: "SPEC",
-      links: {
-        github: "https://github.com/crystallynnvoss",
-        linkedin: "https://www.linkedin.com/in/crystalshamsi/",
-      },
-      image: "https://github.com/crystallynnvoss.png",
-    },
   ];
 
   return (
@@ -75,8 +25,8 @@ export default function AboutUs() {
           This <strong>Data Events Board</strong> is a Data Umbrella
           initiative. This platform is for the community to share their events.
           In the spirit of open source, this event board has been built using
-          open source software (Python, Django, React) and the application code
-          is publicly available.
+          open source software (Python, React) and the application code is
+          publicly available.
         </p>
       </section>
 
@@ -105,11 +55,11 @@ export default function AboutUs() {
               You can support Data Umbrella&apos;s work by making a donation to
               the{" "}
               <a
-                href="https://opencollective.com/data-umbrella"
+                href="https://www.every.org/data-umbrella"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Data Umbrella Open Collective
+                Data Umbrella every.org
               </a>
               .
             </p>
@@ -140,52 +90,50 @@ export default function AboutUs() {
 
           <div className="about-us__card glass-card">
             <img
-              src="/du-event-board/SPEC.png"
-              alt="SPEC"
+              src="/du-event-board/OSL.png"
+              alt="Open Science Labs"
               className="about-us__card-logo"
             />
-            <h3 className="about-us__card-title">
-              Sustainable Progress & Equality Collective
-            </h3>
+            <h3 className="about-us__card-title">Open Science Labs</h3>
             <p className="about-us__card-text">
               <a
-                href="https://specollective.org/"
+                href="https://opensciencelabs.org/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Sustainable Progress & Equality Collective (SPEC)
+                Open Science Labs (OSL)
               </a>{" "}
-              is an open learning organization that empowers individuals to be
-              catalysts for positive change.
+              helps people learn, build, and contribute to impactful
+              open-source projects — mentored by a welcoming community.
             </p>
             <p className="about-us__card-text">
-              You can support SPEC&apos;s work by making a donation to the{" "}
+              You can support OSL&apos;s work by making a donation to the{" "}
               <a
-                href="https://opencollective.com/spec"
+                href="https://opencollective.com/osl/donate?interval"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                SPEC Open Collective
+                OSL Open Collective
               </a>
               .
             </p>
             <div className="about-us__card-socials">
               <a
-                href="https://specollective.org/"
+                href="https://opensciencelabs.org/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Globe size={20} />
               </a>
               <a
-                href="https://x.com/specollective"
+                href="https://x.com/opensciencelabs"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Twitter size={20} />
               </a>
               <a
-                href="https://www.linkedin.com/company/specollective/"
+                href="https://www.linkedin.com/company/open-science-labs/"
                 target="_blank"
                 rel="noopener noreferrer"
               >

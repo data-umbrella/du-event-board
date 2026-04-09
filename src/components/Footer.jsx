@@ -1,5 +1,5 @@
 import React from "react";
-import { ExternalLink, Github, Twitter } from "lucide-react";
+import { ExternalLink, Github, Linkedin } from "lucide-react";
 
 export default function Footer({ onNavigate }) {
   return (
@@ -28,13 +28,26 @@ export default function Footer({ onNavigate }) {
               <Github size={20} strokeWidth={1.5} />
             </a>
             <a
-              href="https://x.com/dataumbrella"
-              aria-label="Twitter"
+              href="https://bsky.app/profile/dataumbrella.org"
+              aria-label="Bluesky"
               className="footer__social-link"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Twitter size={20} strokeWidth={1.5} />
+              <img
+                src="/du-event-board/Bluesky.png"
+                alt="Bluesky"
+                style={{ width: "20px", height: "auto" }}
+              />
+            </a>
+            <a
+              href="https://www.linkedin.com/company/dataumbrella/?viewAsMember=true"
+              aria-label="LinkedIn"
+              className="footer__social-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Linkedin size={20} strokeWidth={1.5} />
             </a>
           </div>
         </div>
@@ -63,7 +76,7 @@ export default function Footer({ onNavigate }) {
 
           <div className="footer__column">
             <a
-              href="https://opencollective.com/data-umbrella"
+              href="https://www.every.org/data-umbrella"
               target="_blank"
               rel="noopener noreferrer"
               className="footer__external-link"
