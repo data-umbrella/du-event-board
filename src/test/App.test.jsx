@@ -1,3 +1,8 @@
+Object.defineProperty(window, "scrollTo", {
+  value: () => {},
+  writable: true,
+});
+
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "../App";
@@ -6,6 +11,11 @@ import events from "../data/events.json";
 
 describe("App", () => {
   beforeEach(() => {
+    Object.defineProperty(window, "scrollTo", {
+      value: vi.fn(),
+      writable: true,
+      configurable: true,
+    });
     vi.useFakeTimers();
     vi.setSystemTime(new Date(2026, 3, 15, 12, 0, 0)); // Apr 15, 2026 (local)
     // Clear the URL global state so tests don't leak into each other when reading window.location.search
@@ -175,7 +185,7 @@ describe("App", () => {
       screen.getByText("DevOps Meetup - Belo Horizonte"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("Rust Programming Intro - São Paulo"),
+      screen.queryByText("Rust Programming Intro - SÃ£o Paulo"),
     ).not.toBeInTheDocument();
   });
 

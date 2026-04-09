@@ -15,6 +15,8 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  sortOrder,
+  onSortOrderChange,
 }) {
   const isInvalidRange =
     dateFilterType === "customRange" &&
@@ -48,7 +50,7 @@ export default function SearchBar({
       <div className="search__container">
         <div className="search__row search__row--primary">
           <div className="search__input-wrapper">
-            <span className="search__icon">🔍</span>
+            <span className="search__icon">ðŸ”</span>
             <input
               id="search-input"
               type="text"
@@ -88,6 +90,20 @@ export default function SearchBar({
                   {category}
                 </option>
               ))}
+            </select>
+          </div>
+          <div className="search__select-wrapper">
+            <select
+              id="sort-select"
+              className="search__select"
+              value={sortOrder}
+              onChange={(e) => onSortOrderChange(e.target.value)}
+              aria-label="Sort events"
+            >
+              <option value="">Sort By</option>
+              <option value="date-asc">Date â†‘</option>
+              <option value="date-desc">Dateâ†“</option>
+              <option value="name">Name A-Z</option>
             </select>
           </div>
         </div>
@@ -172,7 +188,7 @@ export default function SearchBar({
                 className="search__date-separator"
                 style={{ color: "var(--text-muted)" }}
               >
-                —
+                â€”
               </span>
               <input
                 id="range-end-input"
@@ -212,7 +228,7 @@ export default function SearchBar({
               className="search__clear-btn"
               title="Clear all filters"
             >
-              <span className="search__clear-icon">✕</span>
+              <span className="search__clear-icon">âœ•</span>
               Clear Filters
             </button>
           )}
