@@ -1,0 +1,58 @@
+name: Archive Past Events
+
+on:
+  schedule:
+    # Runs weekly at 02:00 UTC
+    - cron: "0 2 * * 1"
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run archive script
+        id: archive
+        run: python scripts/archive_past_events.py
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet data/events.yaml data/past_events.yaml \
+            && echo "changed=false" >> $GITHUB_OUTPUT \
+            || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Open PR with archived events
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(data): archive past events [automated]"
+          branch: "chore/archive-past-events-${{ github.run_number }}"
+          title: "chore(data): archive past events [automated]"
+          body: |
+            ## Automated Event Archive
+
+            This PR was opened automatically by the `archive-events` workflow.
+
+            Events whose date has passed have been moved from `data/events.yaml`
+            to `data/past_events.yaml`.
+
+            Please review and merge to keep the live feed clean.
+          labels: automated, data
