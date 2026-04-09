@@ -40,8 +40,8 @@ function startOfDay(date) {
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useUrlState("search", "");
-  const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
-  const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
+  const [selectedRegion, setSelectedRegion] = useUrlState("region", []);
+  const [selectedCategory, setSelectedCategory] = useUrlState("category", []);
   const [currentPage, setCurrentPage] = useUrlState("page", "events");
   const [viewMode, setViewMode] = useUrlState("view", "grid");
 
@@ -180,11 +180,13 @@ export default function App() {
       if (!eventDate) return false;
 
       // Region filter
-      const matchesRegion = !selectedRegion || event.region === selectedRegion;
+      const matchesRegion =
+        selectedRegion.length === 0 || selectedRegion.includes(event.region);
 
       // Category filter
       const matchesCategory =
-        !selectedCategory || event.category === selectedCategory;
+        selectedCategory.length === 0 ||
+        selectedCategory.includes(event.category);
 
       // Date filter
       let matchesDate = true;
