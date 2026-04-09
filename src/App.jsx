@@ -469,7 +469,7 @@ export default function App() {
                   ))
                 ) : (
                   <div className="empty-state" id="empty-state">
-                    <div className="empty-state__icon">🔎</div>
+                    <div className="empty-state__icon">ðŸ”Ž</div>
                     <h2 className="empty-state__title">No events found</h2>
                     <button
                       onClick={resetFilters}
@@ -509,7 +509,7 @@ export default function App() {
                   )
                 ) : (
                   <div className="empty-state" id="empty-state">
-                    <div className="empty-state__icon">🔎</div>
+                    <div className="empty-state__icon">ðŸ”Ž</div>
                     <h2 className="empty-state__title">No events found</h2>
                     <button
                       onClick={resetFilters}

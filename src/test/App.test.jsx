@@ -45,7 +45,7 @@ describe("App", () => {
     expect(
       screen.getByText("Python Meetup - Porto Alegre"),
     ).toBeInTheDocument();
-    expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
+    expect(screen.getByText("React Workshop - SÃ£o Paulo")).toBeInTheDocument();
   });
 
   it("shows the total events count", () => {
@@ -71,7 +71,7 @@ describe("App", () => {
       screen.getByText("Data Science Bootcamp - Rio de Janeiro"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("React Workshop - São Paulo"),
+      screen.queryByText("React Workshop - SÃ£o Paulo"),
     ).not.toBeInTheDocument();
   });
 
@@ -88,7 +88,7 @@ describe("App", () => {
       screen.getByText("UX Design Workshop - Porto Alegre"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("React Workshop - São Paulo"),
+      screen.queryByText("React Workshop - SÃ£o Paulo"),
     ).not.toBeInTheDocument();
   });
 
@@ -129,10 +129,10 @@ describe("App", () => {
     setDateFilter("upcoming");
 
     expect(
-      screen.getByText("Rust Programming Intro - São Paulo"),
+      screen.getByText("Rust Programming Intro - SÃ£o Paulo"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Community Hackathon - Florianópolis"),
+      screen.getByText("Community Hackathon - FlorianÃ³polis"),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("UX Design Workshop - Porto Alegre"),
@@ -144,10 +144,10 @@ describe("App", () => {
     setDateFilter("thisWeek");
 
     expect(
-      screen.getByText("Rust Programming Intro - São Paulo"),
+      screen.getByText("Rust Programming Intro - SÃ£o Paulo"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("Community Hackathon - Florianópolis"),
+      screen.queryByText("Community Hackathon - FlorianÃ³polis"),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByText("UX Design Workshop - Porto Alegre"),
@@ -162,7 +162,7 @@ describe("App", () => {
       screen.getByText("DevOps Meetup - Belo Horizonte"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Community Hackathon - Florianópolis"),
+      screen.getByText("Community Hackathon - FlorianÃ³polis"),
     ).toBeInTheDocument();
     expect(
       screen.queryByText("Python Meetup - Porto Alegre"),
@@ -180,7 +180,7 @@ describe("App", () => {
       screen.getByText("DevOps Meetup - Belo Horizonte"),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText("Rust Programming Intro - São Paulo"),
+      screen.queryByText("Rust Programming Intro - SÃ£o Paulo"),
     ).not.toBeInTheDocument();
   });
 
@@ -202,11 +202,11 @@ describe("App", () => {
       screen.getByText("UX Design Workshop - Porto Alegre"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Rust Programming Intro - São Paulo"),
+      screen.getByText("Rust Programming Intro - SÃ£o Paulo"),
     ).toBeInTheDocument();
 
     expect(
-      screen.queryByText("Community Hackathon - Florianópolis"),
+      screen.queryByText("Community Hackathon - FlorianÃ³polis"),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByText("Data Science Bootcamp - Rio de Janeiro"),
