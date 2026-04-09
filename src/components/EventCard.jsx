@@ -3,6 +3,7 @@ import { getEventStatus } from "../utils/eventHelpers";
 export default function EventCard({ event, viewMode = "grid" }) {
   const status = getEventStatus(event.date);
 
+
   // Safely format the date
   const formattedDate = event.date
     ? new Date(event.date + "T00:00:00").toLocaleDateString("en-US", {
@@ -13,13 +14,23 @@ export default function EventCard({ event, viewMode = "grid" }) {
       })
     : "Date TBD";
 
+  const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    },
+  );
+
+
   const statusMap = {
     live: "status-badge--live",
     upcoming: "status-badge--upcoming",
     ended: "status-badge--ended",
   };
 
-  // --- List View Rendering ---
+
   if (viewMode === "list") {
     return (
       <article className="event-list-row" id={`event-${event.id}`}>
@@ -38,6 +49,11 @@ export default function EventCard({ event, viewMode = "grid" }) {
           )}
         </div>
 
+
+        <div className="event-list-row__right">
+          <span className="event-list-row__category">{event.category}</span>
+
+
         <div className="event-list-row__right">
           <span className="event-list-row__category">{event.category}</span>
 
@@ -50,13 +66,19 @@ export default function EventCard({ event, viewMode = "grid" }) {
             </div>
           )}
 
+
+
           <span className="event-list-row__date">{formattedDate}</span>
         </div>
       </article>
     );
   }
 
+
   // --- Grid View Rendering (Default) ---
+
+  // Grid view (default)
+
   return (
     <article className="event-card" id={`event-${event.id}`}>
       <div className="event-card__header">
@@ -88,7 +110,11 @@ export default function EventCard({ event, viewMode = "grid" }) {
           <span className="event-card__meta-icon" aria-hidden="true">
             🕐
           </span>
+
           <span>{event.time || "Time TBD"}</span>
+
+          <span>{event.time}</span>
+
         </div>
 
         <div className="event-card__meta-item">
@@ -100,6 +126,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
 
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon" aria-hidden="true">
+
             🎟️
           </span>
           <span>
@@ -107,6 +134,11 @@ export default function EventCard({ event, viewMode = "grid" }) {
               ? `${event.capacity} spots`
               : "Unlimited"}
           </span>
+
+            📍
+          </span>
+          <span>{event.location}</span>
+
         </div>
       </div>
 
