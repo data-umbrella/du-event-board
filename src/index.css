@@ -759,6 +759,7 @@ span.event-list-row__title {
   display: inline-block;
   font-size: 0.7rem;
   font-weight: 600;
+  align-self: flex-start;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--accent-secondary);
@@ -918,6 +919,8 @@ span.event-list-row__title {
   gap: 0.5rem;
   font-size: 0.85rem;
   font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
   color: var(--accent-primary);
   text-decoration: none;
   padding: 0.5rem 1rem;
@@ -941,6 +944,54 @@ span.event-list-row__title {
 
 .event-card__link:hover .event-card__link-arrow {
   transform: translateX(3px);
+}
+
+.moreInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: auto;
+  padding-top: 12px;
+  gap: 10px;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.socialIcons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-input);
+
+  transition: all 0.25s ease;
+}
+
+.socialIcons a:hover {
+  background: var(--bg-input-focus);
+  border-color: var(--border-accent);
+
+  transform: translateY(-2px);
+}
+
+.socialIcons svg {
+  color: var(--text-primary);
+  width: 16px;
+  height: 16px;
+}
+
+.socialIcons a:hover svg {
+  color: var(--accent-secondary);
 }
 
 /* ===================================
