@@ -135,7 +135,7 @@ export default function SearchBar({
             </div>
           )}
 
-          {dateFilterType !== "customDate" && (
+          {dateFilterType === "customRange" && (
             <div
               className="search__date-group"
               style={{
