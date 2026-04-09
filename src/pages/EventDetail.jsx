@@ -104,12 +104,6 @@ export default function EventDetail() {
           </div>
         )}
 
-        {/* 👥 CAPACITY */}
-        <div style={{ marginTop: "1.5rem", fontWeight: "bold" }}>
-          👥 Capacity:{" "}
-          {event.capacity ? `${event.capacity} spots` : "Unlimited"}
-        </div>
-
         {/* 🔗 CTA BUTTON */}
       </div>
     </div>
