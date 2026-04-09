@@ -147,14 +147,8 @@ export default function SearchBar({
             >
               <input
                 id="range-start-input"
-                type={rangeStart ? "date" : "text"}
+                type="date"
                 placeholder="Start Date"
-                onFocus={(e) => {
-                  e.target.type = "date";
-                }}
-                onBlur={(e) => {
-                  if (!e.target.value) e.target.type = "text";
-                }}
                 className={`search__date-input search__select ${
                   isInvalidRange ? "search__date-input--invalid" : ""
                 }`}
@@ -176,14 +170,8 @@ export default function SearchBar({
               </span>
               <input
                 id="range-end-input"
-                type={rangeEnd ? "date" : "text"}
+                type="date"
                 placeholder="End Date"
-                onFocus={(e) => {
-                  e.target.type = "date";
-                }}
-                onBlur={(e) => {
-                  if (!e.target.value) e.target.type = "text";
-                }}
                 className={`search__date-input search__select ${
                   isInvalidRange ? "search__date-input--invalid" : ""
                 }`}
