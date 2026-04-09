@@ -181,13 +181,15 @@ export default function App() {
 
       // Region filter
       const matchesSearch =
-      !term ||
-      String(event.title || "").toLowerCase().includes(term) ||
-      String(event.description || "").toLowerCase().includes(term) ||
-      (Array.isArray(event.tags) &&
-      event.tags.some((tag) =>
-      String(tag).toLowerCase().includes(term)
-      ));
+        !term ||
+        String(event.title || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(event.description || "")
+          .toLowerCase()
+          .includes(term) ||
+        (Array.isArray(event.tags) &&
+          event.tags.some((tag) => String(tag).toLowerCase().includes(term)));
 
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
       const matchesCategory =
