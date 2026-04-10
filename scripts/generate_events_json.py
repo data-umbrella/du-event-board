@@ -6,15 +6,17 @@ summary: |-
   that the React frontend consumes.
 """
 
+from __future__ import annotations
+
 import json
 import os
 import sys
 import time
-import urllib.request
 import urllib.parse
-from typing import Any
+import urllib.request
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import yaml  # type: ignore
 
@@ -27,7 +29,42 @@ REQUIRED_FIELDS = [
     "location",
     "region",
     "category",
+    "url",
+    "tags",
 ]
+
+# Schema-like dict (JSON-Schema-shaped); validated in code below — same idea as
+# douki's schema-driven validation, without requiring jsonschema at runtime.
+EVENT_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "required": REQUIRED_FIELDS,
+    "properties": {
+        # Base fields
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "description": {"type": "string"},
+        "date": {"type": "string", "format": "date"},
+        "time": {"type": "string", "format": "time"},
+        "location": {"type": "string"},
+        "region": {"type": "string"},
+        "category": {"type": "string"},
+        "url": {"type": "string", "format": "url"},
+        "tags": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+        # Optional fields for richer filters/views
+        "event_type": {
+            "type": "string",
+            "enum": ["online", "in_person", "hybrid"],
+        },
+        "cost": {"type": "string", "enum": ["free", "paid"]},
+        "start_date": {"type": "string", "format": "date"},
+        "end_date": {"type": "string", "format": "date"},
+        "org_logo": {"type": "string", "format": "url"},
+    },
+}
+
+OPTIONAL_DATE_FIELDS = {"start_date", "end_date"}
+OPTIONAL_URL_FIELDS = {"org_logo"}
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 INPUT_FILE = PROJECT_ROOT / "data" / "events.yaml"
@@ -118,7 +155,25 @@ def geocode_location(location_str: str) -> tuple[float, float] | None:
     return None
 
 
-def validate_event(event: dict[str, Any], index: int) -> list[str]:
+def _is_http_url(value: str) -> bool:
+    """
+    title: Return True if value looks like an http(s) URL.
+    parameters:
+      value:
+        type: str
+    returns:
+      type: bool
+    """
+    try:
+        p = urllib.parse.urlparse(value)
+        return p.scheme in {"http", "https"} and bool(p.netloc)
+    except Exception:
+        return False
+
+
+def validate_event(
+    event: dict[str, Any], index: int, seen_ids: set[str]
+) -> list[str]:
     """
     title: Validate a single event entry.
     parameters:
@@ -126,37 +181,126 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
         type: dict[str, Any]
       index:
         type: int
+      seen_ids:
+        type: set[str]
     returns:
       type: list[str]
     """
-    errors = []
+    errors: list[str] = []
+    props: dict[str, Any] = EVENT_SCHEMA["properties"]
+
+    label = f"Event #{index}"
+    if event.get("id"):
+        label = f"Event id={event.get('id')}"
+    elif event.get("title"):
+        label = f"Event '{event.get('title')}'"
 
     for field in REQUIRED_FIELDS:
         if field not in event or not event[field]:
-            errors.append(f"Event #{index}: Missing required field '{field}'")
+            errors.append(f"{label}: Missing required field '{field}'")
 
-    # Validate date format
-    if "date" in event:
+    if event.get("id"):
+        event_id = str(event["id"])
+        if event_id in seen_ids:
+            errors.append(f"{label}: Duplicate id '{event_id}'")
+        else:
+            seen_ids.add(event_id)
+
+    if event.get("date"):
         try:
             if isinstance(event["date"], datetime):
                 event["date"] = event["date"].strftime("%Y-%m-%d")
             datetime.strptime(str(event["date"]), "%Y-%m-%d")
         except ValueError:
             errors.append(
-                f"Event #{index}: Invalid date format '{event['date']}' (expected YYYY-MM-DD)"
+                f"{label}: Invalid date format '{event['date']}' (expected YYYY-MM-DD)"
             )
 
-    # Validate time format
-    if "time" in event:
+    if event.get("time"):
         try:
-            # Handle time objects if PyYAML parsed them
             if not isinstance(event["time"], str):
                 event["time"] = event["time"].strftime("%H:%M")
-            datetime.strptime(event["time"], "%H:%M")
+            datetime.strptime(str(event["time"]), "%H:%M")
         except ValueError:
             errors.append(
-                f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
+                f"{label}: Invalid time format '{event['time']}' (expected HH:MM)"
             )
+
+    def _validate_format(field: str, value: Any) -> None:
+        """
+        title: Validate a field value using EVENT_SCHEMA format rules.
+        parameters:
+          field:
+            type: str
+          value:
+            type: Any
+        """
+        schema = props.get(field, {})
+        fmt = schema.get("format")
+        if fmt == "date":
+            try:
+                datetime.strptime(str(value), "%Y-%m-%d")
+            except ValueError:
+                errors.append(
+                    f"{label}: Invalid {field} '{value}' (expected YYYY-MM-DD)"
+                )
+        elif fmt == "time":
+            try:
+                datetime.strptime(str(value), "%H:%M")
+            except ValueError:
+                errors.append(
+                    f"{label}: Invalid {field} '{value}' (expected HH:MM)"
+                )
+        elif fmt == "url":
+            if not _is_http_url(str(value)):
+                errors.append(
+                    f"{label}: Invalid {field} '{value}' (expected http(s) URL)"
+                )
+
+    # tags (required field; structure from schema)
+    if "tags" in props and "tags" in event:
+        tags = event.get("tags")
+        tag_schema = props.get("tags", {})
+        min_items = tag_schema.get("minItems", 1)
+        if (
+            not isinstance(tags, list)
+            or len(tags) < min_items
+            or not all(isinstance(t, str) and t.strip() for t in tags)
+        ):
+            errors.append(
+                f"{label}: 'tags' must be a non-empty list of strings"
+            )
+
+    if "url" in event:
+        _validate_format("url", event["url"])
+
+    for k in OPTIONAL_URL_FIELDS:
+        if k in event and event.get(k):
+            _validate_format(k, event[k])
+
+    for enum_field in ("event_type", "cost"):
+        if enum_field in event and event.get(enum_field):
+            allowed = props[enum_field].get("enum", [])
+            value = str(event[enum_field]).strip()
+            if value not in allowed:
+                errors.append(
+                    f"{label}: Invalid {enum_field} '{value}' "
+                    f"(allowed: {', '.join(allowed)})"
+                )
+
+    parsed_dates: dict[str, datetime] = {}
+    for k in OPTIONAL_DATE_FIELDS:
+        if k in event and event.get(k):
+            try:
+                parsed_dates[k] = datetime.strptime(str(event[k]), "%Y-%m-%d")
+            except ValueError:
+                errors.append(
+                    f"{label}: Invalid {k} '{event[k]}' (expected YYYY-MM-DD)"
+                )
+
+    if "start_date" in parsed_dates and "end_date" in parsed_dates:
+        if parsed_dates["end_date"] < parsed_dates["start_date"]:
+            errors.append(f"{label}: end_date must be >= start_date")
 
     return errors
 
@@ -178,7 +322,6 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
     lines = original_content.splitlines(keepends=True)
     final_output = []
 
-    # Track which events we've already updated in this pass
     updated_ids = {str(e["id"]) for e in events_with_coords if "lat" in e}
 
     i = 0
@@ -186,18 +329,14 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
         line = lines[i]
         final_output.append(line)
 
-        # Look for the start of an event: "  - id: \"X\"" or "  - id: 'X'"
         if line.strip().startswith("- id:"):
-            # Extract the ID
             event_id = line.strip().split(":", 1)[1].strip().strip("'\"")
 
             if event_id in updated_ids:
-                # Find the event data
                 event_data = next(
                     e for e in events_with_coords if str(e["id"]) == event_id
                 )
 
-                # Check if it already has coordinates in the text block
                 block_end = i + 1
                 has_lat = False
                 while block_end < len(lines):
@@ -209,14 +348,6 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
                     block_end += 1
 
                 if not has_lat:
-                    # Insert before the block ends or before an empty line
-                    # Determine indentation (match the 'id' key's indentation)
-                    id_indent = line[: line.find("- id:")]
-                    property_indent = id_indent + "    "
-
-                    # Wait, if id_indent is "  ", then id is at 4, title is at 4.
-                    # So property_indent should be id_indent + "  " to reach 4 spaces.
-                    # Actually, let's just use "    " directly as it matches the file.
                     property_indent = "    "
 
                     final_output.append(
@@ -252,16 +383,18 @@ def main() -> None:
     events = data["events"]
     print(f"Found {len(events)} events")
 
-    # Track if we updated any events with new coordinates
     new_coords_found = False
+    all_errors: list[str] = []
+    seen_ids: set[str] = set()
 
-    # Validate all events
-    all_errors = []
     for i, event in enumerate(events, start=1):
-        errors = validate_event(event, i)
-        all_errors.extend(errors)
+        if not isinstance(event, dict):
+            all_errors.append(
+                f"Event #{i}: Expected object, got {type(event).__name__}"
+            )
+            continue
+        all_errors.extend(validate_event(event, i, seen_ids))
 
-        # Geocode if we have a location and no coordinates
         if not all_errors and "lat" not in event:
             coords = None
             if (
@@ -291,7 +424,6 @@ def main() -> None:
 
     print("All events validated successfully")
 
-    # If we found new coordinates locally, save them back to the source YAML surgically
     if new_coords_found and not is_ci():
         print(
             f"Surgically updating source file with new coordinates: {INPUT_FILE}"
@@ -301,10 +433,8 @@ def main() -> None:
 
     save_cache()
 
-    # Ensure output directory exists
     OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    # Write JSON output
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(events, f, indent=2, ensure_ascii=False)
         f.write("\n")
