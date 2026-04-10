@@ -227,6 +227,14 @@ def validate_event(
             )
 
     def _validate_format(field: str, value: Any) -> None:
+        """
+        title: Validate a field value using EVENT_SCHEMA format rules.
+        parameters:
+          field:
+            type: str
+          value:
+            type: Any
+        """
         schema = props.get(field, {})
         fmt = schema.get("format")
         if fmt == "date":
