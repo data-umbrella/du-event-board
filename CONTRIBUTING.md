@@ -52,7 +52,8 @@ npm run dev
    npm run lint
    pytest tests/
    ```
-   (`pytest` needs the conda env; it covers `scripts/generate_events_json.py` validation helpers.)
+   (`pytest` needs the conda env; it covers `scripts/generate_events_json.py`
+   validation helpers.)
 5. Commit your changes using
    [conventional commits](https://www.conventionalcommits.org/)
 6. Push to the branch (`git push origin feat/amazing-feature`)
