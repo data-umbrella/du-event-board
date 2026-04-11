@@ -50,6 +50,7 @@ repos:
         pass_filenames: true
         require_serial: yes
         files: "./"
+        exclude: ^tests/
         types:
           - python
 
