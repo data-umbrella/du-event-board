@@ -86,6 +86,12 @@ export default function EventCard({ event, viewMode = "grid" }) {
           </span>
           <span>{event.location}</span>
         </div>
+        <div className="event-card__meta-item">
+          <span className="event-card__meta-icon">👥</span>
+          <span>
+            {event.capacity != null ? `${event.capacity} spots` : "Unlimited"}
+          </span>
+        </div>
       </div>
 
       {event.tags && event.tags.length > 0 && (
