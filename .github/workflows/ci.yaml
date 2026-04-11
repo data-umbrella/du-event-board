@@ -94,8 +94,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install PyYAML
-        run: pip install pyyaml
+      - name: Install Python dependencies
+        run: pip install pyyaml pytest
+
+      - name: Run generator unit tests
+        run: pytest tests/ -q
 
       - name: Backup committed events.json
         run: cp src/data/events.json src/data/events.json.committed
