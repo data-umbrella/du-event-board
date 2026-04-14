@@ -185,28 +185,18 @@ export default function EventMap({ events }) {
                     {event.description}
                   </p>
 
-                  <a
-                    href={event.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      textDecoration: "none",
-                      backgroundColor: "#7c5cfc",
-                      color: "white",
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      fontSize: "13px",
-                      fontWeight: "600",
-                      transition: "all 0.2s",
-                      width: "100%",
-                      justifyContent: "center",
-                    }}
-                  >
-                    View Details <ExternalLink size={14} />
-                  </a>
+                  <div className="event-map__popup-actions">
+                    <a
+                      href={event.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="event-map__popup-link"
+                    >
+                      View Details <ExternalLink size={14} />
+                    </a>
+
+                    <MapDirectionsDropdown event={event} />
+                  </div>
                 </div>
               </Popup>
             </Marker>
@@ -214,5 +204,76 @@ export default function EventMap({ events }) {
         </MapContainer>
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+function MapDirectionsDropdown({ event }) {
+  const [showDirections, setShowDirections] = useState(false);
+  const dropdownRef = React.useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDirections(false);
+      }
+    };
+    if (showDirections) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showDirections]);
+
+  const handleDirectionClick = (provider) => {
+    const address = encodeURIComponent(event.location);
+    let url = "";
+    if (provider === "google") {
+      url = `https://www.google.com/maps/search/?api=1&query=${address}`;
+    } else {
+      url = `https://maps.apple.com/?q=${address}&ll=${event.lat},${event.lng}&sll=${event.lat},${event.lng}`;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+    setShowDirections(false);
+  };
+
+  return (
+    <div className="event-card__directions" ref={dropdownRef}>
+      <button
+        className="event-card__directions-btn event-card__directions-btn--popup"
+        onClick={() => setShowDirections(!showDirections)}
+      >
+        Directions
+        <span
+          className={`event-card__directions-arrow ${showDirections ? "open" : ""}`}
+        >
+          ▾
+        </span>
+      </button>
+      {showDirections && (
+        <div className="event-card__directions-menu event-card__directions-menu--popup">
+          <button
+            className="event-card__directions-item"
+            onClick={() => handleDirectionClick("google")}
+          >
+            <img
+              src="public/google-map-icon.png"
+              alt=""
+              className="event-card__directions-logo"
+            />
+            Google Maps
+          </button>
+          <button
+            className="event-card__directions-item"
+            onClick={() => handleDirectionClick("apple")}
+          >
+            <img
+              src="public/Apple_Maps_Logo.png"
+              alt=""
+              className="event-card__directions-logo"
+            />
+            Apple Maps
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

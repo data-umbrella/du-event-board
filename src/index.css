@@ -353,7 +353,8 @@ body {
   gap: 0.5rem;
   flex: 1 1 320px;
   min-width: 280px;
-  position: relative; /* Anchor for absolute error message */
+  position: relative;
+  /* Anchor for absolute error message */
 }
 
 .search__date-input {
@@ -384,7 +385,8 @@ body {
 }
 
 .search__error-message {
-  color: #ef4444; /* Standard red for accessibility */
+  color: #ef4444;
+  /* Standard red for accessibility */
   font-size: 0.81rem;
   font-weight: 600;
   padding: 0.45rem 0.9rem;
@@ -401,7 +403,8 @@ body {
   z-index: 20;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   pointer-events: none;
-  opacity: 1; /* Always visible in invalid state */
+  opacity: 1;
+  /* Always visible in invalid state */
   transform: translateY(0);
 }
 
@@ -629,8 +632,10 @@ body.light-theme .search__clear-btn:hover {
   border-radius: 100px;
   transition: all var(--transition-slow);
   cursor: default;
-  overflow: hidden;
+  overflow: visible;
+  /* Changed from hidden to allow the directions dropdown */
   min-height: 48px;
+  position: relative;
 }
 
 .event-list-row:hover {
@@ -638,6 +643,8 @@ body.light-theme .search__clear-btn:hover {
   border-color: var(--border-accent);
   box-shadow: var(--shadow-md), var(--shadow-glow);
   transform: translateX(6px);
+  z-index: 10;
+  /* Ensure hovered row is on top of others */
 }
 
 .event-list-row__title-wrap {
@@ -943,6 +950,141 @@ span.event-list-row__title {
   transform: translateX(3px);
 }
 
+/* Directions Dropdown */
+.event-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.event-card__directions {
+  position: relative;
+}
+
+.event-card__directions-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.event-card__directions-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border-accent);
+  transform: translateY(-1px);
+}
+
+.event-card__directions-btn--icon {
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  background: rgba(124, 92, 252, 0.1);
+  border-color: rgba(124, 92, 252, 0.2);
+}
+
+.event-card__directions-arrow {
+  font-size: 0.8rem;
+  transition: transform var(--transition-base);
+  opacity: 0.7;
+}
+
+.event-card__directions-arrow.open {
+  transform: rotate(180deg);
+}
+
+.event-card__directions-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  width: 180px;
+  background: #1a1a3a;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 10px 30px -5px rgba(0, 0, 0, 0.5),
+    var(--shadow-glow);
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  animation: menuAppear 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.event-list-row .event-card__directions-menu {
+  bottom: auto;
+  top: calc(100% + 12px);
+}
+
+@keyframes menuAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.event-card__directions-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.event-card__directions-item:hover {
+  background: rgba(124, 92, 252, 0.2);
+  color: var(--accent-secondary);
+}
+
+.event-card__directions-icon {
+  font-size: 1.2rem;
+  opacity: 1;
+}
+
+.light-theme .event-card__directions-menu {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .event-card__directions-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+.light-theme .event-card__directions-item:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
 /* ===================================
    Empty State
    =================================== */
@@ -1095,6 +1237,76 @@ span.event-list-row__title {
   font-size: 0.9rem;
 }
 
+/* Map Popup Enhancements */
+.event-map__popup-actions {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.event-map__popup-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  background-color: var(--accent-primary);
+  color: white !important;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.event-map__popup-link:hover {
+  background-color: var(--accent-secondary);
+  transform: translateY(-1px);
+}
+
+.event-card__directions-btn--popup {
+  padding: 8px 12px;
+  font-size: 13px;
+  background: white;
+  border: 1px solid #ddd;
+  color: #333;
+  border-radius: 8px;
+  height: 100%;
+}
+
+.event-card__directions-btn--popup:hover {
+  background: #f8f9fa;
+  border-color: #ccc;
+}
+
+.event-card__directions-menu--popup {
+  width: 180px;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: white;
+}
+
+.event-card__directions-logo {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.premium-popup .leaflet-popup-content-wrapper {
+  color: #333 !important;
+}
+
+.premium-popup .event-card__directions-item {
+  color: #333;
+}
+
+.premium-popup .event-card__directions-item:hover {
+  background: #f0f0f8;
+  color: var(--accent-primary);
+}
+
 /* ===================================
    Animations
    =================================== */
@@ -1115,6 +1327,7 @@ span.event-list-row__title {
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
