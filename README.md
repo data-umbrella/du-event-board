@@ -38,6 +38,21 @@ Edit `data/events.yaml` and add a new entry:
 Then open a Pull Request. CI will validate the YAML and run tests. Once merged,
 the site is automatically rebuilt and deployed.
 
+## 🗂️ Event Archiving
+
+Past events are automatically archived daily via GitHub Actions.
+
+- **Live events** live in `data/events.yaml` — only upcoming/current events
+- **Past events** are moved to `data/past_events.yaml` for historical reference
+
+The `archive-events` workflow runs every Monday at 02:00 UTC. When it finds
+events whose date has passed, it opens a pull request moving them from the live
+feed to the archive file. Maintainers review and merge the PR to keep the site
+clean.
+
+To trigger the archive manually: go to **Actions → Archive Past Events → Run
+workflow**.
+
 ## 🛠️ Local Development
 
 ### Prerequisites
