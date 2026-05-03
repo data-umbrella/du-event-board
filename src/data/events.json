@@ -10,7 +10,7 @@
     "location": "TechHub Coworking, Rua da República 433, Porto Alegre",
     "region": "Porto Alegre",
     "category": "Technology",
-    "url": "https://example.com/python-poa",
+    "url": "https://www.meetup.com/python-porto-alegre/",
     "tags": [
       "python",
       "programming",
@@ -28,7 +28,7 @@
     "location": "InovaBR Hub, Av. Paulista 1578, São Paulo",
     "region": "São Paulo",
     "category": "Technology",
-    "url": "https://example.com/react-sp",
+    "url": "https://www.meetup.com/reactjs-sao-paulo/",
     "tags": [
       "react",
       "javascript",
@@ -46,7 +46,7 @@
     "location": "Espaço Digital, Rua XV de Novembro 700, Curitiba",
     "region": "Curitiba",
     "category": "Technology",
-    "url": "https://example.com/oss-friday-cwb",
+    "url": "https://www.meetup.com/open-source-curitiba/",
     "tags": [
       "open-source",
       "community",
@@ -64,7 +64,7 @@
     "location": "Lab Analytics, Rua Visconde de Pirajá 330, Rio de Janeiro",
     "region": "Rio de Janeiro",
     "category": "Education",
-    "url": "https://example.com/ds-bootcamp-rj",
+    "url": "https://www.meetup.com/data-science-rio-de-janeiro/",
     "tags": [
       "data-science",
       "machine-learning",
@@ -82,7 +82,7 @@
     "location": "MG Tech Center, Av. Afonso Pena 1500, Belo Horizonte",
     "region": "Belo Horizonte",
     "category": "Technology",
-    "url": "https://example.com/devops-bh",
+    "url": "https://www.meetup.com/devops-belo-horizonte/",
     "tags": [
       "devops",
       "docker",
@@ -100,7 +100,7 @@
     "location": "Design Lab POA, Rua Mostardeiro 120, Porto Alegre",
     "region": "Porto Alegre",
     "category": "Design",
-    "url": "https://example.com/ux-workshop-poa",
+    "url": "https://www.meetup.com/ux-design-porto-alegre/",
     "tags": [
       "design",
       "ux",
@@ -118,7 +118,7 @@
     "location": "Hacker House SP, Rua Augusta 2690, São Paulo",
     "region": "São Paulo",
     "category": "Technology",
-    "url": "https://example.com/rust-intro-sp",
+    "url": "https://www.meetup.com/rust-sao-paulo/",
     "tags": [
       "rust",
       "programming",
@@ -136,7 +136,7 @@
     "location": "ACATE, Rodovia SC-401 600, Florianópolis",
     "region": "Florianópolis",
     "category": "Community",
-    "url": "https://example.com/hackathon-floripa",
+    "url": "https://www.meetup.com/hackathon-florianopolis/",
     "tags": [
       "hackathon",
       "community",
