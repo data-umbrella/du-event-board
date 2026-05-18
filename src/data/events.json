@@ -15,6 +15,20 @@
       "python",
       "programming",
       "community"
+    ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://hackathon.com"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.com/hackathon"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/hackathon"
+      }
     ]
   },
   {
@@ -33,6 +47,16 @@
       "react",
       "javascript",
       "frontend"
+    ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://hackathon.com"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/hackathon"
+      }
     ]
   },
   {
@@ -51,6 +75,20 @@
       "open-source",
       "community",
       "programming"
+    ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://hackathon.com"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.com/hackathon"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/hackathon"
+      }
     ]
   },
   {
@@ -69,6 +107,20 @@
       "data-science",
       "machine-learning",
       "python"
+    ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://hackathon.com"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.com/hackathon"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/hackathon"
+      }
     ]
   },
   {
@@ -87,6 +139,16 @@
       "devops",
       "docker",
       "kubernetes"
+    ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://hackathon.com"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.com/hackathon"
+      }
     ]
   },
   {
@@ -105,6 +167,16 @@
       "design",
       "ux",
       "figma"
+    ],
+    "socials": [
+      {
+        "name": "discord",
+        "url": "https://discord.com/hackathon"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/hackathon"
+      }
     ]
   },
   {
@@ -123,6 +195,16 @@
       "rust",
       "programming",
       "systems"
+    ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://hackathon.com"
+      },
+      {
+        "name": "linkedin",
+        "url": "https://linkedin.com/hackathon"
+      }
     ]
   },
   {
@@ -141,6 +223,16 @@
       "hackathon",
       "community",
       "innovation"
+    ],
+    "socials": [
+      {
+        "name": "website",
+        "url": "https://hackathon.com"
+      },
+      {
+        "name": "discord",
+        "url": "https://discord.com/hackathon"
+      }
     ]
   }
 ]

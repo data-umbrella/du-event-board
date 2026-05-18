@@ -1,3 +1,11 @@
+import {
+  FaGlobe,
+  FaTwitter,
+  FaInstagram,
+  FaDiscord,
+  FaSlack,
+  FaLinkedin,
+} from "react-icons/fa";
 import { getEventStatus } from "../utils/eventHelpers";
 
 export default function EventCard({ event, viewMode = "grid" }) {
@@ -11,6 +19,18 @@ export default function EventCard({ event, viewMode = "grid" }) {
     },
   );
 
+  function getSocialIcon(name) {
+    const iconMap = {
+      website: <FaGlobe />,
+      twitter: <FaTwitter />,
+      instagram: <FaInstagram />,
+      discord: <FaDiscord />,
+      slack: <FaSlack />,
+      linkedin: <FaLinkedin />,
+    };
+
+    return iconMap[name?.toLowerCase()] || <FaGlobe />;
+  }
   const statusMap = {
     live: "status-badge--live",
     upcoming: "status-badge--upcoming",
@@ -98,17 +118,35 @@ export default function EventCard({ event, viewMode = "grid" }) {
         </div>
       )}
 
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
-      )}
+      <div className="moreInfo">
+        {event.url && (
+          <a
+            href={event.url}
+            className="event-card__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn more
+            <span className="event-card__link-arrow">→</span>
+          </a>
+        )}
+
+        {event.socials && event.socials.length > 0 && (
+          <div className="socialIcons">
+            {event.socials.map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={social.name}
+              >
+                {getSocialIcon(social.name)}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
     </article>
   );
 }
