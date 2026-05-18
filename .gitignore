@@ -42,3 +42,4 @@ venv/
 
 # Map Cache
 .geocode_cache.json
+.mypy_cache/
