@@ -59,36 +59,62 @@ export default function SearchBar({
             />
           </div>
 
-          <div className="search__select-wrapper">
-            <select
-              id="region-select"
-              className="search__select"
-              value={selectedRegion}
-              onChange={(e) => onRegionChange(e.target.value)}
-            >
-              <option value="">All Regions</option>
+          <div className="search__select-wrapper custom-dropdown">
+            <div className="dropdown-header">
+              {selectedRegion.length > 0
+                ? `${selectedRegion.length} selected`
+                : "All Regions"}
+            </div>
+
+            <div className="dropdown-content">
               {regions.map((region) => (
-                <option key={region} value={region}>
+                <label key={region}>
+                  <input
+                    type="checkbox"
+                    checked={selectedRegion.includes(region)}
+                    onChange={() => {
+                      if (selectedRegion.includes(region)) {
+                        onRegionChange(
+                          selectedRegion.filter((r) => r !== region),
+                        );
+                      } else {
+                        onRegionChange([...selectedRegion, region]);
+                      }
+                    }}
+                  />
                   {region}
-                </option>
+                </label>
               ))}
-            </select>
+            </div>
           </div>
 
-          <div className="search__select-wrapper">
-            <select
-              id="category-select"
-              className="search__select"
-              value={selectedCategory}
-              onChange={(e) => onCategoryChange(e.target.value)}
-            >
-              <option value="">All Categories</option>
+          <div className="search__select-wrapper custom-dropdown">
+            <div className="dropdown-header">
+              {selectedCategory.length > 0
+                ? `${selectedCategory.length} selected`
+                : "All Categories"}
+            </div>
+
+            <div className="dropdown-content">
               {categories.map((category) => (
-                <option key={category} value={category}>
+                <label key={category}>
+                  <input
+                    type="checkbox"
+                    checked={selectedCategory.includes(category)}
+                    onChange={() => {
+                      if (selectedCategory.includes(category)) {
+                        onCategoryChange(
+                          selectedCategory.filter((c) => c !== category),
+                        );
+                      } else {
+                        onCategoryChange([...selectedCategory, category]);
+                      }
+                    }}
+                  />
                   {category}
-                </option>
+                </label>
               ))}
-            </select>
+            </div>
           </div>
         </div>
 
