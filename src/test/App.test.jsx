@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import App from "../App";
 
 import events from "../data/events.json";
@@ -220,5 +220,38 @@ describe("App", () => {
     });
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
+  });
+
+  it("restores filter state when popstate updates browser URL", () => {
+    render(<App />);
+
+    const regionSelect = screen.getByLabelText("Region filter");
+    const categorySelect = screen.getByLabelText("Category filter");
+
+    fireEvent.change(regionSelect, { target: { value: "Porto Alegre" } });
+    fireEvent.change(categorySelect, { target: { value: "Education" } });
+
+    expect(window.location.search).toContain("region=Porto+Alegre");
+    expect(window.location.search).toContain("category=Education");
+    expect(screen.getByText("No events found")).toBeInTheDocument();
+
+    act(() => {
+      window.history.replaceState(null, "", "/?region=Porto+Alegre");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+
+    expect(screen.getByLabelText("Category filter").value).toBe("");
+    expect(screen.getByLabelText("Region filter").value).toBe("Porto Alegre");
+    expect(
+      screen.getByText("Python Meetup - Porto Alegre"),
+    ).toBeInTheDocument();
+
+    act(() => {
+      window.history.replaceState(null, "", "/");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+
+    expect(screen.getByLabelText("Region filter").value).toBe("");
+    expect(screen.getByText("React Workshop - São Paulo")).toBeInTheDocument();
   });
 });
