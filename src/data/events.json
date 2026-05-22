@@ -142,5 +142,38 @@
       "community",
       "innovation"
     ]
+  },
+  {
+    "id": "9",
+    "lat": 41.4996574,
+    "lng": -81.6936772,
+    "event_name": "PyOhio 2026",
+    "start_date": "2026-07-25",
+    "end_date": "2026-07-26",
+    "event_type": "Conference",
+    "featured": 0,
+    "tags": [
+      "python"
+    ],
+    "event_description": "PyOhio is an annual conference for Python developers, featuring talks, tutorials, and community events.",
+    "organization_name": "PyOhio",
+    "organization_url": "https://www.pyohio.org",
+    "url_linkedin": "https://www.linkedin.com/company/pyohio/about/",
+    "url_twitter": "https://twitter.com/pyohio",
+    "url_other": "",
+    "acronym": "",
+    "paid_or_free": "paid",
+    "event_url": "https://www.pyohio.org/2026/",
+    "image_url": "https://github.com/data-umbrella/resources/blob/main/events-images/2024/2024-pyohio.png?raw=true",
+    "location": "Cleveland, OH, USA",
+    "region": "Canada / USA",
+    "in_person": "Yes",
+    "virtual": "Unknown",
+    "language": "English",
+    "title": "PyOhio 2026",
+    "date": "2026-07-25",
+    "category": "Conference",
+    "url": "https://www.pyohio.org/2026/",
+    "description": "PyOhio is an annual conference for Python developers, featuring talks, tutorials, and community events."
   }
 ]

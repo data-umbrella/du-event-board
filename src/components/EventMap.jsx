@@ -78,7 +78,7 @@ function MapController({ events }) {
   return null;
 }
 
-export default function EventMap({ events }) {
+export default function EventMap({ events, onSelectEvent }) {
   // Filter events with valid coords
   const mapEvents = events.filter((e) => e.lat && e.lng);
 
@@ -167,7 +167,8 @@ export default function EventMap({ events }) {
                     }}
                   >
                     <Calendar size={14} />
-                    {event.date} • {event.time}
+                    {event.date}
+                    {event.time ? ` • ${event.time}` : ""}
                   </div>
 
                   <p
@@ -186,9 +187,11 @@ export default function EventMap({ events }) {
                   </p>
 
                   <a
-                    href={event.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`?page=event-details&eventId=${event.id}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelectEvent(event.id);
+                    }}
                     style={{
                       display: "inline-flex",
                       alignItems: "center",
@@ -203,6 +206,7 @@ export default function EventMap({ events }) {
                       transition: "all 0.2s",
                       width: "100%",
                       justifyContent: "center",
+                      cursor: "pointer",
                     }}
                   >
                     View Details <ExternalLink size={14} />

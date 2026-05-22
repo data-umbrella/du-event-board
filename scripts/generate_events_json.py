@@ -23,7 +23,6 @@ REQUIRED_FIELDS = [
     "title",
     "description",
     "date",
-    "time",
     "location",
     "region",
     "category",
@@ -258,6 +257,25 @@ def main() -> None:
     # Validate all events
     all_errors = []
     for i, event in enumerate(events, start=1):
+        # Normalize/Alias keys if they exist under the new format
+        if "title" not in event and "event_name" in event:
+            event["title"] = event["event_name"]
+        if "date" not in event and "start_date" in event:
+            event["date"] = event["start_date"]
+        if "category" not in event and "event_type" in event:
+            event["category"] = event["event_type"]
+        if "url" not in event and "event_url" in event:
+            event["url"] = event["event_url"]
+        if "description" not in event and "event_description" in event:
+            event["description"] = (
+                event["event_description"]
+                or f"Event details for {event.get('title', 'this event')}."
+            )
+        if "tags" in event and isinstance(event["tags"], str):
+            event["tags"] = [
+                t.strip() for t in event["tags"].split(",") if t.strip()
+            ]
+
         errors = validate_event(event, i)
         all_errors.extend(errors)
 
