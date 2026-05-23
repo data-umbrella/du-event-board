@@ -35,7 +35,7 @@ export default function Footer({ onNavigate }) {
               rel="noopener noreferrer"
             >
               <img
-                src="/du-event-board/Bluesky.png"
+                src={`${import.meta.env.BASE_URL}Bluesky.png`}
                 alt="Bluesky"
                 style={{ width: "20px", height: "auto" }}
               />

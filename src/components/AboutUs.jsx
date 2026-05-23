@@ -35,7 +35,7 @@ export default function AboutUs() {
         <div className="about-us__cards">
           <div className="about-us__card glass-card">
             <img
-              src="/du-event-board/DU_logo.png"
+              src={`${import.meta.env.BASE_URL}DU_logo.png`}
               alt="Data Umbrella"
               className="about-us__card-logo"
             />
@@ -90,7 +90,7 @@ export default function AboutUs() {
 
           <div className="about-us__card glass-card">
             <img
-              src="/du-event-board/OSL.png"
+              src={`${import.meta.env.BASE_URL}OSL.png`}
               alt="Open Science Labs"
               className="about-us__card-logo"
             />

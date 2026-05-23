@@ -221,4 +221,23 @@ describe("App", () => {
 
     expect(screen.getByText("No events found")).toBeInTheDocument();
   });
+
+  it("navigates to event details page when clicking View Details and back to main list when clicking Back to Events", () => {
+    render(<App />);
+
+    // Click "View Details" on the first event card
+    const viewDetailsButtons = screen.getAllByText("View Details");
+    fireEvent.click(viewDetailsButtons[0]);
+
+    // Should render the event details page structure
+    expect(screen.getByText("About this Event")).toBeInTheDocument();
+
+    // Click back button
+    const backButton = screen.getByRole("button", { name: /Back to Events/i });
+    fireEvent.click(backButton);
+
+    // Should return to the main board page
+    expect(screen.getByText("DU Event Board")).toBeInTheDocument();
+    expect(screen.queryByText("About this Event")).not.toBeInTheDocument();
+  });
 });

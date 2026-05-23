@@ -7,6 +7,7 @@ import EventMap from "./components/EventMap";
 import Footer from "./components/Footer";
 import AboutUs from "./components/AboutUs";
 import Sponsors from "./components/Sponsors";
+import EventDetails from "./components/EventDetails";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import BackToTop from "./components/BackToTop";
@@ -43,12 +44,36 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
   const [currentPage, setCurrentPage] = useUrlState("page", "events");
+  const [selectedEventId, setSelectedEventId] = useUrlState("eventId", "");
   const [viewMode, setViewMode] = useUrlState("view", "grid");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+
+  const selectedEvent = useMemo(() => {
+    if (!selectedEventId) return null;
+    return events.find((e) => String(e.id) === String(selectedEventId));
+  }, [selectedEventId]);
+
+  useEffect(() => {
+    if (currentPage === "event-details" && !selectedEvent) {
+      setCurrentPage("events");
+    }
+  }, [currentPage, selectedEvent, setCurrentPage]);
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+    if (page !== "event-details") {
+      setSelectedEventId("");
+    }
+  };
+
+  const handleSelectEvent = (eventId) => {
+    setSelectedEventId(eventId);
+    setCurrentPage("event-details");
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -260,7 +285,7 @@ export default function App() {
       <Header
         theme={theme}
         onToggleTheme={toggleTheme}
-        onNavigate={setCurrentPage}
+        onNavigate={handleNavigate}
       />
       {currentPage === "events" ? (
         <>
@@ -437,7 +462,12 @@ export default function App() {
               <div className="events-grid" id="events-grid">
                 {filteredEvents && filteredEvents.length > 0 ? (
                   filteredEvents.map((event) => (
-                    <EventCard key={event.id} event={event} viewMode="grid" />
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      viewMode="grid"
+                      onSelectEvent={handleSelectEvent}
+                    />
                   ))
                 ) : (
                   <div className="empty-state" id="empty-state">
@@ -472,6 +502,7 @@ export default function App() {
                             key={event.id}
                             event={event}
                             viewMode="list"
+                            onSelectEvent={handleSelectEvent}
                           />
                         ))}
                       </div>
@@ -499,16 +530,24 @@ export default function App() {
                 )}
               </div>
             ) : (
-              <EventMap events={filteredEvents} />
+              <EventMap
+                events={filteredEvents}
+                onSelectEvent={handleSelectEvent}
+              />
             )}
           </main>
         </>
+      ) : currentPage === "event-details" && selectedEvent ? (
+        <EventDetails
+          event={selectedEvent}
+          onBack={() => handleNavigate("events")}
+        />
       ) : currentPage === "about" ? (
         <AboutUs />
       ) : currentPage === "sponsors" ? (
         <Sponsors />
       ) : null}
-      <Footer onNavigate={setCurrentPage} />
+      <Footer onNavigate={handleNavigate} />
       <BackToTop />
     </>
   );

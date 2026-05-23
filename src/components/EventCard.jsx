@@ -1,6 +1,10 @@
 import { getEventStatus } from "../utils/eventHelpers";
 
-export default function EventCard({ event, viewMode = "grid" }) {
+export default function EventCard({
+  event,
+  viewMode = "grid",
+  onSelectEvent,
+}) {
   const status = getEventStatus(event.date);
   const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
     "en-US",
@@ -21,18 +25,16 @@ export default function EventCard({ event, viewMode = "grid" }) {
     return (
       <article className="event-list-row" id={`event-${event.id}`}>
         <div className="event-list-row__title-wrap">
-          {event.url ? (
-            <a
-              href={event.url}
-              className="event-list-row__title"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {event.title}
-            </a>
-          ) : (
-            <span className="event-list-row__title">{event.title}</span>
-          )}
+          <a
+            href={`?page=event-details&eventId=${event.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              onSelectEvent(event.id);
+            }}
+            className="event-list-row__title"
+          >
+            {event.title}
+          </a>
         </div>
         <div className="event-list-row__right">
           <span className="event-list-row__category">{event.category}</span>
@@ -64,7 +66,18 @@ export default function EventCard({ event, viewMode = "grid" }) {
         )}
       </div>
 
-      <h2 className="event-card__title">{event.title}</h2>
+      <h2 className="event-card__title">
+        <a
+          href={`?page=event-details&eventId=${event.id}`}
+          onClick={(e) => {
+            e.preventDefault();
+            onSelectEvent(event.id);
+          }}
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          {event.title}
+        </a>
+      </h2>
       <p className="event-card__description">{event.description}</p>
 
       <div className="event-card__meta">
@@ -74,12 +87,14 @@ export default function EventCard({ event, viewMode = "grid" }) {
           </span>
           <span>{formattedDate}</span>
         </div>
-        <div className="event-card__meta-item">
-          <span className="event-card__meta-icon" aria-hidden="true">
-            🕐
-          </span>
-          <span>{event.time}</span>
-        </div>
+        {event.time && (
+          <div className="event-card__meta-item">
+            <span className="event-card__meta-icon" aria-hidden="true">
+              🕐
+            </span>
+            <span>{event.time}</span>
+          </div>
+        )}
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon" aria-hidden="true">
             📍
@@ -98,17 +113,17 @@ export default function EventCard({ event, viewMode = "grid" }) {
         </div>
       )}
 
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
-      )}
+      <a
+        href={`?page=event-details&eventId=${event.id}`}
+        onClick={(e) => {
+          e.preventDefault();
+          onSelectEvent(event.id);
+        }}
+        className="event-card__link"
+      >
+        View Details
+        <span className="event-card__link-arrow">→</span>
+      </a>
     </article>
   );
 }

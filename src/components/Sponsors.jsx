@@ -5,7 +5,7 @@ export default function Sponsors() {
     {
       name: "CZI",
       fullName: "Chan Zuckerberg Initiative",
-      logo: "/du-event-board/ChanZuckerberg.png",
+      logo: `${import.meta.env.BASE_URL}ChanZuckerberg.png`,
       url: "https://chanzuckerberg.com/",
     },
   ];
