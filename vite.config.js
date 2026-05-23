@@ -6,10 +6,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePluginRadar({
-      enableDev: true,
       analytics: {
         provider: "ga",
-        analyticsId: "G-E5SMJ9E985",
+        id: "G-E5SMJ9E985",
       },
     }),
   ],
