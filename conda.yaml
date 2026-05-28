@@ -8,6 +8,7 @@ dependencies:
   - pyyaml
   - pip
   - pip:
+      - pytest
       - pre-commit
       - ruff
       - mypy
