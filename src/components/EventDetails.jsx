@@ -232,7 +232,7 @@ export default function EventDetails({ event, onBack }) {
                 className="event-details__cta-btn"
                 id="event-register-cta"
               >
-                Register / Learn More <ExternalLink size={16} />
+                Learn More <ExternalLink size={16} />
               </a>
             )}
           </div>
