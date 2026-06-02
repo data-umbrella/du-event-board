@@ -52,6 +52,17 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (typeof window.gtag !== "undefined") {
+      window.gtag("event", "page_view", {
+        page_path: `/?page=${currentPage}`,
+        page_title:
+          currentPage === "events"
+            ? "Events"
+            : currentPage === "about"
+              ? "About"
+              : "Sponsors",
+      });
+    }
   }, [currentPage]);
 
   const [theme, setTheme] = useState(() => {
