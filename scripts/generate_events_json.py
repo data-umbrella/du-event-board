@@ -25,7 +25,6 @@ REQUIRED_FIELDS = [
     "date",
     "location",
     "region",
-    "category",
 ]
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
@@ -146,7 +145,7 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
             )
 
     # Validate time format
-    if "time" in event:
+    if "time" in event and event["time"]:
         try:
             # Handle time objects if PyYAML parsed them
             if not isinstance(event["time"], str):
@@ -155,6 +154,28 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
         except ValueError:
             errors.append(
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
+            )
+
+    # Validate start_time format
+    if "start_time" in event and event["start_time"]:
+        try:
+            if not isinstance(event["start_time"], str):
+                event["start_time"] = event["start_time"].strftime("%H:%M")
+            datetime.strptime(event["start_time"], "%H:%M")
+        except ValueError:
+            errors.append(
+                f"Event #{index}: Invalid start_time format '{event['start_time']}' (expected HH:MM)"
+            )
+
+    # Validate end_time format
+    if "end_time" in event and event["end_time"]:
+        try:
+            if not isinstance(event["end_time"], str):
+                event["end_time"] = event["end_time"].strftime("%H:%M")
+            datetime.strptime(event["end_time"], "%H:%M")
+        except ValueError:
+            errors.append(
+                f"Event #{index}: Invalid end_time format '{event['end_time']}' (expected HH:MM)"
             )
 
     return errors
