@@ -28,7 +28,8 @@ const fuse = new Fuse(events, fuseOptions);
 
 function parseISODate(dateString) {
   if (!dateString) return null;
-  const [year, month, day] = dateString.split("-").map(Number);
+  const datePart = dateString.split("T")[0].split(" ")[0];
+  const [year, month, day] = datePart.split("-").map(Number);
   if (!year || !month || !day) return null;
   return new Date(year, month - 1, day);
 }
@@ -163,12 +164,22 @@ export default function App() {
     const baseEvents = (() => {
       if (!term) return events;
 
+      let searchDate = parseISODate(term);
+      if (!searchDate && term.length >= 6) {
+        const d = new Date(term);
+        if (!isNaN(d.getTime())) {
+          searchDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        }
+      }
+
       // 1. Exact Substring/Prefix matches always come first
       const exactMatches = events
         .map((event) => {
           let score = 0;
-          const title = event.title.toLowerCase();
-          const description = event.description.toLowerCase();
+          const title = event.title ? event.title.toLowerCase() : "";
+          const description = event.description
+            ? event.description.toLowerCase()
+            : "";
           const tags = event.tags
             ? event.tags.map((t) => t.toLowerCase())
             : [];
@@ -180,6 +191,20 @@ export default function App() {
           else if (tags.some((t) => t.includes(term))) score += 10;
 
           if (description.includes(term)) score += 5;
+
+          if (searchDate) {
+            const startDate = parseISODate(event.date || event.start_date);
+            const endDate =
+              parseISODate(event.end_date || event.endDate) || startDate;
+            if (
+              startDate &&
+              endDate &&
+              startDate <= searchDate &&
+              endDate >= searchDate
+            ) {
+              score += 100;
+            }
+          }
 
           return { ...event, _score: score };
         })
@@ -201,8 +226,9 @@ export default function App() {
     })();
 
     return baseEvents.filter((event) => {
-      const startDate = parseISODate(event.date);
-      const endDate = parseISODate(event.end_date) || startDate;
+      const startDate = parseISODate(event.date || event.start_date);
+      const endDate =
+        parseISODate(event.end_date || event.endDate) || startDate;
       if (!startDate) return false;
 
       // Region filter
@@ -272,7 +298,7 @@ export default function App() {
     if (viewMode !== "list") return null;
     const groups = {};
     filteredEvents.forEach((event) => {
-      const date = parseISODate(event.date);
+      const date = parseISODate(event.date || event.start_date);
       if (!date) return;
       const key = date.toLocaleDateString("en-US", {
         month: "long",
