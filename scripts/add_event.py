@@ -9,7 +9,7 @@ import urllib.parse
 from datetime import datetime
 from pathlib import Path
 import yaml  # type: ignore
-from typing import Any
+from typing import Any, Optional
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
@@ -70,7 +70,7 @@ def parse_issue_body(body: str) -> dict[str, str]:
     for label, val in matches:
         label = label.strip()
         val = val.strip()
-        if val == "_No response_" or not val:
+        if val == "_No response_" or val == "None" or not val:
             val = ""
         parsed[label] = val
     return parsed
@@ -78,7 +78,7 @@ def parse_issue_body(body: str) -> dict[str, str]:
 
 def geocode_location_forced(
     location_str: str, cache: dict[str, list[float]]
-) -> tuple[float, float] | None:
+) -> Optional[tuple[float, float]]:
     """
     title: Geocode a location using Nominatim API and updates the cache.
     parameters:
