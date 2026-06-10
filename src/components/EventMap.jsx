@@ -78,7 +78,7 @@ function MapController({ events }) {
   return null;
 }
 
-export default function EventMap({ events, onSelectEvent }) {
+export default function EventMap({ events, onSelectEvent, theme }) {
   // Filter events with valid coords
   const mapEvents = events.filter((e) => e.lat && e.lng);
 
@@ -128,133 +128,175 @@ export default function EventMap({ events, onSelectEvent }) {
           }}
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            url={
+              theme === "dark"
+                ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            }
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           />
 
           <ZoomControl position="topright" />
           <MapController events={mapEvents} />
 
-          {mapEvents.map((event) => (
-            <Marker key={event.id} position={[event.lat, event.lng]}>
-              <Popup className="premium-popup">
-                <div style={{ minWidth: "220px" }}>
-                  <span
-                    className="event-card__category"
-                    style={{ marginBottom: "10px", display: "inline-block" }}
-                  >
-                    {event.category}
-                  </span>
-                  <h3
-                    style={{
-                      margin: "0 0 10px 0",
-                      fontSize: "1.2rem",
-                      fontWeight: "bold",
-                      color: "#111",
-                    }}
-                  >
-                    {event.title}
-                  </h3>
+          {(() => {
+            const groupedEvents = {};
+            mapEvents.forEach((event) => {
+              const key = `${event.lat},${event.lng}`;
+              if (!groupedEvents[key]) {
+                groupedEvents[key] = [];
+              }
+              groupedEvents[key].push(event);
+            });
 
+            return Object.values(groupedEvents).map((group, index) => (
+              <Marker key={index} position={[group[0].lat, group[0].lng]}>
+                <Popup className="premium-popup">
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      fontSize: "13px",
-                      color: "#555",
-                      marginBottom: "12px",
+                      minWidth: "220px",
+                      maxHeight: "350px",
+                      overflowY: "auto",
+                      paddingRight: "4px",
                     }}
                   >
-                    <Calendar size={14} />
-                    {(() => {
-                      const formatDate = (dateStr) => {
-                        if (!dateStr) return "";
-                        try {
-                          return new Date(
-                            dateStr + "T00:00:00",
-                          ).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          });
-                        } catch (e) {
-                          return dateStr;
-                        }
-                      };
-                      const formattedDate = formatDate(event.date);
-                      const formattedEndDate = formatDate(event.end_date);
+                    {group.length > 1 && (
+                      <div
+                        style={{
+                          marginBottom: "12px",
+                          padding: "6px 10px",
+                          background: "var(--accent-primary)",
+                          color: "white",
+                          borderRadius: "8px",
+                          fontSize: "13px",
+                          fontWeight: "bold",
+                          display: "inline-block",
+                        }}
+                      >
+                        {group.length} Events Here
+                      </div>
+                    )}
 
-                      const hasEndDate =
-                        event.end_date && event.end_date !== event.date;
-                      const hasTimes = event.start_time && event.end_time;
+                    {group.map((event, i) => (
+                      <div
+                        key={event.id}
+                        style={{
+                          marginBottom: i < group.length - 1 ? "16px" : "0",
+                          borderBottom:
+                            i < group.length - 1 ? "1px solid #eee" : "none",
+                          paddingBottom: i < group.length - 1 ? "16px" : "0",
+                        }}
+                      >
+                        <span
+                          className="event-card__category"
+                          style={{
+                            marginBottom: "10px",
+                            display: "inline-block",
+                          }}
+                        >
+                          {event.category}
+                        </span>
+                        <h3
+                          style={{
+                            margin: "0 0 10px 0",
+                            fontSize: "1.2rem",
+                            fontWeight: "bold",
+                            color: "#111",
+                          }}
+                        >
+                          {event.title}
+                        </h3>
 
-                      let dateDisplay = formattedDate;
-                      let displayTime = event.time;
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            fontSize: "13px",
+                            color: "#555",
+                            marginBottom: "12px",
+                          }}
+                        >
+                          <Calendar size={14} />
+                          {(() => {
+                            const formatDate = (dateStr) => {
+                              if (!dateStr) return "";
+                              try {
+                                return new Date(
+                                  dateStr + "T00:00:00",
+                                ).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                });
+                              } catch (e) {
+                                return dateStr;
+                              }
+                            };
+                            const formattedDate = formatDate(event.date);
+                            const formattedEndDate = formatDate(
+                              event.end_date,
+                            );
 
-                      if (hasEndDate) {
-                        if (hasTimes) {
-                          return `${formattedDate}, ${event.start_time} – ${formattedEndDate}, ${event.end_time}`;
-                        } else {
-                          return `${formattedDate} – ${formattedEndDate}`;
-                        }
-                      } else {
-                        if (hasTimes) {
-                          displayTime = `${event.start_time} – ${event.end_time}`;
-                        } else {
-                          displayTime = event.time || event.start_time;
-                        }
-                      }
-                      return displayTime
-                        ? `${dateDisplay} • ${displayTime}`
-                        : dateDisplay;
-                    })()}
+                            const hasEndDate =
+                              event.end_date && event.end_date !== event.date;
+                            const hasTimes =
+                              event.start_time && event.end_time;
+
+                            let dateDisplay = formattedDate;
+                            let displayTime = event.time;
+
+                            if (hasEndDate) {
+                              if (hasTimes) {
+                                return `${formattedDate}, ${event.start_time} – ${formattedEndDate}, ${event.end_time}`;
+                              } else {
+                                return `${formattedDate} – ${formattedEndDate}`;
+                              }
+                            } else {
+                              if (hasTimes) {
+                                displayTime = `${event.start_time} – ${event.end_time}`;
+                              } else {
+                                displayTime = event.time || event.start_time;
+                              }
+                            }
+                            return displayTime
+                              ? `${dateDisplay} • ${displayTime}`
+                              : dateDisplay;
+                          })()}
+                        </div>
+
+                        <a
+                          href={`?page=event-details&eventId=${event.id}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onSelectEvent(event.id);
+                          }}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            textDecoration: "none",
+                            backgroundColor: "#7c5cfc",
+                            color: "white",
+                            padding: "8px 16px",
+                            borderRadius: "8px",
+                            fontSize: "13px",
+                            fontWeight: "600",
+                            transition: "all 0.2s",
+                            width: "100%",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                          }}
+                        >
+                          View Details <ExternalLink size={14} />
+                        </a>
+                      </div>
+                    ))}
                   </div>
-
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      margin: "0 0 16px 0",
-                      color: "#333",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 3,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      lineHeight: "1.5",
-                    }}
-                  >
-                    {event.description}
-                  </p>
-
-                  <a
-                    href={`?page=event-details&eventId=${event.id}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onSelectEvent(event.id);
-                    }}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      textDecoration: "none",
-                      backgroundColor: "#7c5cfc",
-                      color: "white",
-                      padding: "8px 16px",
-                      borderRadius: "8px",
-                      fontSize: "13px",
-                      fontWeight: "600",
-                      transition: "all 0.2s",
-                      width: "100%",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                    }}
-                  >
-                    View Details <ExternalLink size={14} />
-                  </a>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+                </Popup>
+              </Marker>
+            ));
+          })()}
         </MapContainer>
       </motion.div>
     </AnimatePresence>

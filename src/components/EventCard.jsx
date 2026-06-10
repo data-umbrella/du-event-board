@@ -84,7 +84,12 @@ export default function EventCard({
 
   // Grid view (default)
   return (
-    <article className="event-card" id={`event-${event.id}`}>
+    <article
+      className="event-card"
+      id={`event-${event.id}`}
+      onClick={() => onSelectEvent(event.id)}
+      style={{ cursor: "pointer" }}
+    >
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 
@@ -101,6 +106,7 @@ export default function EventCard({
           href={`?page=event-details&eventId=${event.id}`}
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             onSelectEvent(event.id);
           }}
           style={{ color: "inherit", textDecoration: "none" }}
@@ -124,6 +130,18 @@ export default function EventCard({
           </span>
           <span>{event.location}</span>
         </div>
+
+        {event.paid_or_free && (
+          <div className="event-card__meta-item">
+            <span className="event-card__meta-icon" aria-hidden="true">
+              💰
+            </span>
+            <span>
+              {event.paid_or_free.charAt(0).toUpperCase() +
+                event.paid_or_free.slice(1)}
+            </span>
+          </div>
+        )}
       </div>
 
       {event.tags && event.tags.length > 0 && (
@@ -135,18 +153,6 @@ export default function EventCard({
           ))}
         </div>
       )}
-
-      <a
-        href={`?page=event-details&eventId=${event.id}`}
-        onClick={(e) => {
-          e.preventDefault();
-          onSelectEvent(event.id);
-        }}
-        className="event-card__link"
-      >
-        View Details
-        <span className="event-card__link-arrow">→</span>
-      </a>
     </article>
   );
 }

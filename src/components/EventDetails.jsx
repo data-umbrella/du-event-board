@@ -37,6 +37,9 @@ export default function EventDetails({ event, onBack }) {
   const time = event.time;
   const location = event.location;
   const region = event.region;
+  const city = event.city;
+  const state = event.state || event.province;
+  const country = event.country;
   const category = event.category || event.event_type;
   const url = event.url || event.event_url;
   const tags = event.tags || [];
@@ -108,15 +111,14 @@ export default function EventDetails({ event, onBack }) {
     formatBadge = "Virtual";
   } else if (location && location.toLowerCase() === "online") {
     formatBadge = "Virtual";
-  } else {
-    formatBadge = "In-Person";
   }
 
   // Cost status display
+  const hasCost = !!paidOrFree;
   const isPaid = paidOrFree && paidOrFree.toLowerCase() === "paid";
   const costLabel = paidOrFree
     ? paidOrFree.charAt(0).toUpperCase() + paidOrFree.slice(1)
-    : "Free";
+    : "";
 
   return (
     <main className="event-details" id={`event-details-${event.id}`}>
@@ -151,18 +153,22 @@ export default function EventDetails({ event, onBack }) {
               <span className="event-details__badge event-details__badge--category">
                 {category}
               </span>
-              <span
-                className={`event-details__badge ${
-                  isPaid
-                    ? "event-details__badge--paid"
-                    : "event-details__badge--free"
-                }`}
-              >
-                {costLabel}
-              </span>
-              <span className="event-details__badge event-details__badge--format">
-                {formatBadge}
-              </span>
+              {hasCost && (
+                <span
+                  className={`event-details__badge ${
+                    isPaid
+                      ? "event-details__badge--paid"
+                      : "event-details__badge--free"
+                  }`}
+                >
+                  {costLabel}
+                </span>
+              )}
+              {formatBadge && (
+                <span className="event-details__badge event-details__badge--format">
+                  {formatBadge}
+                </span>
+              )}
               {language && (
                 <span className="event-details__badge event-details__badge--lang">
                   <Languages
@@ -237,6 +243,50 @@ export default function EventDetails({ event, onBack }) {
                 <p className="event-details__sidebar-value">{location}</p>
               </div>
             </div>
+
+            {city && (
+              <div className="event-details__sidebar-item">
+                <MapPin
+                  size={18}
+                  className="event-details__sidebar-icon"
+                  style={{ opacity: 0 }}
+                />
+                <div>
+                  <p className="event-details__sidebar-label">City</p>
+                  <p className="event-details__sidebar-value">{city}</p>
+                </div>
+              </div>
+            )}
+
+            {state && (
+              <div className="event-details__sidebar-item">
+                <MapPin
+                  size={18}
+                  className="event-details__sidebar-icon"
+                  style={{ opacity: 0 }}
+                />
+                <div>
+                  <p className="event-details__sidebar-label">
+                    State/Province
+                  </p>
+                  <p className="event-details__sidebar-value">{state}</p>
+                </div>
+              </div>
+            )}
+
+            {country && (
+              <div className="event-details__sidebar-item">
+                <Globe
+                  size={18}
+                  className="event-details__sidebar-icon"
+                  style={{ opacity: 0 }}
+                />
+                <div>
+                  <p className="event-details__sidebar-label">Country</p>
+                  <p className="event-details__sidebar-value">{country}</p>
+                </div>
+              </div>
+            )}
 
             {region && (
               <div className="event-details__sidebar-item">

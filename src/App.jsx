@@ -16,6 +16,10 @@ const fuseOptions = {
   keys: [
     { name: "title", weight: 0.9 },
     { name: "tags", weight: 0.7 },
+    { name: "category", weight: 0.6 },
+    { name: "city", weight: 0.5 },
+    { name: "state", weight: 0.5 },
+    { name: "country", weight: 0.5 },
     { name: "description", weight: 0.4 },
   ],
   threshold: 0.3,
@@ -52,6 +56,46 @@ export default function App() {
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
+
+  const [selectedCity, setSelectedCity] = useUrlState("city", "");
+  const [selectedState, setSelectedState] = useUrlState("state", "");
+  const [selectedCountry, setSelectedCountry] = useUrlState("country", "");
+  const [selectedFormat, setSelectedFormat] = useUrlState("format", "");
+  const [selectedCost, setSelectedCost] = useUrlState("cost", "");
+
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    if (city) {
+      const match = events.find((e) => e.city === city);
+      if (match) {
+        if (match.state || match.province)
+          setSelectedState(match.state || match.province);
+        if (match.country) setSelectedCountry(match.country);
+        if (match.region) setSelectedRegion(match.region);
+      }
+    }
+  };
+
+  const handleStateChange = (state) => {
+    setSelectedState(state);
+    if (state) {
+      const match = events.find((e) => (e.state || e.province) === state);
+      if (match) {
+        if (match.country) setSelectedCountry(match.country);
+        if (match.region) setSelectedRegion(match.region);
+      }
+    }
+  };
+
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    if (country) {
+      const match = events.find((e) => e.country === country);
+      if (match) {
+        if (match.region) setSelectedRegion(match.region);
+      }
+    }
+  };
 
   const selectedEvent = useMemo(() => {
     if (!selectedEventId) return null;
@@ -122,14 +166,56 @@ export default function App() {
   };
 
   const regions = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.region))];
+    const unique = [...new Set(events.map((e) => e.region).filter(Boolean))];
     return unique.sort();
   }, []);
 
   const categories = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.category))];
+    const unique = [...new Set(events.map((e) => e.category).filter(Boolean))];
     return unique.sort();
   }, []);
+
+  const countries = useMemo(() => {
+    let filtered = events;
+    if (selectedRegion) {
+      filtered = filtered.filter((e) => e.region === selectedRegion);
+    }
+    const unique = [
+      ...new Set(filtered.map((e) => e.country).filter(Boolean)),
+    ];
+    return unique.sort();
+  }, [selectedRegion]);
+
+  const states = useMemo(() => {
+    let filtered = events;
+    if (selectedRegion) {
+      filtered = filtered.filter((e) => e.region === selectedRegion);
+    }
+    if (selectedCountry) {
+      filtered = filtered.filter((e) => e.country === selectedCountry);
+    }
+    const unique = [
+      ...new Set(filtered.map((e) => e.state || e.province).filter(Boolean)),
+    ];
+    return unique.sort();
+  }, [selectedRegion, selectedCountry]);
+
+  const cities = useMemo(() => {
+    let filtered = events;
+    if (selectedRegion) {
+      filtered = filtered.filter((e) => e.region === selectedRegion);
+    }
+    if (selectedCountry) {
+      filtered = filtered.filter((e) => e.country === selectedCountry);
+    }
+    if (selectedState) {
+      filtered = filtered.filter(
+        (e) => (e.state || e.province) === selectedState,
+      );
+    }
+    const unique = [...new Set(filtered.map((e) => e.city).filter(Boolean))];
+    return unique.sort();
+  }, [selectedRegion, selectedCountry, selectedState]);
 
   const resetFilters = () => {
     setSearchTerm("");
@@ -139,6 +225,11 @@ export default function App() {
     setCustomDate("");
     setRangeStart("");
     setRangeEnd("");
+    setSelectedCity("");
+    setSelectedState("");
+    setSelectedCountry("");
+    setSelectedFormat("");
+    setSelectedCost("");
   };
 
   const filteredEvents = useMemo(() => {
@@ -183,7 +274,16 @@ export default function App() {
           const tags = event.tags
             ? event.tags.map((t) => t.toLowerCase())
             : [];
+          const category = event.category ? event.category.toLowerCase() : "";
+          const city = event.city ? event.city.toLowerCase() : "";
+          const state = event.state
+            ? event.state.toLowerCase()
+            : event.province
+              ? event.province.toLowerCase()
+              : "";
+          const country = event.country ? event.country.toLowerCase() : "";
 
+          // Full phrase matches
           if (title.startsWith(term)) score += 100;
           else if (title.includes(term)) score += 50;
 
@@ -191,6 +291,45 @@ export default function App() {
           else if (tags.some((t) => t.includes(term))) score += 10;
 
           if (description.includes(term)) score += 5;
+
+          // Multi-term logic (OR logic across any field, ranking by match count)
+          const terms = term.split(/\s+/).filter(Boolean);
+          if (terms.length > 1) {
+            let matchCount = 0;
+            for (const t of terms) {
+              let termMatched = false;
+              if (title.includes(t)) {
+                score += 20;
+                termMatched = true;
+              } else if (tags.some((tag) => tag.includes(t))) {
+                score += 15;
+                termMatched = true;
+              } else if (category.includes(t)) {
+                score += 10;
+                termMatched = true;
+              } else if (
+                city.includes(t) ||
+                state.includes(t) ||
+                country.includes(t)
+              ) {
+                score += 10;
+                termMatched = true;
+              } else if (description.includes(t)) {
+                score += 5;
+                termMatched = true;
+              }
+
+              if (termMatched) {
+                matchCount++;
+              }
+            }
+
+            if (matchCount === terms.length) {
+              score += 75; // Big boost for matching all terms!
+            } else if (matchCount > 0) {
+              score += matchCount * 10; // Bonus for each additional term matched
+            }
+          }
 
           if (searchDate) {
             const startDate = parseISODate(event.date || event.start_date);
@@ -281,7 +420,51 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesRegion && matchesCategory && matchesDate;
+      // Location filters
+      const matchesCity = !selectedCity || event.city === selectedCity;
+      const matchesState =
+        !selectedState ||
+        event.state === selectedState ||
+        event.province === selectedState;
+      const matchesCountry =
+        !selectedCountry || event.country === selectedCountry;
+
+      // Format filter
+      let matchesFormat = true;
+      if (selectedFormat) {
+        const isHybrid = event.in_person === "Yes" && event.virtual === "Yes";
+        const isOnline =
+          event.virtual === "Yes" ||
+          (event.location && event.location.toLowerCase() === "online");
+        const isInPerson = event.in_person === "Yes";
+
+        if (selectedFormat === "hybrid") matchesFormat = isHybrid;
+        else if (selectedFormat === "online")
+          matchesFormat = isOnline && !isHybrid;
+        else if (selectedFormat === "in-person")
+          matchesFormat = isInPerson && !isHybrid;
+      }
+
+      // Cost filter
+      let matchesCost = true;
+      if (selectedCost) {
+        const costVal = event.paid_or_free
+          ? event.paid_or_free.toLowerCase()
+          : "";
+        if (selectedCost === "free") matchesCost = costVal === "free";
+        else if (selectedCost === "paid") matchesCost = costVal === "paid";
+      }
+
+      return (
+        matchesRegion &&
+        matchesCategory &&
+        matchesDate &&
+        matchesCity &&
+        matchesState &&
+        matchesCountry &&
+        matchesFormat &&
+        matchesCost
+      );
     });
   }, [
     searchTerm,
@@ -291,6 +474,11 @@ export default function App() {
     customDate,
     rangeStart,
     rangeEnd,
+    selectedCity,
+    selectedState,
+    selectedCountry,
+    selectedFormat,
+    selectedCost,
   ]);
 
   // Group events by month for list view
@@ -336,6 +524,19 @@ export default function App() {
             onRangeEndChange={setRangeEnd}
             regions={regions}
             categories={categories}
+            selectedCity={selectedCity}
+            onCityChange={handleCityChange}
+            selectedState={selectedState}
+            onStateChange={handleStateChange}
+            selectedCountry={selectedCountry}
+            onCountryChange={handleCountryChange}
+            selectedFormat={selectedFormat}
+            onFormatChange={setSelectedFormat}
+            selectedCost={selectedCost}
+            onCostChange={setSelectedCost}
+            cities={cities}
+            states={states}
+            countries={countries}
           />
           <main className="main" id="main-content">
             <div
@@ -563,6 +764,7 @@ export default function App() {
               <EventMap
                 events={filteredEvents}
                 onSelectEvent={handleSelectEvent}
+                theme={theme}
               />
             )}
           </main>

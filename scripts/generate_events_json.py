@@ -73,7 +73,9 @@ def save_cache() -> None:
             json.dump(_geocode_cache, f, indent=2)
 
 
-def geocode_location(location_str: str) -> tuple[float, float] | None:
+from typing import Any, Optional
+
+def geocode_location(location_str: str) -> Optional[tuple[float, float]]:
     """
     title: Uses Nominatim API to get lat/long for a location string.
     parameters:
@@ -282,20 +284,20 @@ def main() -> None:
         # Geocode if we have a location and no coordinates
         if not all_errors and "lat" not in event:
             coords = None
-            if (
-                "location" in event
-                and event["location"]
-                and event["location"].lower() != "online"
-            ):
-                coords = geocode_location(event["location"])
 
-            if (
-                not coords
-                and "region" in event
-                and event["region"]
-                and event["region"].lower() != "online"
-            ):
-                coords = geocode_location(event["region"])
+            # Build an ordered list of geographic components (most to least specific)
+            geo_parts = []
+            for field in ["location", "city", "state", "country", "region"]:
+                val = event.get(field)
+                if val and isinstance(val, str) and val.lower() != "online":
+                    geo_parts.append(val)
+
+            # Try combining them from most specific to least specific
+            for start_idx in range(len(geo_parts)):
+                query = ", ".join(geo_parts[start_idx:])
+                coords = geocode_location(query)
+                if coords:
+                    break
 
             if coords:
                 event["lat"], event["lng"] = coords
