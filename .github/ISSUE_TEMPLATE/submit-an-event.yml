@@ -30,6 +30,7 @@ body:
     attributes:
       label: Start Time
       placeholder: HH:MM (e.g., 09:00 or 18:30)
+      description: Please enter the start time in UTC.
     validations:
       required: false
 
@@ -46,6 +47,7 @@ body:
     attributes:
       label: End Time
       placeholder: HH:MM (e.g., 17:00)
+      description: Please enter the end time in UTC.
     validations:
       required: false
 
