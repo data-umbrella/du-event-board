@@ -17,5 +17,9 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: "./src/test/setup.js",
+    coverage: {
+      reporter: ["text", "json-summary", "json"],
+      reportOnFailure: true,
+    },
   },
 });
