@@ -52,6 +52,9 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      pull-requests: write
+      contents: read
 
     concurrency:
       group: ci-lint-test-${{ github.ref }}
@@ -72,11 +75,39 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Run tests
-        run: npm run test
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Report Coverage
+        uses: davelosert/vitest-coverage-report-action@v2
+        if: always()
 
       - name: Build
         run: npm run build
+
+  test-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    concurrency:
+      group: ci-test-backend-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml requests pytest pytest-cov pytest-mock
+
+      - name: Run Python tests with coverage
+        run: python -m pytest tests/ --cov=scripts --cov-report=term-missing
 
   validate-events:
     runs-on: ubuntu-latest
