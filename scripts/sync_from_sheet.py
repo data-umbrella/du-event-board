@@ -1481,6 +1481,21 @@ def main() -> None:
 
             # 5. Commit and push
             debug_file_path = PROJECT_ROOT / "data" / "debug_sheet_events.json"
+
+            print("  Running pre-commit formatting...")
+            subprocess.run(
+                [
+                    "pre-commit",
+                    "run",
+                    "--files",
+                    "data/events.yaml",
+                    "src/data/events.json",
+                ],
+                cwd=str(PROJECT_ROOT),
+                capture_output=True,
+                check=False,
+            )
+
             if debug_file_path.exists():
                 run_git_cmd(
                     [
