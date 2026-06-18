@@ -31,6 +31,18 @@ jobs:
           EVENT_PAYLOAD: ${{ toJson(github.event.client_payload.event_data || github.event.client_payload) }}
         run: python scripts/add_event_from_submission.py
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Format files
+        run: npx prettier --write .
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
