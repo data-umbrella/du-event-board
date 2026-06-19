@@ -418,8 +418,12 @@ def main() -> None:
 
     yaml_keys = set()
     for event in events:
-        title = str(event.get("title", "")).strip().lower()
-        date = str(event.get("date", "")).strip()
+        title = (
+            str(event.get("title", event.get("event_name", "")))
+            .strip()
+            .lower()
+        )
+        date = str(event.get("date", event.get("start_date", ""))).strip()
         location = str(event.get("location", "")).strip().lower()
         if title and date:
             yaml_keys.add((title, date, location))
@@ -466,8 +470,12 @@ def main() -> None:
     missing_events = []
     events_needing_id_update = []
     for event in events:
-        title = str(event.get("title", "")).strip().lower()
-        date = str(event.get("date", "")).strip()
+        title = (
+            str(event.get("title", event.get("event_name", "")))
+            .strip()
+            .lower()
+        )
+        date = str(event.get("date", event.get("start_date", ""))).strip()
         end_date = str(event.get("end_date", "")).strip()
         location = str(event.get("location", "")).strip().lower()
         if not title or not date:
@@ -551,13 +559,15 @@ def main() -> None:
             "id": event.get("id", ""),
             "start_time": event.get("time", ""),
             "end_time": event.get("end_time", ""),
-            "event_name": event.get("title", ""),
-            "start_date": event.get("date", ""),
+            "event_name": event.get("title", event.get("event_name", "")),
+            "start_date": event.get("date", event.get("start_date", "")),
             "end_date": event.get("end_date", ""),
-            "event_type": event.get("category", ""),
+            "event_type": event.get("category", event.get("event_type", "")),
             "featured": format_featured(event.get("featured", "")),
             "tags": tags_val,
-            "event_description (200 char)": event.get("description", ""),
+            "event_description (200 char)": event.get(
+                "description", event.get("event_description", "")
+            ),
             "organization_name": event.get("organization_name", ""),
             "organization_url": event.get("organization_url", ""),
             "url_linkedin": event.get("url_linkedin", ""),
@@ -565,7 +575,7 @@ def main() -> None:
             "url_other": event.get("url_other", ""),
             "acronym": event.get("acronym", ""),
             "paid_or_free": event.get("paid_or_free", ""),
-            "event_url": event.get("url", ""),
+            "event_url": event.get("url", event.get("event_url", "")),
             "image_url": event.get("image_url", ""),
             "location": event.get("location", ""),
             "city": event.get("city", ""),
