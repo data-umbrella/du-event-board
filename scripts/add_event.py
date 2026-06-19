@@ -238,10 +238,18 @@ def main() -> None:
     for url_key in url_keys:
         url_val = event.get(url_key)
         if url_val:
-            if not re.match(
-                r"^(https?://|www\.)[a-zA-Z0-9\-\.\:\[\]]+([/?#]\S*)?$",
-                url_val,
-            ):
+            test_url = (
+                "https://" + url_val if url_val.startswith("www.") else url_val
+            )
+            try:
+                parsed = urllib.parse.urlparse(test_url)
+                is_valid = parsed.scheme in ["http", "https"] and bool(
+                    parsed.netloc
+                )
+            except Exception:
+                is_valid = False
+
+            if not is_valid:
                 label = [
                     lbl for lbl, k in LABEL_TO_KEY.items() if k == url_key
                 ][0]
