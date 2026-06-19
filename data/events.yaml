@@ -179,3 +179,25 @@ events:
     in_person: "Yes"
     virtual: "Unknown"
     language: "English"
+
+  - id: "10"
+    lat: 28.6138954
+    lng: 77.2090057
+    title: Event
+    description: xyz
+    date: "2026-06-26"
+    time: "10:00"
+    location: New delhi
+    region: asia
+    category: conf
+    url: www.sample.com
+    tags:
+      - python
+      - xyz
+    end_date: "2026-06-26"
+    featured: true
+    organization_name: xyz
+    paid_or_free: paid
+    in_person: true
+    virtual: false
+    language: english
