@@ -239,7 +239,7 @@ def main() -> None:
         url_val = event.get(url_key)
         if url_val:
             if not re.match(
-                r"^(https?://|www\.)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(/\S*)?$",
+                r"^(https?://|www\.)[a-zA-Z0-9\-\.\:\[\]]+([/?#]\S*)?$",
                 url_val,
             ):
                 label = [
