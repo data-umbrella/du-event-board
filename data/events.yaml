@@ -179,24 +179,3 @@ events:
     in_person: "Yes"
     virtual: "Unknown"
     language: "English"
-
-  - id: "10"
-    lat: 28.6138954
-    lng: 77.2090057
-    title: New Event
-    description: lkmklm
-    date: "2026-06-25"
-    time: "10:00"
-    location: new delhi
-    region: asia
-    category: conf
-    url: www.sample.com
-    tags:
-      - vhjkvb
-    end_date: "2026-07-02"
-    featured: false
-    organization_name: lml
-    paid_or_free: paid
-    in_person: true
-    virtual: false
-    language: english
