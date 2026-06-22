@@ -96,48 +96,68 @@ def main() -> None:
         sys.exit(1)
 
     parsed_url = urllib.parse.urlparse(webapp_url)
-    query_params = urllib.parse.parse_qs(parsed_url.query)
-    query_params["action"] = ["delete_pending"]
-    query_params["token"] = [secret_token]
-    new_query = urllib.parse.urlencode(query_params, doseq=True)
-    delete_url = urllib.parse.urlunparse(
-        (
-            parsed_url.scheme,
-            parsed_url.netloc,
-            parsed_url.path,
-            parsed_url.params,
-            new_query,
-            parsed_url.fragment,
+
+    def make_request(action: str) -> None:
+        """
+        title: Make a request to the Google Sheet Web App.
+        parameters:
+          action:
+            type: str
+        """
+        query_params = urllib.parse.parse_qs(parsed_url.query)
+        query_params["action"] = [action]
+        query_params["token"] = [secret_token]
+        new_query = urllib.parse.urlencode(query_params, doseq=True)
+        req_url = urllib.parse.urlunparse(
+            (
+                parsed_url.scheme,
+                parsed_url.netloc,
+                parsed_url.path,
+                parsed_url.params,
+                new_query,
+                parsed_url.fragment,
+            )
         )
-    )
 
-    payload = {"event_name": title, "start_date": date}
-    req_data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        delete_url,
-        data=req_data,
-        headers={
-            "Content-Type": "application/json",
-            "User-Agent": "GitHubActions-Sync",
-        },
-        method="POST",
-    )
+        payload = {"event_name": title, "start_date": date}
+        req_data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            req_url,
+            data=req_data,
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "GitHubActions-Sync",
+            },
+            method="POST",
+        )
 
-    try:
-        with urllib.request.urlopen(req) as response:
-            res_body = json.loads(response.read().decode())
-            if isinstance(res_body, dict) and "error" in res_body:
-                print(
-                    f"Error from Web App: {res_body['error']}", file=sys.stderr
-                )
-                sys.exit(1)
-            else:
-                print(
-                    f"Successfully requested deletion of pending submission: '{title}'"
-                )
-    except Exception as e:
-        print(f"Failed to call Google Sheet Web App: {e}", file=sys.stderr)
-        sys.exit(1)
+        try:
+            with urllib.request.urlopen(req) as response:
+                res_body = json.loads(response.read().decode())
+                if isinstance(res_body, dict) and "error" in res_body:
+                    print(
+                        f"Error from Web App ({action}): {res_body['error']}",
+                        file=sys.stderr,
+                    )
+                else:
+                    print(f"Successfully requested {action} for: '{title}'")
+        except Exception as e:
+            print(
+                f"Failed to call Google Sheet Web App ({action}): {e}",
+                file=sys.stderr,
+            )
+
+    # Always attempt to remove from Form Responses 1 queue
+    make_request("delete_pending")
+
+    # If the PR was closed WITHOUT merging (rejected), ALSO delete it from event-listing
+    # to ensure it doesn't get synced again.
+    pr_is_merged = os.environ.get("PR_IS_MERGED", "false").lower() == "true"
+    if not pr_is_merged:
+        print(
+            "PR was rejected (closed without merging). Requesting deletion from event-listing as well..."
+        )
+        make_request("delete_event")
 
 
 if __name__ == "__main__":

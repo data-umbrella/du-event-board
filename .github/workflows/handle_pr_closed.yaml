@@ -31,4 +31,5 @@ jobs:
         env:
           GOOGLE_SHEET_WEBAPP_URL: ${{ secrets.GOOGLE_SHEET_WEBAPP_URL }}
           GOOGLE_SHEET_SECRET_TOKEN: ${{ secrets.GOOGLE_SHEET_SECRET_TOKEN }}
+          PR_IS_MERGED: ${{ github.event.pull_request.merged }}
         run: python scripts/delete_pending_submission.py
