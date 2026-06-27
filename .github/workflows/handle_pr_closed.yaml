@@ -1,0 +1,35 @@
+name: Handle PR Closed
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup_submission:
+    # Run when a PR is closed (merged OR rejected) if it was a form submission or sync/add branch
+    if: |
+      startsWith(github.event.pull_request.head.ref, 'event-submission-') ||
+      startsWith(github.event.pull_request.head.ref, 'sync/add-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Delete pending submission from sheet
+        env:
+          GOOGLE_SHEET_WEBAPP_URL: ${{ secrets.GOOGLE_SHEET_WEBAPP_URL }}
+          GOOGLE_SHEET_SECRET_TOKEN: ${{ secrets.GOOGLE_SHEET_SECRET_TOKEN }}
+          PR_IS_MERGED: ${{ github.event.pull_request.merged }}
+        run: python scripts/delete_pending_submission.py

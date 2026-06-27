@@ -1,0 +1,34 @@
+name: Sync Events from Google Sheet
+
+on:
+  repository_dispatch:
+    types: [sync_from_sheet]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: pip install pyyaml pre-commit
+
+      - name: Run sync script
+        env:
+          GOOGLE_SHEET_WEBAPP_URL: ${{ secrets.GOOGLE_SHEET_WEBAPP_URL }}
+          GOOGLE_SHEET_SECRET_TOKEN: ${{ secrets.GOOGLE_SHEET_SECRET_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/sync_from_sheet.py
