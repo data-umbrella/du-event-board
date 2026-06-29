@@ -122,6 +122,20 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+        main
+    if (typeof window.gtag !== "undefined") {
+      window.gtag("event", "page_view", {
+        page_path: `/?page=${currentPage}`,
+        page_title:
+          currentPage === "events"
+            ? "Events"
+            : currentPage === "about"
+              ? "About"
+              : "Sponsors",
+      });
+    }
+  }, [currentPage]);
+
 
     // 1. Update Document Title dynamically for any page added now or in the future
     let newTitle = "DU Event Board - Discover Events Near You";
@@ -147,6 +161,7 @@ export default function App() {
       });
     }
   }, [currentPage, selectedEvent]);
+       main
 
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
