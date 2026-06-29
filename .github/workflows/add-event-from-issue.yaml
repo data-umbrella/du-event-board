@@ -1,0 +1,81 @@
+name: Add Event from Issue
+
+on:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  add-event-pr:
+    # Trigger if the issue has the label 'add-event'
+    if: |
+      github.event.label.name == 'add-event' ||
+      contains(github.event.issue.labels.*.name, 'add-event') ||
+      startsWith(github.event.issue.title, '[Event]:')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          pip install pyyaml pre-commit
+
+      - name: Parse and add event to YAML
+        id: add_event
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python scripts/add_event.py
+
+      - name: Comment on issue if validation fails
+        if: failure() && steps.add_event.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ERROR_MSG=$(cat error_message.md || echo "### ❌ Error
+          An unknown error occurred during event validation.")
+          gh issue comment ${{ github.event.issue.number }} --body "$ERROR_MSG"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Regenerate events.json
+        run: npm run generate
+
+      - name: Run pre-commit formatting
+        run: |
+          pre-commit run --files data/events.yaml src/data/events.json || true
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: add event ${{ steps.add_event.outputs.event_name }}"
+          title: "feat: add event ${{ steps.add_event.outputs.event_name }}"
+          body: |
+            This Pull Request was automatically generated from issue #${{ github.event.issue.number }}.
+
+            It adds the event **${{ steps.add_event.outputs.event_name }}** to the event board.
+
+            Closes #${{ github.event.issue.number }}
+
+            > [!NOTE]
+            > Since this PR was generated automatically using `GITHUB_TOKEN`, GitHub Actions prevents other workflows (like CI) from running automatically. If you want to trigger CI checks, you can simply close and reopen this PR, or push an empty commit to it.
+          branch: add-event/issue-${{ github.event.issue.number }}
+          delete-branch: true

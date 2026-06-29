@@ -9,6 +9,9 @@ export default defineConfig({
       analytics: {
         provider: "ga",
         id: "G-E5SMJ9E985",
+        config: {
+          send_page_view: false,
+        },
       },
     }),
   ],

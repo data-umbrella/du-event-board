@@ -1,15 +1,49 @@
 import { getEventStatus } from "../utils/eventHelpers";
 
-export default function EventCard({ event, viewMode = "grid" }) {
+export default function EventCard({
+  event,
+  viewMode = "grid",
+  onSelectEvent,
+}) {
   const status = getEventStatus(event.date);
-  const formattedDate = new Date(event.date + "T00:00:00").toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
-  );
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    try {
+      return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
+  const formattedDate = formatDate(event.date);
+  const formattedEndDate = formatDate(event.end_date);
+
+  const hasEndDate = event.end_date && event.end_date !== event.date;
+  const hasTimes = event.start_time && event.end_time;
+
+  let dateDisplay = formattedDate;
+
+  if (hasEndDate) {
+    if (hasTimes) {
+      dateDisplay = `${formattedDate}, ${event.start_time} – ${formattedEndDate}, ${event.end_time}`;
+    } else {
+      dateDisplay = `${formattedDate} – ${formattedEndDate}`;
+    }
+  } else {
+    // Single day event
+    const timeVal =
+      event.time ||
+      (event.start_time && event.end_time
+        ? `${event.start_time} – ${event.end_time}`
+        : event.start_time);
+    if (timeVal) {
+      dateDisplay = `${formattedDate} • ${timeVal}`;
+    }
+  }
 
   const statusMap = {
     live: "status-badge--live",
@@ -21,18 +55,16 @@ export default function EventCard({ event, viewMode = "grid" }) {
     return (
       <article className="event-list-row" id={`event-${event.id}`}>
         <div className="event-list-row__title-wrap">
-          {event.url ? (
-            <a
-              href={event.url}
-              className="event-list-row__title"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {event.title}
-            </a>
-          ) : (
-            <span className="event-list-row__title">{event.title}</span>
-          )}
+          <a
+            href={`?page=event-details&eventId=${event.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              onSelectEvent(event.id);
+            }}
+            className="event-list-row__title"
+          >
+            {event.title}
+          </a>
         </div>
         <div className="event-list-row__right">
           <span className="event-list-row__category">{event.category}</span>
@@ -44,7 +76,7 @@ export default function EventCard({ event, viewMode = "grid" }) {
               {status === "live" ? "Live" : status}
             </div>
           )}
-          <span className="event-list-row__date">{formattedDate}</span>
+          <span className="event-list-row__date">{dateDisplay}</span>
         </div>
       </article>
     );
@@ -52,7 +84,13 @@ export default function EventCard({ event, viewMode = "grid" }) {
 
   // Grid view (default)
   return (
-    <article className="event-card" id={`event-${event.id}`}>
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
+    <article
+      className="event-card"
+      id={`event-${event.id}`}
+      onClick={() => onSelectEvent(event.id)}
+      style={{ cursor: "pointer" }}
+    >
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 
@@ -64,7 +102,19 @@ export default function EventCard({ event, viewMode = "grid" }) {
         )}
       </div>
 
-      <h2 className="event-card__title">{event.title}</h2>
+      <h2 className="event-card__title">
+        <a
+          href={`?page=event-details&eventId=${event.id}`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onSelectEvent(event.id);
+          }}
+          style={{ color: "inherit", textDecoration: "none" }}
+        >
+          {event.title}
+        </a>
+      </h2>
       <p className="event-card__description">{event.description}</p>
 
       <div className="event-card__meta">
@@ -72,20 +122,27 @@ export default function EventCard({ event, viewMode = "grid" }) {
           <span className="event-card__meta-icon" aria-hidden="true">
             📅
           </span>
-          <span>{formattedDate}</span>
+          <span>{dateDisplay}</span>
         </div>
-        <div className="event-card__meta-item">
-          <span className="event-card__meta-icon" aria-hidden="true">
-            🕐
-          </span>
-          <span>{event.time}</span>
-        </div>
+
         <div className="event-card__meta-item">
           <span className="event-card__meta-icon" aria-hidden="true">
             📍
           </span>
           <span>{event.location}</span>
         </div>
+
+        {event.paid_or_free && (
+          <div className="event-card__meta-item">
+            <span className="event-card__meta-icon" aria-hidden="true">
+              💰
+            </span>
+            <span>
+              {event.paid_or_free.charAt(0).toUpperCase() +
+                event.paid_or_free.slice(1)}
+            </span>
+          </div>
+        )}
       </div>
 
       {event.tags && event.tags.length > 0 && (
@@ -96,18 +153,6 @@ export default function EventCard({ event, viewMode = "grid" }) {
             </span>
           ))}
         </div>
-      )}
-
-      {event.url && (
-        <a
-          href={event.url}
-          className="event-card__link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn more
-          <span className="event-card__link-arrow">→</span>
-        </a>
       )}
     </article>
   );

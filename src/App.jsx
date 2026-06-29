@@ -7,6 +7,7 @@ import EventMap from "./components/EventMap";
 import Footer from "./components/Footer";
 import AboutUs from "./components/AboutUs";
 import Sponsors from "./components/Sponsors";
+import EventDetails from "./components/EventDetails";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import BackToTop from "./components/BackToTop";
@@ -15,6 +16,10 @@ const fuseOptions = {
   keys: [
     { name: "title", weight: 0.9 },
     { name: "tags", weight: 0.7 },
+    { name: "category", weight: 0.6 },
+    { name: "city", weight: 0.5 },
+    { name: "state", weight: 0.5 },
+    { name: "country", weight: 0.5 },
     { name: "description", weight: 0.4 },
   ],
   threshold: 0.3,
@@ -27,7 +32,8 @@ const fuse = new Fuse(events, fuseOptions);
 
 function parseISODate(dateString) {
   if (!dateString) return null;
-  const [year, month, day] = dateString.split("-").map(Number);
+  const datePart = dateString.split("T")[0].split(" ")[0];
+  const [year, month, day] = datePart.split("-").map(Number);
   if (!year || !month || !day) return null;
   return new Date(year, month - 1, day);
 }
@@ -43,6 +49,7 @@ export default function App() {
   const [selectedRegion, setSelectedRegion] = useUrlState("region", "");
   const [selectedCategory, setSelectedCategory] = useUrlState("category", "");
   const [currentPage, setCurrentPage] = useUrlState("page", "events");
+  const [selectedEventId, setSelectedEventId] = useUrlState("eventId", "");
   const [viewMode, setViewMode] = useUrlState("view", "grid");
 
   const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
@@ -50,8 +57,72 @@ export default function App() {
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
 
+  const [selectedCity, setSelectedCity] = useUrlState("city", "");
+  const [selectedState, setSelectedState] = useUrlState("state", "");
+  const [selectedCountry, setSelectedCountry] = useUrlState("country", "");
+  const [selectedFormat, setSelectedFormat] = useUrlState("format", "");
+  const [selectedCost, setSelectedCost] = useUrlState("cost", "");
+
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    if (city) {
+      const match = events.find((e) => e.city === city);
+      if (match) {
+        if (match.state || match.province)
+          setSelectedState(match.state || match.province);
+        if (match.country) setSelectedCountry(match.country);
+        if (match.region) setSelectedRegion(match.region);
+      }
+    }
+  };
+
+  const handleStateChange = (state) => {
+    setSelectedState(state);
+    if (state) {
+      const match = events.find((e) => (e.state || e.province) === state);
+      if (match) {
+        if (match.country) setSelectedCountry(match.country);
+        if (match.region) setSelectedRegion(match.region);
+      }
+    }
+  };
+
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    if (country) {
+      const match = events.find((e) => e.country === country);
+      if (match) {
+        if (match.region) setSelectedRegion(match.region);
+      }
+    }
+  };
+
+  const selectedEvent = useMemo(() => {
+    if (!selectedEventId) return null;
+    return events.find((e) => String(e.id) === String(selectedEventId));
+  }, [selectedEventId]);
+
+  useEffect(() => {
+    if (currentPage === "event-details" && !selectedEvent) {
+      setCurrentPage("events");
+    }
+  }, [currentPage, selectedEvent, setCurrentPage]);
+
+  const handleNavigate = (page) => {
+    setCurrentPage(page);
+    if (page !== "event-details") {
+      setSelectedEventId("");
+    }
+  };
+
+  const handleSelectEvent = (eventId) => {
+    setSelectedEventId(eventId);
+    setCurrentPage("event-details");
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
+        main
     if (typeof window.gtag !== "undefined") {
       window.gtag("event", "page_view", {
         page_path: `/?page=${currentPage}`,
@@ -64,6 +135,33 @@ export default function App() {
       });
     }
   }, [currentPage]);
+
+
+    // 1. Update Document Title dynamically for any page added now or in the future
+    let newTitle = "DU Event Board - Discover Events Near You";
+
+    if (currentPage === "event-details" && selectedEvent) {
+      newTitle = `${selectedEvent.title} | DU Event Board`;
+    } else if (currentPage && currentPage !== "events") {
+      // Auto-formats "about-us" to "About Us" or "sponsors" to "Sponsors"
+      const formattedPage = currentPage
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+      newTitle = `${formattedPage} | DU Event Board`;
+    }
+
+    document.title = newTitle;
+
+    // 2. Explicitly tell Google Analytics that the page has changed
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      window.gtag("event", "page_view", {
+        page_location: window.location.href,
+        page_title: document.title,
+      });
+    }
+  }, [currentPage, selectedEvent]);
+       main
 
   const [theme, setTheme] = useState(() => {
     // Check if we are in a browser and if localStorage.getItem actually exists
@@ -107,14 +205,56 @@ export default function App() {
   };
 
   const regions = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.region))];
+    const unique = [...new Set(events.map((e) => e.region).filter(Boolean))];
     return unique.sort();
   }, []);
 
   const categories = useMemo(() => {
-    const unique = [...new Set(events.map((e) => e.category))];
+    const unique = [...new Set(events.map((e) => e.category).filter(Boolean))];
     return unique.sort();
   }, []);
+
+  const countries = useMemo(() => {
+    let filtered = events;
+    if (selectedRegion) {
+      filtered = filtered.filter((e) => e.region === selectedRegion);
+    }
+    const unique = [
+      ...new Set(filtered.map((e) => e.country).filter(Boolean)),
+    ];
+    return unique.sort();
+  }, [selectedRegion]);
+
+  const states = useMemo(() => {
+    let filtered = events;
+    if (selectedRegion) {
+      filtered = filtered.filter((e) => e.region === selectedRegion);
+    }
+    if (selectedCountry) {
+      filtered = filtered.filter((e) => e.country === selectedCountry);
+    }
+    const unique = [
+      ...new Set(filtered.map((e) => e.state || e.province).filter(Boolean)),
+    ];
+    return unique.sort();
+  }, [selectedRegion, selectedCountry]);
+
+  const cities = useMemo(() => {
+    let filtered = events;
+    if (selectedRegion) {
+      filtered = filtered.filter((e) => e.region === selectedRegion);
+    }
+    if (selectedCountry) {
+      filtered = filtered.filter((e) => e.country === selectedCountry);
+    }
+    if (selectedState) {
+      filtered = filtered.filter(
+        (e) => (e.state || e.province) === selectedState,
+      );
+    }
+    const unique = [...new Set(filtered.map((e) => e.city).filter(Boolean))];
+    return unique.sort();
+  }, [selectedRegion, selectedCountry, selectedState]);
 
   const resetFilters = () => {
     setSearchTerm("");
@@ -124,6 +264,11 @@ export default function App() {
     setCustomDate("");
     setRangeStart("");
     setRangeEnd("");
+    setSelectedCity("");
+    setSelectedState("");
+    setSelectedCountry("");
+    setSelectedFormat("");
+    setSelectedCost("");
   };
 
   const filteredEvents = useMemo(() => {
@@ -149,16 +294,35 @@ export default function App() {
     const baseEvents = (() => {
       if (!term) return events;
 
+      let searchDate = parseISODate(term);
+      if (!searchDate && term.length >= 6) {
+        const d = new Date(term);
+        if (!isNaN(d.getTime())) {
+          searchDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        }
+      }
+
       // 1. Exact Substring/Prefix matches always come first
       const exactMatches = events
         .map((event) => {
           let score = 0;
-          const title = event.title.toLowerCase();
-          const description = event.description.toLowerCase();
+          const title = event.title ? event.title.toLowerCase() : "";
+          const description = event.description
+            ? event.description.toLowerCase()
+            : "";
           const tags = event.tags
             ? event.tags.map((t) => t.toLowerCase())
             : [];
+          const category = event.category ? event.category.toLowerCase() : "";
+          const city = event.city ? event.city.toLowerCase() : "";
+          const state = event.state
+            ? event.state.toLowerCase()
+            : event.province
+              ? event.province.toLowerCase()
+              : "";
+          const country = event.country ? event.country.toLowerCase() : "";
 
+          // Full phrase matches
           if (title.startsWith(term)) score += 100;
           else if (title.includes(term)) score += 50;
 
@@ -166,6 +330,59 @@ export default function App() {
           else if (tags.some((t) => t.includes(term))) score += 10;
 
           if (description.includes(term)) score += 5;
+
+          // Multi-term logic (OR logic across any field, ranking by match count)
+          const terms = term.split(/\s+/).filter(Boolean);
+          if (terms.length > 1) {
+            let matchCount = 0;
+            for (const t of terms) {
+              let termMatched = false;
+              if (title.includes(t)) {
+                score += 20;
+                termMatched = true;
+              } else if (tags.some((tag) => tag.includes(t))) {
+                score += 15;
+                termMatched = true;
+              } else if (category.includes(t)) {
+                score += 10;
+                termMatched = true;
+              } else if (
+                city.includes(t) ||
+                state.includes(t) ||
+                country.includes(t)
+              ) {
+                score += 10;
+                termMatched = true;
+              } else if (description.includes(t)) {
+                score += 5;
+                termMatched = true;
+              }
+
+              if (termMatched) {
+                matchCount++;
+              }
+            }
+
+            if (matchCount === terms.length) {
+              score += 75; // Big boost for matching all terms!
+            } else if (matchCount > 0) {
+              score += matchCount * 10; // Bonus for each additional term matched
+            }
+          }
+
+          if (searchDate) {
+            const startDate = parseISODate(event.date || event.start_date);
+            const endDate =
+              parseISODate(event.end_date || event.endDate) || startDate;
+            if (
+              startDate &&
+              endDate &&
+              startDate <= searchDate &&
+              endDate >= searchDate
+            ) {
+              score += 100;
+            }
+          }
 
           return { ...event, _score: score };
         })
@@ -187,8 +404,10 @@ export default function App() {
     })();
 
     return baseEvents.filter((event) => {
-      const eventDate = parseISODate(event.date);
-      if (!eventDate) return false;
+      const startDate = parseISODate(event.date || event.start_date);
+      const endDate =
+        parseISODate(event.end_date || event.endDate) || startDate;
+      if (!startDate) return false;
 
       // Region filter
       const matchesRegion = !selectedRegion || event.region === selectedRegion;
@@ -202,18 +421,21 @@ export default function App() {
 
       switch (dateFilterType) {
         case "upcoming":
-          matchesDate = eventDate >= today;
+          matchesDate = endDate >= today;
           break;
         case "thisWeek":
-          matchesDate = eventDate >= weekStart && eventDate <= weekEnd;
+          matchesDate = startDate <= weekEnd && endDate >= weekStart;
           break;
         case "thisMonth":
-          matchesDate = eventDate >= monthStart && eventDate <= monthEnd;
+          matchesDate = startDate <= monthEnd && endDate >= monthStart;
           break;
         case "customDate":
-          matchesDate =
-            !selectedCustomDate ||
-            eventDate.getTime() === selectedCustomDate.getTime();
+          if (!selectedCustomDate) {
+            matchesDate = true;
+          } else {
+            matchesDate =
+              startDate <= selectedCustomDate && endDate >= selectedCustomDate;
+          }
           break;
         case "customRange":
           if (
@@ -225,11 +447,11 @@ export default function App() {
             break;
           }
 
-          if (selectedRangeStart && eventDate < selectedRangeStart) {
+          if (selectedRangeStart && endDate < selectedRangeStart) {
             matchesDate = false;
           }
 
-          if (selectedRangeEnd && eventDate > selectedRangeEnd) {
+          if (selectedRangeEnd && startDate > selectedRangeEnd) {
             matchesDate = false;
           }
           break;
@@ -237,7 +459,51 @@ export default function App() {
           matchesDate = true;
       }
 
-      return matchesRegion && matchesCategory && matchesDate;
+      // Location filters
+      const matchesCity = !selectedCity || event.city === selectedCity;
+      const matchesState =
+        !selectedState ||
+        event.state === selectedState ||
+        event.province === selectedState;
+      const matchesCountry =
+        !selectedCountry || event.country === selectedCountry;
+
+      // Format filter
+      let matchesFormat = true;
+      if (selectedFormat) {
+        const isHybrid = event.in_person === "Yes" && event.virtual === "Yes";
+        const isOnline =
+          event.virtual === "Yes" ||
+          (event.location && event.location.toLowerCase() === "online");
+        const isInPerson = event.in_person === "Yes";
+
+        if (selectedFormat === "hybrid") matchesFormat = isHybrid;
+        else if (selectedFormat === "online")
+          matchesFormat = isOnline && !isHybrid;
+        else if (selectedFormat === "in-person")
+          matchesFormat = isInPerson && !isHybrid;
+      }
+
+      // Cost filter
+      let matchesCost = true;
+      if (selectedCost) {
+        const costVal = event.paid_or_free
+          ? event.paid_or_free.toLowerCase()
+          : "";
+        if (selectedCost === "free") matchesCost = costVal === "free";
+        else if (selectedCost === "paid") matchesCost = costVal === "paid";
+      }
+
+      return (
+        matchesRegion &&
+        matchesCategory &&
+        matchesDate &&
+        matchesCity &&
+        matchesState &&
+        matchesCountry &&
+        matchesFormat &&
+        matchesCost
+      );
     });
   }, [
     searchTerm,
@@ -247,6 +513,11 @@ export default function App() {
     customDate,
     rangeStart,
     rangeEnd,
+    selectedCity,
+    selectedState,
+    selectedCountry,
+    selectedFormat,
+    selectedCost,
   ]);
 
   // Group events by month for list view
@@ -254,7 +525,7 @@ export default function App() {
     if (viewMode !== "list") return null;
     const groups = {};
     filteredEvents.forEach((event) => {
-      const date = parseISODate(event.date);
+      const date = parseISODate(event.date || event.start_date);
       if (!date) return;
       const key = date.toLocaleDateString("en-US", {
         month: "long",
@@ -271,7 +542,7 @@ export default function App() {
       <Header
         theme={theme}
         onToggleTheme={toggleTheme}
-        onNavigate={setCurrentPage}
+        onNavigate={handleNavigate}
       />
       {currentPage === "events" ? (
         <>
@@ -292,6 +563,19 @@ export default function App() {
             onRangeEndChange={setRangeEnd}
             regions={regions}
             categories={categories}
+            selectedCity={selectedCity}
+            onCityChange={handleCityChange}
+            selectedState={selectedState}
+            onStateChange={handleStateChange}
+            selectedCountry={selectedCountry}
+            onCountryChange={handleCountryChange}
+            selectedFormat={selectedFormat}
+            onFormatChange={setSelectedFormat}
+            selectedCost={selectedCost}
+            onCostChange={setSelectedCost}
+            cities={cities}
+            states={states}
+            countries={countries}
           />
           <main className="main" id="main-content">
             <div
@@ -448,7 +732,12 @@ export default function App() {
               <div className="events-grid" id="events-grid">
                 {filteredEvents && filteredEvents.length > 0 ? (
                   filteredEvents.map((event) => (
-                    <EventCard key={event.id} event={event} viewMode="grid" />
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      viewMode="grid"
+                      onSelectEvent={handleSelectEvent}
+                    />
                   ))
                 ) : (
                   <div className="empty-state" id="empty-state">
@@ -483,6 +772,7 @@ export default function App() {
                             key={event.id}
                             event={event}
                             viewMode="list"
+                            onSelectEvent={handleSelectEvent}
                           />
                         ))}
                       </div>
@@ -510,16 +800,25 @@ export default function App() {
                 )}
               </div>
             ) : (
-              <EventMap events={filteredEvents} />
+              <EventMap
+                events={filteredEvents}
+                onSelectEvent={handleSelectEvent}
+                theme={theme}
+              />
             )}
           </main>
         </>
+      ) : currentPage === "event-details" && selectedEvent ? (
+        <EventDetails
+          event={selectedEvent}
+          onBack={() => handleNavigate("events")}
+        />
       ) : currentPage === "about" ? (
         <AboutUs />
       ) : currentPage === "sponsors" ? (
         <Sponsors />
       ) : null}
-      <Footer onNavigate={setCurrentPage} />
+      <Footer onNavigate={handleNavigate} />
       <BackToTop />
     </>
   );

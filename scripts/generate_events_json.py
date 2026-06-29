@@ -12,7 +12,7 @@ import sys
 import time
 import urllib.request
 import urllib.parse
-from typing import Any
+from typing import Any, Optional
 from datetime import datetime
 from pathlib import Path
 
@@ -23,10 +23,8 @@ REQUIRED_FIELDS = [
     "title",
     "description",
     "date",
-    "time",
     "location",
     "region",
-    "category",
 ]
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
@@ -74,14 +72,14 @@ def save_cache() -> None:
             json.dump(_geocode_cache, f, indent=2)
 
 
-def geocode_location(location_str: str) -> tuple[float, float] | None:
+def geocode_location(location_str: str) -> Optional[tuple[float, float]]:
     """
     title: Uses Nominatim API to get lat/long for a location string.
     parameters:
       location_str:
         type: str
     returns:
-      type: tuple[float, float] | None
+      type: Optional[tuple[float, float]]
     """
     if not location_str or location_str.lower() == "online":
         return None
@@ -147,7 +145,7 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
             )
 
     # Validate time format
-    if "time" in event:
+    if "time" in event and event["time"]:
         try:
             # Handle time objects if PyYAML parsed them
             if not isinstance(event["time"], str):
@@ -156,6 +154,28 @@ def validate_event(event: dict[str, Any], index: int) -> list[str]:
         except ValueError:
             errors.append(
                 f"Event #{index}: Invalid time format '{event['time']}' (expected HH:MM)"
+            )
+
+    # Validate start_time format
+    if "start_time" in event and event["start_time"]:
+        try:
+            if not isinstance(event["start_time"], str):
+                event["start_time"] = event["start_time"].strftime("%H:%M")
+            datetime.strptime(event["start_time"], "%H:%M")
+        except ValueError:
+            errors.append(
+                f"Event #{index}: Invalid start_time format '{event['start_time']}' (expected HH:MM)"
+            )
+
+    # Validate end_time format
+    if "end_time" in event and event["end_time"]:
+        try:
+            if not isinstance(event["end_time"], str):
+                event["end_time"] = event["end_time"].strftime("%H:%M")
+            datetime.strptime(event["end_time"], "%H:%M")
+        except ValueError:
+            errors.append(
+                f"Event #{index}: Invalid end_time format '{event['end_time']}' (expected HH:MM)"
             )
 
     return errors
@@ -258,26 +278,45 @@ def main() -> None:
     # Validate all events
     all_errors = []
     for i, event in enumerate(events, start=1):
+        # Normalize/Alias keys if they exist under the new format
+        if "title" not in event and "event_name" in event:
+            event["title"] = event["event_name"]
+        if "date" not in event and "start_date" in event:
+            event["date"] = event["start_date"]
+        if "category" not in event and "event_type" in event:
+            event["category"] = event["event_type"]
+        if "url" not in event and "event_url" in event:
+            event["url"] = event["event_url"]
+        if "description" not in event and "event_description" in event:
+            event["description"] = (
+                event["event_description"]
+                or f"Event details for {event.get('title', 'this event')}."
+            )
+        if "tags" in event and isinstance(event["tags"], str):
+            event["tags"] = [
+                t.strip() for t in event["tags"].split(",") if t.strip()
+            ]
+
         errors = validate_event(event, i)
         all_errors.extend(errors)
 
         # Geocode if we have a location and no coordinates
         if not all_errors and "lat" not in event:
             coords = None
-            if (
-                "location" in event
-                and event["location"]
-                and event["location"].lower() != "online"
-            ):
-                coords = geocode_location(event["location"])
 
-            if (
-                not coords
-                and "region" in event
-                and event["region"]
-                and event["region"].lower() != "online"
-            ):
-                coords = geocode_location(event["region"])
+            # Build an ordered list of geographic components (most to least specific)
+            geo_parts = []
+            for field in ["location", "city", "state", "country", "region"]:
+                val = event.get(field)
+                if val and isinstance(val, str) and val.lower() != "online":
+                    geo_parts.append(val)
+
+            # Try combining them from most specific to least specific
+            for start_idx in range(len(geo_parts)):
+                query = ", ".join(geo_parts[start_idx:])
+                coords = geocode_location(query)
+                if coords:
+                    break
 
             if coords:
                 event["lat"], event["lng"] = coords

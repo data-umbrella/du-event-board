@@ -1,0 +1,231 @@
+name: Submit an event
+description: Propose a new event to be added to the DU Event Board.
+title: "[Event]: <Event Name>"
+labels: ["add-event"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for wanting to add an event! Please fill out the form below as completely and accurately as possible.
+        A Pull Request will be automatically generated to add this event.
+
+  - type: input
+    id: event_name
+    attributes:
+      label: Event Name
+      placeholder: e.g., PyOhio 2026
+    validations:
+      required: true
+
+  - type: input
+    id: start_date
+    attributes:
+      label: Start Date
+      placeholder: YYYY-MM-DD (e.g., 2026-07-25)
+    validations:
+      required: true
+
+  - type: input
+    id: start_time
+    attributes:
+      label: Start Time
+      placeholder: HH:MM (e.g., 09:00 or 18:30)
+      description: Please enter the start time in UTC.
+    validations:
+      required: false
+
+  - type: input
+    id: end_date
+    attributes:
+      label: End Date
+      placeholder: YYYY-MM-DD (e.g., 2026-07-26)
+    validations:
+      required: false
+
+  - type: input
+    id: end_time
+    attributes:
+      label: End Time
+      placeholder: HH:MM (e.g., 17:00)
+      description: Please enter the end time in UTC.
+    validations:
+      required: false
+
+  - type: input
+    id: event_type
+    attributes:
+      label: Event Type
+      placeholder: e.g., Conference, Meetup, Workshop, etc.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: featured
+    attributes:
+      label: Featured
+      description: Is this a featured event?
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: false
+
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      placeholder: e.g., python, machine learning, web dev
+      description: Comma-separated list of tags
+    validations:
+      required: true
+
+  - type: textarea
+    id: event_description
+    attributes:
+      label: Event Description (200 char max)
+      placeholder: Provide a short description (up to 200 characters).
+    validations:
+      required: true
+
+  - type: input
+    id: organization_name
+    attributes:
+      label: Organization Name
+      placeholder: e.g., PyOhio
+    validations:
+      required: false
+
+  - type: input
+    id: organization_url
+    attributes:
+      label: Organization URL
+      placeholder: e.g., https://www.pyohio.org
+    validations:
+      required: false
+
+  - type: input
+    id: url_linkedin
+    attributes:
+      label: LinkedIn URL
+      placeholder: e.g., https://www.linkedin.com/company/pyohio/about/
+    validations:
+      required: false
+
+  - type: input
+    id: url_twitter
+    attributes:
+      label: Twitter URL
+      placeholder: e.g., https://twitter.com/pyohio
+    validations:
+      required: false
+
+  - type: input
+    id: url_other
+    attributes:
+      label: Other URL
+    validations:
+      required: false
+
+  - type: input
+    id: acronym
+    attributes:
+      label: Acronym
+    validations:
+      required: false
+
+  - type: dropdown
+    id: paid_or_free
+    attributes:
+      label: Paid or Free
+      options:
+        - free
+        - paid
+    validations:
+      required: false
+
+  - type: input
+    id: event_url
+    attributes:
+      label: Event URL
+      placeholder: e.g., https://www.pyohio.org/2026/
+    validations:
+      required: true
+
+  - type: input
+    id: image_url
+    attributes:
+      label: Image URL
+      placeholder: e.g., https://github.com/.../2024-pyohio.png?raw=true
+    validations:
+      required: false
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      placeholder: e.g., TechHub Coworking, Rua da República 433 (or "Online")
+    validations:
+      required: true
+
+  - type: input
+    id: city
+    attributes:
+      label: City
+      placeholder: e.g., Cleveland
+    validations:
+      required: false
+
+  - type: input
+    id: state
+    attributes:
+      label: State/Province
+      placeholder: e.g., Ohio
+    validations:
+      required: false
+
+  - type: input
+    id: country
+    attributes:
+      label: Country
+      placeholder: e.g., USA
+    validations:
+      required: false
+
+  - type: input
+    id: region
+    attributes:
+      label: Region (Continent)
+      placeholder: e.g., North America (or "Online")
+    validations:
+      required: true
+
+  - type: dropdown
+    id: in_person
+    attributes:
+      label: In Person
+      options:
+        - "Yes"
+        - "No"
+        - "Unknown"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: virtual
+    attributes:
+      label: Virtual
+      options:
+        - "Yes"
+        - "No"
+        - "Unknown"
+    validations:
+      required: false
+
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: e.g., English, Spanish
+      description: Comma-separated list of languages
+    validations:
+      required: true

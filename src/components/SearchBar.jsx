@@ -1,3 +1,6 @@
+import React from "react";
+import SearchableSelect from "./SearchableSelect";
+
 export default function SearchBar({
   searchTerm,
   onSearchChange,
@@ -15,7 +18,61 @@ export default function SearchBar({
   onRangeEndChange,
   regions,
   categories,
+  selectedCity,
+  onCityChange,
+  selectedState,
+  onStateChange,
+  selectedCountry,
+  onCountryChange,
+  selectedFormat,
+  onFormatChange,
+  selectedCost,
+  onCostChange,
+  cities,
+  states,
+  countries,
 }) {
+  const formatOptions = ["In-Person", "Online", "Hybrid"];
+  const formatLabelToValue = {
+    "In-Person": "in-person",
+    Online: "online",
+    Hybrid: "hybrid",
+  };
+  const formatValueToLabel = {
+    "in-person": "In-Person",
+    online: "Online",
+    hybrid: "Hybrid",
+  };
+
+  const costOptions = ["Free", "Paid"];
+  const costLabelToValue = { Free: "free", Paid: "paid" };
+  const costValueToLabel = { free: "Free", paid: "Paid" };
+
+  const dateTypeOptions = [
+    "All Dates",
+    "Upcoming",
+    "This Week",
+    "This Month",
+    "Custom Date",
+    "Custom Range",
+  ];
+  const dateTypeLabelToValue = {
+    "All Dates": "all",
+    Upcoming: "upcoming",
+    "This Week": "thisWeek",
+    "This Month": "thisMonth",
+    "Custom Date": "customDate",
+    "Custom Range": "customRange",
+  };
+  const dateTypeValueToLabel = {
+    all: "All Dates",
+    upcoming: "Upcoming",
+    thisWeek: "This Week",
+    thisMonth: "This Month",
+    customDate: "Custom Date",
+    customRange: "Custom Range",
+  };
+
   const isInvalidRange =
     dateFilterType === "customRange" &&
     rangeStart &&
@@ -31,6 +88,11 @@ export default function SearchBar({
     onCustomDateChange("");
     onRangeStartChange("");
     onRangeEndChange("");
+    if (onCityChange) onCityChange("");
+    if (onStateChange) onStateChange("");
+    if (onCountryChange) onCountryChange("");
+    if (onFormatChange) onFormatChange("");
+    if (onCostChange) onCostChange("");
   };
 
   // Show button only if any filter is active
@@ -41,13 +103,28 @@ export default function SearchBar({
     dateFilterType !== "all" ||
     customDate !== "" ||
     rangeStart !== "" ||
-    rangeEnd !== "";
+    rangeEnd !== "" ||
+    selectedCity !== "" ||
+    selectedState !== "" ||
+    selectedCountry !== "" ||
+    selectedFormat !== "" ||
+    selectedCost !== "";
 
   return (
     <div className="search" id="search">
       <div className="search__container">
-        <div className="search__row search__row--primary">
-          <div className="search__input-wrapper">
+        {/* ROW 1: Search, Categories, Format, Cost */}
+        <div
+          className="search__row search__row--primary"
+          style={{
+            flexWrap: "wrap",
+            display: "flex",
+            gap: "0.75rem",
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          <div className="search__input-wrapper" style={{ flex: "2 1 250px" }}>
             <span className="search__icon">🔍</span>
             <input
               id="search-input"
@@ -59,71 +136,141 @@ export default function SearchBar({
             />
           </div>
 
-          <div className="search__select-wrapper">
-            <select
-              id="region-select"
-              className="search__select"
-              value={selectedRegion}
-              onChange={(e) => onRegionChange(e.target.value)}
-            >
-              <option value="">All Regions</option>
-              {regions.map((region) => (
-                <option key={region} value={region}>
-                  {region}
-                </option>
-              ))}
-            </select>
+          <div
+            className="search__select-wrapper"
+            style={{ flex: "1 1 130px", minWidth: "120px" }}
+          >
+            <SearchableSelect
+              id="category-select"
+              options={categories || []}
+              value={selectedCategory}
+              onChange={onCategoryChange}
+              placeholder="All Categories"
+            />
           </div>
 
-          <div className="search__select-wrapper">
-            <select
-              id="category-select"
-              className="search__select"
-              value={selectedCategory}
-              onChange={(e) => onCategoryChange(e.target.value)}
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+          <div
+            className="search__select-wrapper"
+            style={{ flex: "1 1 130px", minWidth: "120px" }}
+          >
+            <SearchableSelect
+              id="format-select"
+              options={formatOptions}
+              value={formatValueToLabel[selectedFormat] || ""}
+              onChange={(label) =>
+                onFormatChange(formatLabelToValue[label] || "")
+              }
+              placeholder="Format"
+            />
           </div>
+
+          <div
+            className="search__select-wrapper"
+            style={{ flex: "1 1 130px", minWidth: "120px" }}
+          >
+            <SearchableSelect
+              id="cost-select"
+              options={costOptions}
+              value={costValueToLabel[selectedCost] || ""}
+              onChange={(label) => onCostChange(costLabelToValue[label] || "")}
+              placeholder="Event Cost"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="search__clear-btn"
+            title="Clear all filters"
+            style={{ flex: "0 0 auto", whiteSpace: "nowrap" }}
+            disabled={!hasActiveFilters}
+          >
+            <span className="search__clear-icon">✕</span>
+            Clear Filters
+          </button>
         </div>
 
+        {/* ROW 2: Locations, Dates */}
         <div
-          className="search__row search__row--date"
+          className="search__row search__row--secondary"
           style={{
-            alignItems: "center",
             flexWrap: "wrap",
             display: "flex",
             gap: "0.75rem",
+            width: "100%",
+            alignItems: "center",
           }}
         >
           <div
-            className={
-              "search__select-wrapper search__select-wrapper--date-type"
-            }
+            className="search__select-wrapper"
+            style={{ flex: "1 1 130px", minWidth: "120px" }}
           >
-            <select
+            <SearchableSelect
+              id="city-input"
+              options={cities || []}
+              value={selectedCity}
+              onChange={onCityChange}
+              placeholder="City"
+            />
+          </div>
+
+          <div
+            className="search__select-wrapper"
+            style={{ flex: "1 1 130px", minWidth: "120px" }}
+          >
+            <SearchableSelect
+              id="state-input"
+              options={states || []}
+              value={selectedState}
+              onChange={onStateChange}
+              placeholder="State/Province"
+            />
+          </div>
+
+          <div
+            className="search__select-wrapper"
+            style={{ flex: "1 1 130px", minWidth: "120px" }}
+          >
+            <SearchableSelect
+              id="country-input"
+              options={countries || []}
+              value={selectedCountry}
+              onChange={onCountryChange}
+              placeholder="Country"
+            />
+          </div>
+
+          <div
+            className="search__select-wrapper"
+            style={{ flex: "1 1 130px", minWidth: "120px" }}
+          >
+            <SearchableSelect
+              id="region-input"
+              options={regions || []}
+              value={selectedRegion}
+              onChange={onRegionChange}
+              placeholder="Region"
+            />
+          </div>
+
+          <div
+            className="search__select-wrapper search__select-wrapper--date-type"
+            style={{ flex: "1 1 130px", minWidth: "120px" }}
+          >
+            <SearchableSelect
               id="date-filter-select"
-              className="search__select"
-              value={dateFilterType}
-              onChange={(e) => onDateFilterTypeChange(e.target.value)}
-              aria-label="Date filter"
-            >
-              <option value="all">All Dates</option>
-              <option value="upcoming">Upcoming</option>
-              <option value="thisWeek">This Week</option>
-              <option value="thisMonth">This Month</option>
-              <option value="customDate">Custom Date</option>
-              <option value="customRange">Custom Range</option>
-            </select>
+              options={dateTypeOptions}
+              value={dateTypeValueToLabel[dateFilterType] || ""}
+              onChange={(label) =>
+                onDateFilterTypeChange(dateTypeLabelToValue[label] || "all")
+              }
+              placeholder="All Dates"
+              clearable={false}
+            />
           </div>
 
           {dateFilterType === "customDate" && (
-            <div className="search__date-group">
+            <div className="search__date-group" style={{ flex: "1 1 160px" }}>
               <input
                 id="custom-date-input"
                 type="date"
@@ -140,9 +287,10 @@ export default function SearchBar({
               className="search__date-group"
               style={{
                 display: "flex",
-                gap: "0.75rem",
+                gap: "0.5rem",
                 alignItems: "center",
-                flexWrap: "wrap",
+                flexWrap: "nowrap",
+                flex: "2 1 240px",
               }}
             >
               <input
@@ -155,9 +303,7 @@ export default function SearchBar({
                 onBlur={(e) => {
                   if (!e.target.value) e.target.type = "text";
                 }}
-                className={`search__date-input search__select ${
-                  isInvalidRange ? "search__date-input--invalid" : ""
-                }`}
+                className={`search__date-input search__select ${isInvalidRange ? "search__date-input--invalid" : ""}`}
                 value={rangeStart}
                 max={rangeEnd || undefined}
                 onChange={(e) => {
@@ -166,7 +312,7 @@ export default function SearchBar({
                   onRangeStartChange(e.target.value);
                 }}
                 aria-label="Range start date"
-                style={{ width: "160px" }}
+                style={{ width: "100%", minWidth: "110px" }}
               />
               <span
                 className="search__date-separator"
@@ -184,9 +330,7 @@ export default function SearchBar({
                 onBlur={(e) => {
                   if (!e.target.value) e.target.type = "text";
                 }}
-                className={`search__date-input search__select ${
-                  isInvalidRange ? "search__date-input--invalid" : ""
-                }`}
+                className={`search__date-input search__select ${isInvalidRange ? "search__date-input--invalid" : ""}`}
                 value={rangeEnd}
                 min={rangeStart || undefined}
                 onChange={(e) => {
@@ -195,7 +339,7 @@ export default function SearchBar({
                   onRangeEndChange(e.target.value);
                 }}
                 aria-label="Range end date"
-                style={{ width: "160px" }}
+                style={{ width: "100%", minWidth: "110px" }}
               />
               {isInvalidRange && (
                 <div className="search__error-message">
@@ -203,18 +347,6 @@ export default function SearchBar({
                 </div>
               )}
             </div>
-          )}
-
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={handleClearFilters}
-              className="search__clear-btn"
-              title="Clear all filters"
-            >
-              <span className="search__clear-icon">✕</span>
-              Clear Filters
-            </button>
           )}
         </div>
       </div>
