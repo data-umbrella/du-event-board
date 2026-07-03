@@ -176,18 +176,6 @@ export default function SearchBar({
               placeholder="Event Cost"
             />
           </div>
-
-          <button
-            type="button"
-            onClick={handleClearFilters}
-            className="search__clear-btn"
-            title="Clear all filters"
-            style={{ flex: "0 0 auto", whiteSpace: "nowrap" }}
-            disabled={!hasActiveFilters}
-          >
-            <span className="search__clear-icon">✕</span>
-            Clear Filters
-          </button>
         </div>
 
         {/* ROW 2: Locations, Dates */}
@@ -348,6 +336,29 @@ export default function SearchBar({
               )}
             </div>
           )}
+        </div>
+
+        {/* Clear Filters Bottom Row */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            width: "100%",
+            marginTop: "0.75rem",
+            paddingTop: "0.75rem",
+            borderTop: "1px solid var(--border-subtle)",
+          }}
+        >
+          <button
+            type="button"
+            onClick={handleClearFilters}
+            className="search__clear-btn"
+            title="Clear all filters"
+            disabled={!hasActiveFilters}
+          >
+            <span className="search__clear-icon">✕</span>
+            Clear Filters
+          </button>
         </div>
       </div>
     </div>

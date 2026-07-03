@@ -120,6 +120,12 @@ export default function EventMap({ events, onSelectEvent, theme }) {
         <MapContainer
           center={initialCenter}
           zoom={initialZoom}
+          minZoom={3}
+          maxBounds={[
+            [-90, -Infinity],
+            [90, Infinity],
+          ]}
+          maxBoundsViscosity={1.0}
           zoomControl={false}
           style={{
             height: "100%",

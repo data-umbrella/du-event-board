@@ -64,9 +64,7 @@ export default function Footer({ onNavigate }) {
             </button>
             <button
               onClick={() =>
-                onNavigate
-                  ? onNavigate("events")
-                  : (window.location.href = "/")
+                onNavigate ? onNavigate("faq") : (window.location.href = "/")
               }
               className="footer__internal-link"
             >
@@ -100,7 +98,7 @@ export default function Footer({ onNavigate }) {
             <button
               onClick={() =>
                 onNavigate
-                  ? onNavigate("events")
+                  ? onNavigate("contact")
                   : (window.location.href = "/")
               }
               className="footer__internal-link"

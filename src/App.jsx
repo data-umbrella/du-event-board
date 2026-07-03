@@ -8,6 +8,8 @@ import Footer from "./components/Footer";
 import AboutUs from "./components/AboutUs";
 import Sponsors from "./components/Sponsors";
 import EventDetails from "./components/EventDetails";
+import ContactUs from "./components/ContactUs";
+import Faq from "./components/Faq";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import BackToTop from "./components/BackToTop";
@@ -130,10 +132,13 @@ export default function App() {
       newTitle = `${selectedEvent.title} | DU Event Board`;
     } else if (currentPage && currentPage !== "events") {
       // Auto-formats "about-us" to "About Us" or "sponsors" to "Sponsors"
-      const formattedPage = currentPage
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+      const formattedPage =
+        currentPage === "contact"
+          ? "Contact Us"
+          : currentPage
+              .split("-")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ");
       newTitle = `${formattedPage} | DU Event Board`;
     }
 
@@ -802,6 +807,10 @@ export default function App() {
         <AboutUs />
       ) : currentPage === "sponsors" ? (
         <Sponsors />
+      ) : currentPage === "contact" ? (
+        <ContactUs />
+      ) : currentPage === "faq" ? (
+        <Faq onNavigate={handleNavigate} />
       ) : null}
       <Footer onNavigate={handleNavigate} />
       <BackToTop />

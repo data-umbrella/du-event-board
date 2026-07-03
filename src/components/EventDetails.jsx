@@ -388,6 +388,12 @@ export default function EventDetails({ event, onBack }) {
                 <MapContainer
                   center={[lat, lng]}
                   zoom={12}
+                  minZoom={3}
+                  maxBounds={[
+                    [-90, -Infinity],
+                    [90, Infinity],
+                  ]}
+                  maxBoundsViscosity={1.0}
                   zoomControl={true}
                   style={{ height: "100%", width: "100%" }}
                 >
