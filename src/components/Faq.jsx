@@ -31,7 +31,7 @@ export default function Faq({ onNavigate }) {
               Q: How can I contribute to this event board?
             </h3>
             <p className="faq-answer">
-              A: The repositories for frontend and backend are on Github.
+              A: The project repository is on GitHub.
               <br />
               Contributions can be made there: <br />
               <a
@@ -40,16 +40,7 @@ export default function Faq({ onNavigate }) {
                 rel="noopener noreferrer"
                 className="faq-link mt-2 inline-block"
               >
-                Frontend Repository
-              </a>
-              <br />
-              <a
-                href="https://github.com/data-umbrella/du-event-board-api"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="faq-link"
-              >
-                Backend Repository
+                Project Repository
               </a>
             </p>
           </div>
