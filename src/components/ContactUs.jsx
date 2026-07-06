@@ -27,9 +27,8 @@ export default function ContactUs() {
 
           <form
             className="contact-us-form"
-            action="mailto:info@dataumbrella.org"
+            action="https://formspree.io/f/form_id"
             method="POST"
-            encType="text/plain"
           >
             <div className="form-group-row">
               <div className="form-group w-50">
