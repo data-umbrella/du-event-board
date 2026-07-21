@@ -52,7 +52,7 @@ export default function App() {
   const [selectedEventId, setSelectedEventId] = useUrlState("eventId", "");
   const [viewMode, setViewMode] = useUrlState("view", "grid");
 
-  const [dateFilterType, setDateFilterType] = useUrlState("dateType", "all");
+  const [dateFilterType, setDateFilterType] = useUrlState("dateType", "upcoming");
   const [customDate, setCustomDate] = useUrlState("customDate", "");
   const [rangeStart, setRangeStart] = useUrlState("rangeStart", "");
   const [rangeEnd, setRangeEnd] = useUrlState("rangeEnd", "");
