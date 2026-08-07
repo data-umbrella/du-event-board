@@ -1,14 +1,18 @@
 import React from "react";
 import { ExternalLink, Github, Linkedin } from "lucide-react";
 
-export default function Footer({ onNavigate }) {
+export default function Footer({ onNavigate, theme }) {
   return (
     <footer className="footer">
       <div className="footer__divider"></div>
       <div className="footer__content">
         <div className="footer__brand">
           <img
-            src="https://github.com/data-umbrella.png"
+            src={
+              theme === "dark"
+                ? "/DU_logo.png"
+                : "https://github.com/data-umbrella.png"
+            }
             alt="Data <Umbrella> Logo"
             className="footer__logo"
           />
@@ -70,6 +74,15 @@ export default function Footer({ onNavigate }) {
             >
               FAQs
             </button>
+            <a
+              href="https://github.com/data-umbrella/du-event-board/blob/main/CONTRIBUTING.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer__external-link"
+            >
+              Contribute{" "}
+              <ExternalLink size={14} className="footer__external-icon" />
+            </a>
           </div>
 
           <div className="footer__column">
@@ -92,6 +105,16 @@ export default function Footer({ onNavigate }) {
             >
               Sponsors
             </button>
+            <button
+              onClick={() =>
+                onNavigate
+                  ? onNavigate("privacy")
+                  : (window.location.href = "/")
+              }
+              className="footer__internal-link"
+            >
+              Privacy Policy
+            </button>
           </div>
 
           <div className="footer__column">
@@ -105,6 +128,15 @@ export default function Footer({ onNavigate }) {
             >
               Contact Us
             </button>
+            <a
+              href="https://github.com/data-umbrella/du-event-board/blob/main/CODE_OF_CONDUCT.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="footer__external-link"
+            >
+              Code of Conduct{" "}
+              <ExternalLink size={14} className="footer__external-icon" />
+            </a>
             <a
               href="https://www.dataumbrella.org/"
               target="_blank"

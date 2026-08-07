@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ContactUs() {
+export default function ContactUs({ onNavigate }) {
   return (
     <div className="contact-us-wrapper">
       <div className="contact-us-container">
@@ -85,6 +85,16 @@ export default function ContactUs() {
                   rel="noopener noreferrer"
                 >
                   Code of Conduct
+                </a>{" "}
+                and{" "}
+                <a
+                  href="#privacy"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (onNavigate) onNavigate("privacy");
+                  }}
+                >
+                  Privacy Policy
                 </a>
                 *
               </label>

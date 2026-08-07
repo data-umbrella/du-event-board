@@ -10,6 +10,7 @@ import Sponsors from "./components/Sponsors";
 import EventDetails from "./components/EventDetails";
 import ContactUs from "./components/ContactUs";
 import Faq from "./components/Faq";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import BackToTop from "./components/BackToTop";
@@ -521,10 +522,33 @@ export default function App() {
         month: "long",
         year: "numeric",
       });
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(event);
+      if (!groups[key]) {
+        groups[key] = {
+          month: key,
+          timestamp: new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            1,
+          ).getTime(),
+          events: [],
+        };
+      }
+      groups[key].events.push(event);
     });
-    return groups;
+
+    const sortedGroups = Object.values(groups).sort(
+      (a, b) => b.timestamp - a.timestamp,
+    );
+
+    sortedGroups.forEach((group) => {
+      group.events.sort((a, b) => {
+        const dateA = parseISODate(a.date || a.start_date);
+        const dateB = parseISODate(b.date || b.start_date);
+        return dateB - dateA;
+      });
+    });
+
+    return sortedGroups;
   }, [filteredEvents, viewMode]);
 
   return (
@@ -753,11 +777,16 @@ export default function App() {
             ) : viewMode === "list" ? (
               <div className="events-list" id="events-list">
                 {filteredEvents && filteredEvents.length > 0 ? (
-                  Object.entries(groupedEvents).map(([month, monthEvents]) => (
-                    <div key={month} className="events-list__month-group">
-                      <h3 className="events-list__month-heading">{month}</h3>
+                  groupedEvents.map((group) => (
+                    <div
+                      key={group.month}
+                      className="events-list__month-group"
+                    >
+                      <h3 className="events-list__month-heading">
+                        {group.month}
+                      </h3>
                       <div className="events-list__month-rows">
-                        {monthEvents.map((event) => (
+                        {group.events.map((event) => (
                           <EventCard
                             key={event.id}
                             event={event}
@@ -808,11 +837,13 @@ export default function App() {
       ) : currentPage === "sponsors" ? (
         <Sponsors />
       ) : currentPage === "contact" ? (
-        <ContactUs />
+        <ContactUs onNavigate={handleNavigate} />
       ) : currentPage === "faq" ? (
         <Faq onNavigate={handleNavigate} />
+      ) : currentPage === "privacy" ? (
+        <PrivacyPolicy />
       ) : null}
-      <Footer onNavigate={handleNavigate} />
+      <Footer onNavigate={handleNavigate} theme={theme} />
       <BackToTop />
     </>
   );
