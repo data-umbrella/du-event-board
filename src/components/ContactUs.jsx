@@ -27,7 +27,7 @@ export default function ContactUs({ onNavigate }) {
 
           <form
             className="contact-us-form"
-            action="https://formspree.io/f/form_id"
+            action="https://formspree.io/f/mbdnnqqk"
             method="POST"
           >
             <div className="form-group-row">
