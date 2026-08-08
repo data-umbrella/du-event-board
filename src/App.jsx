@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import Fuse from "fuse.js";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
@@ -126,13 +127,27 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // 1. Update Document Title dynamically for any page added now or in the future
-    let newTitle = "DU Event Board - Discover Events Near You";
+    // 2. Explicitly tell Google Analytics that the page has changed
+    if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      let currentTitle = "DU Event Board";
+      if (currentPage === "event-details" && selectedEvent) {
+        currentTitle = `${selectedEvent.title} | DU Event Board`;
+      } else if (currentPage && currentPage !== "events") {
+        currentTitle = `${currentPage} | DU Event Board`;
+      }
 
+      window.gtag("event", "page_view", {
+        page_location: window.location.href,
+        page_title: currentTitle,
+      });
+    }
+  }, [currentPage, selectedEvent]);
+
+  // Compute dynamic title for Helmet
+  const dynamicTitle = useMemo(() => {
     if (currentPage === "event-details" && selectedEvent) {
-      newTitle = `${selectedEvent.title} | DU Event Board`;
+      return `${selectedEvent.title} | DU Event Board`;
     } else if (currentPage && currentPage !== "events") {
-      // Auto-formats "about-us" to "About Us" or "sponsors" to "Sponsors"
       const formattedPage =
         currentPage === "contact"
           ? "Contact Us"
@@ -140,18 +155,9 @@ export default function App() {
               .split("-")
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(" ");
-      newTitle = `${formattedPage} | DU Event Board`;
+      return `${formattedPage} | DU Event Board`;
     }
-
-    document.title = newTitle;
-
-    // 2. Explicitly tell Google Analytics that the page has changed
-    if (typeof window !== "undefined" && typeof window.gtag === "function") {
-      window.gtag("event", "page_view", {
-        page_location: window.location.href,
-        page_title: document.title,
-      });
-    }
+    return "DU Event Board - Discover Events Near You";
   }, [currentPage, selectedEvent]);
 
   const [theme, setTheme] = useState(() => {
@@ -551,8 +557,45 @@ export default function App() {
     return sortedGroups;
   }, [filteredEvents, viewMode]);
 
+  const websiteStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "DU Event Board",
+    url: "https://du-event-board.netlify.app/", // Assuming netlify based on the toml file, but can be any domain
+    potentialAction: {
+      "@type": "SearchAction",
+      target:
+        "https://du-event-board.netlify.app/?search={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <>
+      <Helmet>
+        <title>{dynamicTitle}</title>
+        <meta
+          name="description"
+          content="DU Event Board - Discover tech events, meetups, and workshops near your region. Find community events in Porto Alegre, São Paulo, Curitiba, and more."
+        />
+        <meta property="og:title" content={dynamicTitle} />
+        <meta
+          property="og:description"
+          content="Discover tech events, meetups, and workshops near your region."
+        />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={dynamicTitle} />
+        <meta
+          name="twitter:description"
+          content="Discover tech events, meetups, and workshops near your region."
+        />
+
+        {/* Site-wide Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(websiteStructuredData)}
+        </script>
+      </Helmet>
       <Header
         theme={theme}
         onToggleTheme={toggleTheme}

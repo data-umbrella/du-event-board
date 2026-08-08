@@ -1,11 +1,27 @@
-import React from "react";
-import { ExternalLink, Github, Linkedin } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ExternalLink, Github, Linkedin, ChevronDown } from "lucide-react";
 
 export default function Footer({ onNavigate, theme }) {
+  const [openAccordion, setOpenAccordion] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const toggleAccordion = (section) => {
+    if (!isMobile) return;
+    setOpenAccordion(openAccordion === section ? null : section);
+  };
+
   return (
     <footer className="footer">
       <div className="footer__divider"></div>
       <div className="footer__content">
+        {/* Brand Section */}
         <div className="footer__brand">
           <img
             src={
@@ -20,7 +36,6 @@ export default function Footer({ onNavigate, theme }) {
           <span className="footer__tagline">
             A data science and open source community
           </span>
-
           <div className="footer__socials">
             <a
               href="https://github.com/data-umbrella"
@@ -56,101 +71,159 @@ export default function Footer({ onNavigate, theme }) {
           </div>
         </div>
 
+        {/* Links Section */}
         <div className="footer__links">
-          <div className="footer__column">
+          {/* Column 1: Company */}
+          <div
+            className={`footer__column ${openAccordion === "company" ? "open" : ""}`}
+          >
             <button
-              onClick={() =>
-                onNavigate ? onNavigate("about") : (window.location.href = "/")
-              }
-              className="footer__internal-link"
+              className="footer__column-header"
+              onClick={() => toggleAccordion("company")}
             >
-              About Us
+              Company
+              {isMobile && (
+                <ChevronDown
+                  size={16}
+                  className={`footer__chevron ${openAccordion === "company" ? "open" : ""}`}
+                />
+              )}
             </button>
-            <button
-              onClick={() =>
-                onNavigate ? onNavigate("faq") : (window.location.href = "/")
-              }
-              className="footer__internal-link"
-            >
-              FAQs
-            </button>
-            <a
-              href="https://github.com/data-umbrella/du-event-board/blob/main/CONTRIBUTING.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer__external-link"
-            >
-              Contribute{" "}
-              <ExternalLink size={14} className="footer__external-icon" />
-            </a>
+            <div className="footer__column-content">
+              <button
+                onClick={() =>
+                  onNavigate
+                    ? onNavigate("about")
+                    : (window.location.href = "/")
+                }
+                className="footer__internal-link"
+              >
+                About Us
+              </button>
+              <button
+                onClick={() =>
+                  onNavigate
+                    ? onNavigate("sponsors")
+                    : (window.location.href = "/")
+                }
+                className="footer__internal-link"
+              >
+                Sponsors
+              </button>
+              <button
+                onClick={() =>
+                  onNavigate
+                    ? onNavigate("contact")
+                    : (window.location.href = "/")
+                }
+                className="footer__internal-link"
+              >
+                Contact Us
+              </button>
+            </div>
           </div>
 
-          <div className="footer__column">
-            <a
-              href="https://www.every.org/data-umbrella"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer__external-link"
-            >
-              Donate{" "}
-              <ExternalLink size={14} className="footer__external-icon" />
-            </a>
+          {/* Column 2: Community */}
+          <div
+            className={`footer__column ${openAccordion === "community" ? "open" : ""}`}
+          >
             <button
-              onClick={() =>
-                onNavigate
-                  ? onNavigate("sponsors")
-                  : (window.location.href = "/")
-              }
-              className="footer__internal-link"
+              className="footer__column-header"
+              onClick={() => toggleAccordion("community")}
             >
-              Sponsors
+              Community
+              {isMobile && (
+                <ChevronDown
+                  size={16}
+                  className={`footer__chevron ${openAccordion === "community" ? "open" : ""}`}
+                />
+              )}
             </button>
-            <button
-              onClick={() =>
-                onNavigate
-                  ? onNavigate("privacy")
-                  : (window.location.href = "/")
-              }
-              className="footer__internal-link"
-            >
-              Privacy Policy
-            </button>
+            <div className="footer__column-content">
+              <a
+                href="https://www.dataumbrella.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer__external-link"
+              >
+                Data Umbrella{" "}
+                <ExternalLink size={14} className="footer__external-icon" />
+              </a>
+              <a
+                href="https://github.com/data-umbrella/du-event-board/blob/main/CONTRIBUTING.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer__external-link"
+              >
+                Contribute{" "}
+                <ExternalLink size={14} className="footer__external-icon" />
+              </a>
+              <a
+                href="https://www.every.org/data-umbrella"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer__external-link"
+              >
+                Donate{" "}
+                <ExternalLink size={14} className="footer__external-icon" />
+              </a>
+            </div>
           </div>
 
-          <div className="footer__column">
+          {/* Column 3: Resources */}
+          <div
+            className={`footer__column ${openAccordion === "resources" ? "open" : ""}`}
+          >
             <button
-              onClick={() =>
-                onNavigate
-                  ? onNavigate("contact")
-                  : (window.location.href = "/")
-              }
-              className="footer__internal-link"
+              className="footer__column-header"
+              onClick={() => toggleAccordion("resources")}
             >
-              Contact Us
+              Resources
+              {isMobile && (
+                <ChevronDown
+                  size={16}
+                  className={`footer__chevron ${openAccordion === "resources" ? "open" : ""}`}
+                />
+              )}
             </button>
-            <a
-              href="https://github.com/data-umbrella/du-event-board/blob/main/CODE_OF_CONDUCT.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer__external-link"
-            >
-              Code of Conduct{" "}
-              <ExternalLink size={14} className="footer__external-icon" />
-            </a>
-            <a
-              href="https://www.dataumbrella.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer__external-link"
-            >
-              Data Umbrella{" "}
-              <ExternalLink size={14} className="footer__external-icon" />
-            </a>
+            <div className="footer__column-content">
+              <button
+                onClick={() =>
+                  onNavigate ? onNavigate("faq") : (window.location.href = "/")
+                }
+                className="footer__internal-link"
+              >
+                FAQs
+              </button>
+              <button
+                onClick={() =>
+                  onNavigate
+                    ? onNavigate("privacy")
+                    : (window.location.href = "/")
+                }
+                className="footer__internal-link"
+              >
+                Privacy Policy
+              </button>
+              <a
+                href="https://github.com/data-umbrella/du-event-board/blob/main/CODE_OF_CONDUCT.md"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer__external-link"
+              >
+                Code of Conduct{" "}
+                <ExternalLink size={14} className="footer__external-icon" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
-      <div className="footer__copyright">
-        &copy; Data Umbrella {new Date().getFullYear()}
+
+      {/* Bottom Bar: Copyright */}
+      <div className="footer__bottom-bar">
+        <div className="footer__copyright">
+          &copy; Data Umbrella {new Date().getFullYear()}
+        </div>
       </div>
     </footer>
   );
