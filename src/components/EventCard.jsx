@@ -84,13 +84,7 @@ export default function EventCard({
 
   // Grid view (default)
   return (
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
-    <article
-      className="event-card"
-      id={`event-${event.id}`}
-      onClick={() => onSelectEvent(event.id)}
-      style={{ cursor: "pointer" }}
-    >
+    <article className="event-card" id={`event-${event.id}`}>
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 
@@ -107,9 +101,9 @@ export default function EventCard({
           href={`?page=event-details&eventId=${event.id}`}
           onClick={(e) => {
             e.preventDefault();
-            e.stopPropagation();
             onSelectEvent(event.id);
           }}
+          className="event-card__title-link"
           style={{ color: "inherit", textDecoration: "none" }}
         >
           {event.title}

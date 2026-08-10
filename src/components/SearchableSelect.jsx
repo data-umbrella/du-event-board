@@ -60,6 +60,10 @@ export default function SearchableSelect({
           onFocus={(e) => e.target.select()}
           placeholder={placeholder}
           autoComplete="off"
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-autocomplete="list"
+          aria-controls={`${id}-listbox`}
         />
         {value && clearable && (
           <button
@@ -78,7 +82,11 @@ export default function SearchableSelect({
         )}
       </div>
       {isOpen && (
-        <ul className="searchable-select__dropdown" role="listbox">
+        <ul
+          className="searchable-select__dropdown"
+          role="listbox"
+          id={`${id}-listbox`}
+        >
           {inputValue && clearable && (
             <li
               className="searchable-select__option searchable-select__option--clear"

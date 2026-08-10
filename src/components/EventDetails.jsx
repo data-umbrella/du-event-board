@@ -13,8 +13,10 @@ import {
   Building,
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { createCustomMarkerIcon } from "../utils/mapIcon";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { formatImageUrl } from "../utils/eventHelpers";
 
 // Fix for default marker icons in React Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -44,7 +46,7 @@ export default function EventDetails({ event, onBack }) {
   const category = event.category || event.event_type;
   const url = event.url || event.event_url;
   const tags = event.tags || [];
-  const imageUrl = event.image_url;
+  const imageUrl = formatImageUrl(event.image_url);
   const organizationName = event.organization_name;
   const organizationUrl = event.organization_url;
   const urlLinkedin = event.url_linkedin;
@@ -406,7 +408,8 @@ export default function EventDetails({ event, onBack }) {
                   className="event-details__cta-btn"
                   id="event-register-cta"
                 >
-                  Learn More <ExternalLink size={16} />
+                  Learn More<span className="sr-only"> about {title}</span>{" "}
+                  <ExternalLink size={16} />
                 </a>
               )}
             </div>
@@ -504,7 +507,10 @@ export default function EventDetails({ event, onBack }) {
                       url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=cb1_4d0t_1_0bf496251c1c59a19781652a"
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     />
-                    <Marker position={[lat, lng]}>
+                    <Marker
+                      position={[lat, lng]}
+                      icon={createCustomMarkerIcon()}
+                    >
                       <Popup>{title}</Popup>
                     </Marker>
                   </MapContainer>

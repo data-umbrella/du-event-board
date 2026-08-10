@@ -1,7 +1,7 @@
 export default function Header({ theme, onToggleTheme, onNavigate }) {
   return (
     <header className="header" id="header">
-      <div className="header__controls">
+      <nav className="header__controls" aria-label="Main navigation">
         <button
           onClick={() =>
             onNavigate ? onNavigate("events") : (window.location.href = "/")
@@ -18,7 +18,7 @@ export default function Header({ theme, onToggleTheme, onNavigate }) {
         >
           {theme === "dark" ? "☀️" : "🌙"}
         </button>
-      </div>
+      </nav>
 
       <div className="header__content">
         <div

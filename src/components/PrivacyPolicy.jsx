@@ -2,7 +2,7 @@ import React from "react";
 
 export default function PrivacyPolicy() {
   return (
-    <div
+    <main
       className="faq-wrapper"
       style={{ alignItems: "flex-start", paddingTop: "3rem" }}
     >
@@ -18,6 +18,6 @@ export default function PrivacyPolicy() {
           Placeholder for Privacy Policy content.
         </p>
       </div>
-    </div>
+    </main>
   );
 }

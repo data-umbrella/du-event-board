@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ContactUs({ onNavigate }) {
   return (
-    <div className="contact-us-wrapper">
+    <main className="contact-us-wrapper">
       <div className="contact-us-container">
         <h1 className="contact-us-title">Contact Us</h1>
 
@@ -108,6 +108,6 @@ export default function ContactUs({ onNavigate }) {
           </form>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
