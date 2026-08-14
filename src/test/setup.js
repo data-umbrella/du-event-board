@@ -26,3 +26,13 @@ vi.mock("react-leaflet", () => {
     }),
   };
 });
+
+// Mock react-helmet-async globally to prevent JSDOM issues with v3.0.0
+vi.mock("react-helmet-async", () => {
+  return {
+    Helmet: ({ children }) =>
+      React.createElement(React.Fragment, null, children),
+    HelmetProvider: ({ children }) =>
+      React.createElement(React.Fragment, null, children),
+  };
+});

@@ -38,6 +38,7 @@ export default function AboutUs() {
               src={`${import.meta.env.BASE_URL}DU_logo.png`}
               alt="Data Umbrella"
               className="about-us__card-logo"
+              loading="lazy"
             />
             <h3 className="about-us__card-title">Data Umbrella</h3>
             <p className="about-us__card-text">
@@ -68,6 +69,7 @@ export default function AboutUs() {
                 href="https://www.dataumbrella.org"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Website"
               >
                 <Globe size={20} />
               </a>
@@ -75,6 +77,7 @@ export default function AboutUs() {
                 href="https://twitter.com/dataumbrella"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Twitter"
               >
                 <Twitter size={20} />
               </a>
@@ -82,6 +85,7 @@ export default function AboutUs() {
                 href="https://www.linkedin.com/company/dataumbrella/"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="LinkedIn"
               >
                 <Linkedin size={20} />
               </a>
@@ -93,6 +97,7 @@ export default function AboutUs() {
               src={`${import.meta.env.BASE_URL}OSL.png`}
               alt="Open Science Labs"
               className="about-us__card-logo"
+              loading="lazy"
             />
             <h3 className="about-us__card-title">Open Science Labs</h3>
             <p className="about-us__card-text">
@@ -122,6 +127,7 @@ export default function AboutUs() {
                 href="https://opensciencelabs.org/"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Website"
               >
                 <Globe size={20} />
               </a>
@@ -129,6 +135,7 @@ export default function AboutUs() {
                 href="https://x.com/opensciencelabs"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Twitter"
               >
                 <Twitter size={20} />
               </a>
@@ -136,6 +143,7 @@ export default function AboutUs() {
                 href="https://www.linkedin.com/company/open-science-labs/"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="LinkedIn"
               >
                 <Linkedin size={20} />
               </a>
@@ -154,6 +162,7 @@ export default function AboutUs() {
                   src={member.image}
                   alt={member.name}
                   className="team-card__image"
+                  loading="lazy"
                 />
               </div>
               <h3 className="team-card__name">{member.name}</h3>
@@ -165,6 +174,7 @@ export default function AboutUs() {
                     href={member.links.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="Twitter"
                   >
                     <Twitter size={18} />
                   </a>
@@ -174,6 +184,7 @@ export default function AboutUs() {
                     href={member.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="GitHub"
                   >
                     <Github size={18} />
                   </a>
@@ -183,6 +194,7 @@ export default function AboutUs() {
                     href={member.links.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="LinkedIn"
                   >
                     <Linkedin size={18} />
                   </a>
@@ -192,6 +204,7 @@ export default function AboutUs() {
                     href={member.links.web}
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label="Website"
                   >
                     <Globe size={18} />
                   </a>

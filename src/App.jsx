@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import Fuse from "fuse.js";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
@@ -8,6 +9,9 @@ import Footer from "./components/Footer";
 import AboutUs from "./components/AboutUs";
 import Sponsors from "./components/Sponsors";
 import EventDetails from "./components/EventDetails";
+import ContactUs from "./components/ContactUs";
+import Faq from "./components/Faq";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import BackToTop from "./components/BackToTop";
@@ -123,29 +127,37 @@ export default function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // 1. Update Document Title dynamically for any page added now or in the future
-    let newTitle = "DU Event Board - Discover Events Near You";
-
-    if (currentPage === "event-details" && selectedEvent) {
-      newTitle = `${selectedEvent.title} | DU Event Board`;
-    } else if (currentPage && currentPage !== "events") {
-      // Auto-formats "about-us" to "About Us" or "sponsors" to "Sponsors"
-      const formattedPage = currentPage
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-      newTitle = `${formattedPage} | DU Event Board`;
-    }
-
-    document.title = newTitle;
-
     // 2. Explicitly tell Google Analytics that the page has changed
     if (typeof window !== "undefined" && typeof window.gtag === "function") {
+      let currentTitle = "DU Event Board";
+      if (currentPage === "event-details" && selectedEvent) {
+        currentTitle = `${selectedEvent.title} | DU Event Board`;
+      } else if (currentPage && currentPage !== "events") {
+        currentTitle = `${currentPage} | DU Event Board`;
+      }
+
       window.gtag("event", "page_view", {
         page_location: window.location.href,
-        page_title: document.title,
+        page_title: currentTitle,
       });
     }
+  }, [currentPage, selectedEvent]);
+
+  // Compute dynamic title for Helmet
+  const dynamicTitle = useMemo(() => {
+    if (currentPage === "event-details" && selectedEvent) {
+      return `${selectedEvent.title} | DU Event Board`;
+    } else if (currentPage && currentPage !== "events") {
+      const formattedPage =
+        currentPage === "contact"
+          ? "Contact Us"
+          : currentPage
+              .split("-")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ");
+      return `${formattedPage} | DU Event Board`;
+    }
+    return "DU Event Board - Discover Events Near You";
   }, [currentPage, selectedEvent]);
 
   const [theme, setTheme] = useState(() => {
@@ -516,14 +528,74 @@ export default function App() {
         month: "long",
         year: "numeric",
       });
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(event);
+      if (!groups[key]) {
+        groups[key] = {
+          month: key,
+          timestamp: new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            1,
+          ).getTime(),
+          events: [],
+        };
+      }
+      groups[key].events.push(event);
     });
-    return groups;
+
+    const sortedGroups = Object.values(groups).sort(
+      (a, b) => b.timestamp - a.timestamp,
+    );
+
+    sortedGroups.forEach((group) => {
+      group.events.sort((a, b) => {
+        const dateA = parseISODate(a.date || a.start_date);
+        const dateB = parseISODate(b.date || b.start_date);
+        return dateB - dateA;
+      });
+    });
+
+    return sortedGroups;
   }, [filteredEvents, viewMode]);
+
+  const websiteStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "DU Event Board",
+    url: "https://du-event-board.netlify.app/", // Assuming netlify based on the toml file, but can be any domain
+    potentialAction: {
+      "@type": "SearchAction",
+      target:
+        "https://du-event-board.netlify.app/?search={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
 
   return (
     <>
+      <Helmet>
+        <title>{dynamicTitle}</title>
+        <meta
+          name="description"
+          content="DU Event Board - Discover tech events, meetups, and workshops near your region. Find community events in Porto Alegre, São Paulo, Curitiba, and more."
+        />
+        <meta property="og:title" content={dynamicTitle} />
+        <meta
+          property="og:description"
+          content="Discover tech events, meetups, and workshops near your region."
+        />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={dynamicTitle} />
+        <meta
+          name="twitter:description"
+          content="Discover tech events, meetups, and workshops near your region."
+        />
+
+        {/* Site-wide Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(websiteStructuredData)}
+        </script>
+      </Helmet>
       <Header
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -597,12 +669,13 @@ export default function App() {
               >
                 <button
                   onClick={() => setViewMode("grid")}
+                  aria-pressed={viewMode === "grid"}
                   style={{
                     padding: "0.5rem 1rem",
                     borderRadius: "8px",
                     background:
                       viewMode === "grid"
-                        ? "var(--accent-primary)"
+                        ? "var(--accent-solid)"
                         : "transparent",
                     color: viewMode === "grid" ? "#fff" : "var(--text-muted)",
                     border: "none",
@@ -635,12 +708,13 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
+                  aria-pressed={viewMode === "list"}
                   style={{
                     padding: "0.5rem 1rem",
                     borderRadius: "8px",
                     background:
                       viewMode === "list"
-                        ? "var(--accent-primary)"
+                        ? "var(--accent-solid)"
                         : "transparent",
                     color: viewMode === "list" ? "#fff" : "var(--text-muted)",
                     border: "none",
@@ -675,12 +749,13 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => setViewMode("map")}
+                  aria-pressed={viewMode === "map"}
                   style={{
                     padding: "0.5rem 1rem",
                     borderRadius: "8px",
                     background:
                       viewMode === "map"
-                        ? "var(--accent-primary)"
+                        ? "var(--accent-solid)"
                         : "transparent",
                     color: viewMode === "map" ? "#fff" : "var(--text-muted)",
                     border: "none",
@@ -748,11 +823,16 @@ export default function App() {
             ) : viewMode === "list" ? (
               <div className="events-list" id="events-list">
                 {filteredEvents && filteredEvents.length > 0 ? (
-                  Object.entries(groupedEvents).map(([month, monthEvents]) => (
-                    <div key={month} className="events-list__month-group">
-                      <h3 className="events-list__month-heading">{month}</h3>
+                  groupedEvents.map((group) => (
+                    <div
+                      key={group.month}
+                      className="events-list__month-group"
+                    >
+                      <h2 className="events-list__month-heading">
+                        {group.month}
+                      </h2>
                       <div className="events-list__month-rows">
-                        {monthEvents.map((event) => (
+                        {group.events.map((event) => (
                           <EventCard
                             key={event.id}
                             event={event}
@@ -802,8 +882,14 @@ export default function App() {
         <AboutUs />
       ) : currentPage === "sponsors" ? (
         <Sponsors />
+      ) : currentPage === "contact" ? (
+        <ContactUs onNavigate={handleNavigate} />
+      ) : currentPage === "faq" ? (
+        <Faq onNavigate={handleNavigate} />
+      ) : currentPage === "privacy" ? (
+        <PrivacyPolicy />
       ) : null}
-      <Footer onNavigate={handleNavigate} />
+      <Footer onNavigate={handleNavigate} theme={theme} />
       <BackToTop />
     </>
   );

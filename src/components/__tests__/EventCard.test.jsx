@@ -75,9 +75,9 @@ describe("EventCard Component", () => {
       />,
     );
 
-    // The article is clickable
-    const card = screen.getByRole("article");
-    fireEvent.click(card);
+    // The card uses a block link pattern, so clicking the title triggers selection
+    const titleLink = screen.getByText("Test Meetup");
+    fireEvent.click(titleLink);
     expect(handleSelect).toHaveBeenCalledWith("123");
   });
 
@@ -144,22 +144,5 @@ describe("EventCard Component", () => {
       />,
     );
     expect(screen.getByText("Test Meetup")).toBeInTheDocument();
-  });
-
-  it("stops propagation when clicking the title link in grid view", () => {
-    const handleSelect = vi.fn();
-    render(
-      <EventCard
-        event={mockEvent}
-        viewMode="grid"
-        onSelectEvent={handleSelect}
-      />,
-    );
-
-    const titleLink = screen.getByText("Test Meetup");
-    fireEvent.click(titleLink);
-    // Should be called only once
-    expect(handleSelect).toHaveBeenCalledTimes(1);
-    expect(handleSelect).toHaveBeenCalledWith("123");
   });
 });

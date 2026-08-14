@@ -1,7 +1,7 @@
 export default function Header({ theme, onToggleTheme, onNavigate }) {
   return (
     <header className="header" id="header">
-      <div className="header__controls">
+      <nav className="header__controls" aria-label="Main navigation">
         <button
           onClick={() =>
             onNavigate ? onNavigate("events") : (window.location.href = "/")
@@ -18,12 +18,30 @@ export default function Header({ theme, onToggleTheme, onNavigate }) {
         >
           {theme === "dark" ? "☀️" : "🌙"}
         </button>
-      </div>
+      </nav>
 
       <div className="header__content">
-        <div className="header__brand">
+        <div
+          className="header__brand"
+          onClick={() =>
+            onNavigate ? onNavigate("events") : (window.location.href = "/")
+          }
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onNavigate ? onNavigate("events") : (window.location.href = "/");
+            }
+          }}
+          style={{ cursor: "pointer" }}
+        >
           <img
-            src="https://github.com/data-umbrella.png"
+            src={
+              theme === "dark"
+                ? "/DU_logo.png"
+                : "https://github.com/data-umbrella.png"
+            }
             alt="Data Umbrella Logo"
             className="header__logo-img"
           />

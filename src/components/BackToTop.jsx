@@ -31,7 +31,7 @@ const BackToTop = () => {
         width: "45px",
         height: "45px",
         borderRadius: "50%",
-        backgroundColor: "var(--accent-primary, #dc2626)",
+        backgroundColor: "var(--accent-solid, #5b3ce6)",
         color: "#ffffff",
         border: "1px solid rgba(255, 255, 255, 0.25)",
         cursor: "pointer",

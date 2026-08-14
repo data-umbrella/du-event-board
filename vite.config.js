@@ -16,6 +16,9 @@ export default defineConfig({
     }),
   ],
   base: "/",
+  build: {
+    sourcemap: true,
+  },
   test: {
     environment: "jsdom",
     globals: true,
