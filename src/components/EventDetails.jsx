@@ -305,9 +305,32 @@ export default function EventDetails({ event, onBack }) {
                 rel="noopener noreferrer"
                 className="event-details__cta-btn"
                 id="event-register-cta"
+                style={{ marginBottom: "10px" }}
               >
                 Learn More <ExternalLink size={16} />
               </a>
+            )}
+
+            {location && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const queryParts = [location, city, state, country].filter(
+                    Boolean,
+                  );
+                  const address = encodeURIComponent(queryParts.join(", "));
+                  const googleMapUrl = `https://www.google.com/maps/search/?api=1&query=${address}`;
+                  window.open(googleMapUrl, "_blank", "noopener,noreferrer");
+                }}
+                className="event-details__cta-btn"
+                style={{
+                  backgroundColor: "#f0f0f0",
+                  color: "#333",
+                  border: "1px solid #ccc",
+                }}
+              >
+                Directions
+              </button>
             )}
           </div>
 
