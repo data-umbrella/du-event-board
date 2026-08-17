@@ -254,6 +254,60 @@ def update_yaml_surgically(events_with_coords: list[dict[str, Any]]) -> None:
         f.writelines(final_output)
 
 
+def generate_sitemap(events: list[dict[str, Any]]) -> None:
+    """
+    title: Generate sitemap.xml for static routes and dynamic events.
+    parameters:
+      events:
+        type: list[dict[str, Any]]
+    """
+    sitemap_path = PROJECT_ROOT / "public" / "sitemap.xml"
+    base_url = "https://du-event-board.netlify.app"
+
+    xml_lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+
+    # Add static routes
+    static_routes = [
+        "",
+        "?page=about-us",
+        "?page=sponsors",
+        "?page=contact",
+        "?page=faq",
+        "?page=privacy-policy",
+    ]
+
+    for route in static_routes:
+        xml_lines.append("  <url>")
+        xml_lines.append(f"    <loc>{base_url}/{route}</loc>")
+        xml_lines.append("    <changefreq>weekly</changefreq>")
+        xml_lines.append(
+            f"    <priority>{1.0 if route == '' else 0.8}</priority>"
+        )
+        xml_lines.append("  </url>")
+
+    # Add event routes
+    for event in events:
+        event_id = event.get("id")
+        if event_id:
+            xml_lines.append("  <url>")
+            # Need to escape & as &amp; in XML
+            xml_lines.append(
+                f"    <loc>{base_url}/?eventId={event_id}&amp;page=event-details</loc>"
+            )
+            xml_lines.append("    <changefreq>weekly</changefreq>")
+            xml_lines.append("    <priority>0.6</priority>")
+            xml_lines.append("  </url>")
+
+    xml_lines.append("</urlset>\n")
+
+    with open(sitemap_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(xml_lines))
+    print(f"Generated: {sitemap_path}")
+
+
 def main() -> None:
     """
     title: Read YAML, validate, and generate JSON.
@@ -357,6 +411,10 @@ def main() -> None:
         f.write("\n")
 
     print(f"Generated: {OUTPUT_FILE}")
+
+    # Generate sitemap
+    generate_sitemap(events)
+
     print(f"Total events: {len(events)}")
 
 

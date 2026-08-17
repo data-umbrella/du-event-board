@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import {
   ArrowLeft,
   Calendar,
@@ -120,290 +121,399 @@ export default function EventDetails({ event, onBack }) {
     ? paidOrFree.charAt(0).toUpperCase() + paidOrFree.slice(1)
     : "";
 
+  // Structured Data for SEO (JSON-LD)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: title,
+    description: description || title,
+    startDate: date ? `${date}${startTime ? `T${startTime}` : ""}` : undefined,
+    endDate: endDate ? `${endDate}${endTime ? `T${endTime}` : ""}` : undefined,
+    eventAttendanceMode:
+      formatBadge === "Virtual"
+        ? "https://schema.org/OnlineEventAttendanceMode"
+        : formatBadge === "Hybrid"
+          ? "https://schema.org/MixedEventAttendanceMode"
+          : "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: "https://schema.org/EventScheduled",
+    location:
+      formatBadge === "Virtual"
+        ? {
+            "@type": "VirtualLocation",
+            url: url || "",
+          }
+        : {
+            "@type": "Place",
+            name: location || city || "TBD",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: city,
+              addressRegion: state,
+              addressCountry: country,
+            },
+          },
+    image: imageUrl ? [imageUrl] : undefined,
+    organizer: organizationName
+      ? {
+          "@type": "Organization",
+          name: organizationName,
+          url: organizationUrl,
+        }
+      : undefined,
+    offers: hasCost
+      ? {
+          "@type": "Offer",
+          price: isPaid ? "1" : "0",
+          priceCurrency: "USD", // default currency since not specified
+          url: url,
+        }
+      : undefined,
+  };
+
+  // Remove undefined properties to make JSON clean
+  Object.keys(structuredData).forEach(
+    (key) => structuredData[key] === undefined && delete structuredData[key],
+  );
+
   return (
-    <main className="event-details" id={`event-details-${event.id}`}>
-      {/* Back navigation */}
-      <div className="event-details__navigation">
-        <button onClick={onBack} className="btn-back" id="back-to-events-btn">
-          <ArrowLeft size={16} /> Back to Events
-        </button>
-      </div>
+    <>
+      <Helmet>
+        <title>{title} | DU Event Board</title>
+        <meta
+          name="description"
+          content={
+            description
+              ? description.substring(0, 160)
+              : `Join ${title} at DU Event Board`
+          }
+        />
 
-      <div className="event-details__container">
-        {/* Left Column: Event Body */}
-        <section className="event-details__main-content">
-          {imageUrl && (
-            <div className="event-details__banner-wrapper">
-              <img
-                src={imageUrl}
-                alt={title}
-                className="event-details__banner"
-              />
-            </div>
-          )}
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="event" />
+        <meta property="og:title" content={title} />
+        <meta
+          property="og:description"
+          content={
+            description ? description.substring(0, 160) : `Join ${title}`
+          }
+        />
+        {imageUrl && <meta property="og:image" content={imageUrl} />}
+        {url && <meta property="og:url" content={url} />}
 
-          <div className="event-details__body glass-card">
-            {acronym && (
-              <span className="event-details__acronym">{acronym}</span>
-            )}
-            <h2 className="event-details__title">{title}</h2>
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta
+          name="twitter:description"
+          content={
+            description ? description.substring(0, 160) : `Join ${title}`
+          }
+        />
+        {imageUrl && <meta name="twitter:image" content={imageUrl} />}
 
-            {/* Badges Row */}
-            <div className="event-details__badges">
-              <span className="event-details__badge event-details__badge--category">
-                {category}
-              </span>
-              {hasCost && (
-                <span
-                  className={`event-details__badge ${
-                    isPaid
-                      ? "event-details__badge--paid"
-                      : "event-details__badge--free"
-                  }`}
-                >
-                  {costLabel}
-                </span>
-              )}
-              {formatBadge && (
-                <span className="event-details__badge event-details__badge--format">
-                  {formatBadge}
-                </span>
-              )}
-              {language && (
-                <span className="event-details__badge event-details__badge--lang">
-                  <Languages
-                    size={12}
-                    style={{ marginRight: "4px", verticalAlign: "middle" }}
-                  />
-                  {language}
-                </span>
-              )}
-            </div>
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
 
-            <div className="event-details__divider"></div>
+      <main className="event-details" id={`event-details-${event.id}`}>
+        {/* Back navigation */}
+        <div className="event-details__navigation">
+          <button
+            onClick={onBack}
+            className="btn-back"
+            id="back-to-events-btn"
+          >
+            <ArrowLeft size={16} /> Back to Events
+          </button>
+        </div>
 
-            {/* Description */}
-            <div className="event-details__description-section">
-              <h3 className="event-details__section-title">
-                About this Event
-              </h3>
-              <p className="event-details__description">{description}</p>
-            </div>
-
-            {/* Tags */}
-            {tags.length > 0 && (
-              <div className="event-details__tags-section">
-                <h4 className="event-details__tags-title">Tags</h4>
-                <div className="event-details__tags">
-                  {tags.map((tag) => (
-                    <span key={tag} className="event-card__tag">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Right Column: Event Info Cards */}
-        <aside className="event-details__sidebar">
-          {/* Main Info Card */}
-          <div className="event-details__info-card glass-card">
-            <h3 className="event-details__sidebar-title">Date & Time</h3>
-            <div className="event-details__sidebar-item">
-              <Calendar size={18} className="event-details__sidebar-icon" />
-              <div>
-                <p className="event-details__sidebar-label">Date</p>
-                <p className="event-details__sidebar-value">{dateDisplay}</p>
-              </div>
-            </div>
-
-            {timeDisplay && (
-              <div className="event-details__sidebar-item">
-                <Clock size={18} className="event-details__sidebar-icon" />
-                <div>
-                  <p className="event-details__sidebar-label">Time</p>
-                  {timeDisplay.split("\n").map((line, idx) => (
-                    <p key={idx} className="event-details__sidebar-value">
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="event-details__divider"></div>
-
-            <h3 className="event-details__sidebar-title">Location</h3>
-            <div className="event-details__sidebar-item">
-              <MapPin size={18} className="event-details__sidebar-icon" />
-              <div>
-                <p className="event-details__sidebar-label">Venue</p>
-                <p className="event-details__sidebar-value">{location}</p>
-              </div>
-            </div>
-
-            {city && (
-              <div className="event-details__sidebar-item">
-                <MapPin
-                  size={18}
-                  className="event-details__sidebar-icon"
-                  style={{ opacity: 0 }}
+        <div className="event-details__container">
+          {/* Left Column: Event Body */}
+          <section className="event-details__main-content">
+            {imageUrl && (
+              <div className="event-details__banner-wrapper">
+                <img
+                  src={imageUrl}
+                  alt={title}
+                  className="event-details__banner"
                 />
-                <div>
-                  <p className="event-details__sidebar-label">City</p>
-                  <p className="event-details__sidebar-value">{city}</p>
-                </div>
               </div>
             )}
 
-            {state && (
-              <div className="event-details__sidebar-item">
-                <MapPin
-                  size={18}
-                  className="event-details__sidebar-icon"
-                  style={{ opacity: 0 }}
-                />
-                <div>
-                  <p className="event-details__sidebar-label">
-                    State/Province
-                  </p>
-                  <p className="event-details__sidebar-value">{state}</p>
-                </div>
-              </div>
-            )}
+            <div className="event-details__body glass-card">
+              {acronym && (
+                <span className="event-details__acronym">{acronym}</span>
+              )}
+              <h2 className="event-details__title">{title}</h2>
 
-            {country && (
-              <div className="event-details__sidebar-item">
-                <Globe
-                  size={18}
-                  className="event-details__sidebar-icon"
-                  style={{ opacity: 0 }}
-                />
-                <div>
-                  <p className="event-details__sidebar-label">Country</p>
-                  <p className="event-details__sidebar-value">{country}</p>
-                </div>
-              </div>
-            )}
-
-            {region && (
-              <div className="event-details__sidebar-item">
-                <Globe size={18} className="event-details__sidebar-icon" />
-                <div>
-                  <p className="event-details__sidebar-label">Region</p>
-                  <p className="event-details__sidebar-value">{region}</p>
-                </div>
-              </div>
-            )}
-
-            {url && (
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="event-details__cta-btn"
-                id="event-register-cta"
-              >
-                Learn More <ExternalLink size={16} />
-              </a>
-            )}
-          </div>
-
-          {/* Organizer Details Card */}
-          {organizationName && (
-            <div className="event-details__org-card glass-card">
-              <h3 className="event-details__sidebar-title">Organizer</h3>
-              <div className="event-details__sidebar-item">
-                <Building size={18} className="event-details__sidebar-icon" />
-                <div>
-                  <p
-                    className="event-details__sidebar-value"
-                    style={{ fontWeight: 600 }}
+              {/* Badges Row */}
+              <div className="event-details__badges">
+                <span className="event-details__badge event-details__badge--category">
+                  {category}
+                </span>
+                {hasCost && (
+                  <span
+                    className={`event-details__badge ${
+                      isPaid
+                        ? "event-details__badge--paid"
+                        : "event-details__badge--free"
+                    }`}
                   >
-                    {organizationName}
-                  </p>
-                  {organizationUrl && (
-                    <a
-                      href={organizationUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="event-details__org-link"
-                    >
-                      Visit Website <ExternalLink size={12} />
-                    </a>
-                  )}
-                </div>
+                    {costLabel}
+                  </span>
+                )}
+                {formatBadge && (
+                  <span className="event-details__badge event-details__badge--format">
+                    {formatBadge}
+                  </span>
+                )}
+                {language && (
+                  <span className="event-details__badge event-details__badge--lang">
+                    <Languages
+                      size={12}
+                      style={{ marginRight: "4px", verticalAlign: "middle" }}
+                    />
+                    {language}
+                  </span>
+                )}
               </div>
 
-              {/* Social links */}
-              {(urlLinkedin || urlTwitter || urlOther) && (
-                <div className="event-details__socials">
-                  {urlLinkedin && (
-                    <a
-                      href={urlLinkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="event-details__social-btn"
-                      aria-label="LinkedIn"
-                    >
-                      <Linkedin size={18} />
-                    </a>
-                  )}
-                  {urlTwitter && (
-                    <a
-                      href={urlTwitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="event-details__social-btn"
-                      aria-label="Twitter"
-                    >
-                      <Twitter size={18} />
-                    </a>
-                  )}
-                  {urlOther && (
-                    <a
-                      href={urlOther}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="event-details__social-btn"
-                      aria-label="Website"
-                    >
-                      <Globe size={18} />
-                    </a>
-                  )}
+              <div className="event-details__divider"></div>
+
+              {/* Description */}
+              <div className="event-details__description-section">
+                <h3 className="event-details__section-title">
+                  About this Event
+                </h3>
+                <p className="event-details__description">{description}</p>
+              </div>
+
+              {/* Tags */}
+              {tags.length > 0 && (
+                <div className="event-details__tags-section">
+                  <h4 className="event-details__tags-title">Tags</h4>
+                  <div className="event-details__tags">
+                    {tags.map((tag) => (
+                      <span key={tag} className="event-card__tag">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-          )}
+          </section>
 
-          {/* Leaflet Mini Map */}
-          {hasCoords && (
-            <div className="event-details__map-card glass-card">
-              <h3 className="event-details__sidebar-title">
-                Event Map Location
-              </h3>
-              <div className="event-details__map-wrapper">
-                <MapContainer
-                  center={[lat, lng]}
-                  zoom={12}
-                  zoomControl={true}
-                  style={{ height: "100%", width: "100%" }}
-                >
-                  <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                  />
-                  <Marker position={[lat, lng]}>
-                    <Popup>{title}</Popup>
-                  </Marker>
-                </MapContainer>
+          {/* Right Column: Event Info Cards */}
+          <aside className="event-details__sidebar">
+            {/* Main Info Card */}
+            <div className="event-details__info-card glass-card">
+              <h3 className="event-details__sidebar-title">Date & Time</h3>
+              <div className="event-details__sidebar-item">
+                <Calendar size={18} className="event-details__sidebar-icon" />
+                <div>
+                  <p className="event-details__sidebar-label">Date</p>
+                  <p className="event-details__sidebar-value">{dateDisplay}</p>
+                </div>
               </div>
+
+              {timeDisplay && (
+                <div className="event-details__sidebar-item">
+                  <Clock size={18} className="event-details__sidebar-icon" />
+                  <div>
+                    <p className="event-details__sidebar-label">Time</p>
+                    {timeDisplay.split("\n").map((line, idx) => (
+                      <p key={idx} className="event-details__sidebar-value">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="event-details__divider"></div>
+
+              <h3 className="event-details__sidebar-title">Location</h3>
+              <div className="event-details__sidebar-item">
+                <MapPin size={18} className="event-details__sidebar-icon" />
+                <div>
+                  <p className="event-details__sidebar-label">Venue</p>
+                  <p className="event-details__sidebar-value">{location}</p>
+                </div>
+              </div>
+
+              {city && (
+                <div className="event-details__sidebar-item">
+                  <MapPin
+                    size={18}
+                    className="event-details__sidebar-icon"
+                    style={{ opacity: 0 }}
+                  />
+                  <div>
+                    <p className="event-details__sidebar-label">City</p>
+                    <p className="event-details__sidebar-value">{city}</p>
+                  </div>
+                </div>
+              )}
+
+              {state && (
+                <div className="event-details__sidebar-item">
+                  <MapPin
+                    size={18}
+                    className="event-details__sidebar-icon"
+                    style={{ opacity: 0 }}
+                  />
+                  <div>
+                    <p className="event-details__sidebar-label">
+                      State/Province
+                    </p>
+                    <p className="event-details__sidebar-value">{state}</p>
+                  </div>
+                </div>
+              )}
+
+              {country && (
+                <div className="event-details__sidebar-item">
+                  <Globe
+                    size={18}
+                    className="event-details__sidebar-icon"
+                    style={{ opacity: 0 }}
+                  />
+                  <div>
+                    <p className="event-details__sidebar-label">Country</p>
+                    <p className="event-details__sidebar-value">{country}</p>
+                  </div>
+                </div>
+              )}
+
+              {region && (
+                <div className="event-details__sidebar-item">
+                  <Globe size={18} className="event-details__sidebar-icon" />
+                  <div>
+                    <p className="event-details__sidebar-label">Region</p>
+                    <p className="event-details__sidebar-value">{region}</p>
+                  </div>
+                </div>
+              )}
+
+              {url && (
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="event-details__cta-btn"
+                  id="event-register-cta"
+                >
+                  Learn More <ExternalLink size={16} />
+                </a>
+              )}
             </div>
-          )}
-        </aside>
-      </div>
-    </main>
+
+            {/* Organizer Details Card */}
+            {organizationName && (
+              <div className="event-details__org-card glass-card">
+                <h3 className="event-details__sidebar-title">Organizer</h3>
+                <div className="event-details__sidebar-item">
+                  <Building
+                    size={18}
+                    className="event-details__sidebar-icon"
+                  />
+                  <div>
+                    <p
+                      className="event-details__sidebar-value"
+                      style={{ fontWeight: 600 }}
+                    >
+                      {organizationName}
+                    </p>
+                    {organizationUrl && (
+                      <a
+                        href={organizationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="event-details__org-link"
+                      >
+                        Visit Website <ExternalLink size={12} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* Social links */}
+                {(urlLinkedin || urlTwitter || urlOther) && (
+                  <div className="event-details__socials">
+                    {urlLinkedin && (
+                      <a
+                        href={urlLinkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="event-details__social-btn"
+                        aria-label="LinkedIn"
+                      >
+                        <Linkedin size={18} />
+                      </a>
+                    )}
+                    {urlTwitter && (
+                      <a
+                        href={urlTwitter}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="event-details__social-btn"
+                        aria-label="Twitter"
+                      >
+                        <Twitter size={18} />
+                      </a>
+                    )}
+                    {urlOther && (
+                      <a
+                        href={urlOther}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="event-details__social-btn"
+                        aria-label="Website"
+                      >
+                        <Globe size={18} />
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Leaflet Mini Map */}
+            {hasCoords && (
+              <div className="event-details__map-card glass-card">
+                <h3 className="event-details__sidebar-title">
+                  Event Map Location
+                </h3>
+                <div className="event-details__map-wrapper">
+                  <MapContainer
+                    center={[lat, lng]}
+                    zoom={12}
+                    minZoom={3}
+                    maxBounds={[
+                      [-90, -Infinity],
+                      [90, Infinity],
+                    ]}
+                    maxBoundsViscosity={1.0}
+                    zoomControl={true}
+                    style={{ height: "100%", width: "100%" }}
+                  >
+                    <TileLayer
+                      url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    />
+                    <Marker position={[lat, lng]}>
+                      <Popup>{title}</Popup>
+                    </Marker>
+                  </MapContainer>
+                </div>
+              </div>
+            )}
+          </aside>
+        </div>
+      </main>
+    </>
   );
 }
