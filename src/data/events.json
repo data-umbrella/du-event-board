@@ -166,5 +166,34 @@
       "community",
       "innovation"
     ]
+  },
+  {
+    "id": "202608190752501959",
+    "lat": 44.9772995,
+    "lng": -93.2654692,
+    "title": "SciPy 2026",
+    "description": "No description provided.",
+    "date": "2026-07-13",
+    "location": "Minneapolis, MN, USA",
+    "city": "Minneapolis",
+    "state": "MN",
+    "country": "USA",
+    "region": "Canada / USA",
+    "category": "Conference",
+    "url": "https://www.scipy2026.scipy.org",
+    "tags": [
+      "python",
+      "open",
+      "source"
+    ],
+    "end_date": "2026-07-19",
+    "organization_name": "NumFOCUS",
+    "organization_url": "https://numfocus.org",
+    "url_linkedin": "https://www.linkedin.com/company/numfocus",
+    "url_twitter": "https://twitter.com/scipyconf",
+    "paid_or_free": "paid",
+    "image_url": "https://images.squarespace-cdn.com/content/v1/6596dfc539fa52603ef8b8d4/106aeb0b-a78a-456e-a238-4f9553960c7d/Tacoma_Waterfront_300px_e2638db7-92fe-4751-844d-2e47c2047bab.jpg?format=2500w",
+    "in_person": true,
+    "language": "English"
   }
 ]
