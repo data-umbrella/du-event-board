@@ -150,3 +150,28 @@ events:
       - hackathon
       - community
       - innovation
+  - id: "202608190752577261"
+    lat: 37.5666791
+    lng: 126.9782914
+    title: ICML 2026
+    description: No description provided.
+    date: "2026-07-06"
+    location: Seoul, South Korea
+    city: Seoul
+    country: South Korea
+    region: Asia
+    category: Conference
+    url: https://icml.cc/Conferences/2026
+    tags:
+      - AI
+      - ML
+      - CV
+    end_date: "2026-07-11"
+    organization_name: Int'l Conf on Machine Learning
+    organization_url: https://icml.cc/
+    url_linkedin: None
+    url_twitter: https://twitter.com/icmlconf
+    acronym: ICML
+    paid_or_free: paid
+    in_person: true
+    language: English
