@@ -150,3 +150,28 @@ events:
       - hackathon
       - community
       - innovation
+  - id: "202608190752537431"
+    lat: 39.7392364
+    lng: -104.984862
+    title: CVPR 2026
+    description: No description provided.
+    date: "2026-06-03"
+    location: Denver, CO, USA
+    city: Denver
+    state: CO
+    country: USA
+    region: Canada / USA
+    category: Conference
+    url: https://cvpr.thecvf.com
+    tags:
+      - ML
+      - CV
+    end_date: "2026-06-07"
+    organization_name: IEEE
+    organization_url: https://www.ieee.org/
+    url_linkedin: https://www.linkedin.com/company/ieee/
+    url_twitter: https://twitter.com/IEEEorg
+    paid_or_free: paid
+    image_url: https://media.icml.cc/Conferences/CVPR2024/img/homepage_image.jpg
+    in_person: true
+    language: English
