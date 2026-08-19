@@ -150,3 +150,28 @@ events:
       - hackathon
       - community
       - innovation
+  - id: "202608190752565263"
+    lat: 41.8755616
+    lng: -87.6244212
+    title: DjangoCon US 2026
+    description: No description provided.
+    date: "2026-08-24"
+    location: Chicago, IL, USA
+    city: Chicago
+    state: IL
+    country: USA
+    region: Canada / USA
+    category: Conference
+    url: https://2026.djangocon.us
+    tags:
+      - Django
+      - Python
+    end_date: "2026-08-28"
+    organization_name: Django Software Foundation
+    organization_url: https://2026.djangocon.us
+    url_linkedin: https://www.linkedin.com/company/djangocon/
+    url_twitter: https://twitter.com/djangocon
+    url_other: https://github.com/djangocon/
+    paid_or_free: paid
+    in_person: true
+    language: English
