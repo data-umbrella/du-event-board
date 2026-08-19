@@ -166,5 +166,33 @@
       "community",
       "innovation"
     ]
+  },
+  {
+    "id": "202608190752592167",
+    "lat": 42.3588336,
+    "lng": -71.0578303,
+    "title": "JSM 2026",
+    "description": "No description provided.",
+    "date": "2026-08-01",
+    "location": "Boston, MA, USA",
+    "city": "Boston",
+    "state": "MA",
+    "country": "USA",
+    "region": "Canada / USA",
+    "category": "Conference",
+    "url": "https://ww2.amstat.org/meetings/jsm/2026/",
+    "tags": [
+      "statistics"
+    ],
+    "end_date": "2026-08-06",
+    "organization_name": "ASA",
+    "organization_url": "https://www.amstat.org",
+    "url_linkedin": "https://www.linkedin.com/company/american-statistical-association---asa/",
+    "url_twitter": "https://twitter.com/AmstatNews?s=20&t=xb_aVg7v6V9g2LZXxAYHJg",
+    "acronym": "JSM",
+    "paid_or_free": "paid",
+    "image_url": "https://ww2.amstat.org/meetings/jsm/2023/images/logo.png?v=2023",
+    "in_person": true,
+    "language": "English"
   }
 ]
