@@ -150,3 +150,26 @@ events:
       - hackathon
       - community
       - innovation
+  - id: "202608190752521749"
+    lat: 50.0619474
+    lng: 19.9368564
+    title: EuroPython 2026
+    description: No description provided.
+    date: "2026-07-13"
+    location: Krakow, Poland
+    city: Krakow
+    country: Poland
+    region: Europe
+    category: Conference
+    url: https://ep2026.europython.eu
+    tags:
+      - python
+    end_date: "2026-07-19"
+    organization_name: EuroPython Society (EPS)
+    organization_url: https://www.europython-society.org/coc/
+    url_linkedin: https://www.linkedin.com/company/europython/
+    url_twitter: https://twitter.com/europython
+    paid_or_free: paid
+    image_url: https://raw.githubusercontent.com/data-umbrella/resources/main/events-images/2024/2024-europython.png
+    in_person: true
+    language: English
