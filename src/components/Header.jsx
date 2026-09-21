@@ -1,3 +1,5 @@
+import { MoonIcon, SunIcon } from "lucide-react";
+
 export default function Header({ theme, onToggleTheme, onNavigate }) {
   return (
     <header className="header" id="header">
@@ -16,7 +18,11 @@ export default function Header({ theme, onToggleTheme, onNavigate }) {
           onClick={onToggleTheme}
           aria-label="Toggle Theme"
         >
-          {theme === "dark" ? "☀️" : "🌙"}
+          {theme === "dark" ? (
+            <SunIcon size={16} color="#f2e674" />
+          ) : (
+            <MoonIcon size={16} color="#4a5568" />
+          )}
         </button>
       </div>
 
