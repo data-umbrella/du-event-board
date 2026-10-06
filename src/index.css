@@ -1093,6 +1093,8 @@ span.event-list-row__title {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  line-height: 1.6;
+  min-height: 24px;
 }
 
 .footer__column a:hover {
@@ -1101,6 +1103,7 @@ span.event-list-row__title {
 
 .footer__external-icon {
   opacity: 0.7;
+  flex-shrink: 0;
 }
 
 .footer__copyright {
@@ -1499,6 +1502,7 @@ span.event-list-row__title {
 
 /* Navigation Links in Footer */
 .footer__internal-link,
+.footer__external-link,
 .footer__column a {
   background: none;
   border: none;
@@ -1506,6 +1510,8 @@ span.event-list-row__title {
   cursor: pointer;
   padding: 0;
   font-size: 0.95rem;
+  line-height: 1.6;
+  min-height: 24px;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
@@ -1515,6 +1521,7 @@ span.event-list-row__title {
 }
 
 .footer__internal-link:hover,
+.footer__external-link:hover,
 .footer__column a:hover {
   color: var(--accent-secondary) !important;
   text-decoration: none;
