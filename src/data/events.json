@@ -1,3 +1,29 @@
 [
-  
+  {
+    "id": "202608190752473993",
+    "lat": 41.4996574,
+    "lng": -81.6936772,
+    "title": "PyOhio 2026",
+    "description": "No description provided.",
+    "date": "2026-07-25",
+    "location": "Cleveland, OH, USA",
+    "city": "Cleveland",
+    "state": "OH",
+    "country": "USA",
+    "region": "Canada / USA",
+    "category": "Conference",
+    "url": "https://www.pyohio.org/2026/",
+    "tags": [
+      "python"
+    ],
+    "end_date": "2026-07-26",
+    "organization_name": "PyOhio",
+    "organization_url": "https://www.pyohio.org",
+    "url_linkedin": "https://www.linkedin.com/company/pyohio/about/",
+    "url_twitter": "https://twitter.com/pyohio",
+    "paid_or_free": "paid",
+    "image_url": "https://github.com/data-umbrella/resources/blob/main/events-images/2024/2024-pyohio.png?raw=true",
+    "in_person": true,
+    "language": "English"
+  }
 ]
