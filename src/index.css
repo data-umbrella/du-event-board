@@ -2076,8 +2076,3 @@ body.light-theme .searchable-select__clear-btn:hover {
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
 }
-
-/* Dark mode map tiles filter */
-.map-tiles-dark {
-  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-}
