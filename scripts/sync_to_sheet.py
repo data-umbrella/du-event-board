@@ -123,7 +123,7 @@ def get_derived_category(in_person: Any, virtual: Any) -> str:
 
 def get_open_sync_prs(
     repo: str, token: str
-) -> dict[tuple[str, str, str], dict[str, Any]]:
+) -> dict[tuple[str, str], dict[str, Any]]:
     """
     title: >-
       Fetch open sync PRs and parse their event details from PR descriptions.
@@ -133,7 +133,7 @@ def get_open_sync_prs(
       token:
         type: str
     returns:
-      type: dict[tuple[str, str, str], dict[str, Any]]
+      type: dict[tuple[str, str], dict[str, Any]]
     """
     url = f"https://api.github.com/repos/{repo}/pulls?state=open&per_page=100"
     req = urllib.request.Request(
@@ -173,9 +173,6 @@ def get_open_sync_prs(
                 date_match = re.search(
                     r"-\s+\*\*Start Date\*\*:\s*`([^`]+)`", body
                 )
-                loc_match = re.search(
-                    r"-\s+\*\*Location\*\*:\s*`([^`]+)`", body
-                )
 
                 if title_match and date_match:
                     e_id = ""
@@ -214,9 +211,8 @@ def get_open_sync_prs(
 
                     e_title = title_match.group(1).strip()
                     e_date = date_match.group(1).strip()
-                    e_loc = loc_match.group(1).strip() if loc_match else ""
 
-                    key = (e_title.lower(), e_date, e_loc.lower())
+                    key = (e_title.lower(), e_date)
                     open_prs[key] = {
                         "number": pr["number"],
                         "branch": branch,
@@ -648,7 +644,7 @@ def main() -> None:
         date = str(event.get("date", event.get("start_date", ""))).strip()
         location = str(event.get("location", "")).strip().lower()
         if title and date:
-            yaml_keys.add((title, date, location))
+            yaml_keys.add((title, date))
 
     # Identify events in sheet but deleted from YAML
     deleted_events = []
@@ -678,7 +674,7 @@ def main() -> None:
             if not s_id:
                 continue
 
-            sheet_key = (s_title, s_date, s_location)
+            sheet_key = (s_title, s_date)
 
             # Use ID matching first if available
             is_deleted = False
@@ -725,19 +721,16 @@ def main() -> None:
             if key in existing_keys:
                 s_ev = sheet_events_by_key[key]
             else:
-                # Fallback: check if we can match by title, date, and a substring of location
-                fallback_key = None
                 for s_key in existing_keys:
                     if s_key[0] == title and s_key[1] == date:
-                        if s_key[3] in location or location in s_key[3]:
-                            fallback_key = s_key
-                            break
+                        fallback_key = s_key
+                        break
 
                 if fallback_key:
                     s_ev = sheet_events_by_key[fallback_key]
 
         if not s_ev:
-            pr_key = (title, date, location)
+            pr_key = (title, date)
             if e_id in pending_syncs_ids or pr_key in pending_syncs:
                 print(
                     f"Skipping sync to sheet for '{title}' because an open PR is currently syncing it to the repo."
@@ -817,7 +810,7 @@ def main() -> None:
                         needs_update = True
                         break
         if needs_update:
-            pr_key = (title, date, location)
+            pr_key = (title, date)
             if e_id in pending_syncs_ids or pr_key in pending_syncs:
                 print(
                     f"Skipping update for '{title}' because an open PR is currently syncing it to the repo."
