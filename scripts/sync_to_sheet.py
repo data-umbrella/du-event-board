@@ -553,6 +553,7 @@ def main() -> None:
 
             existing_ids = set()
             sheet_events_by_id = {}
+            sheet_events_by_title_date = {}
             existing_keys = set()
             sheet_events_by_key = {}
             for s_ev in res_body:
@@ -588,6 +589,7 @@ def main() -> None:
                     key = (s_title, s_date, s_end_date, s_location)
                     existing_keys.add(key)
                     sheet_events_by_key[key] = s_ev
+                    sheet_events_by_title_date[(s_title, s_date)] = s_ev
     except Exception as e:
         print(f"Error calling Web App to fetch events: {e}", file=sys.stderr)
         sys.exit(1)
@@ -645,6 +647,31 @@ def main() -> None:
         location = str(event.get("location", "")).strip().lower()
         if title and date:
             yaml_keys.add((title, date))
+
+    # Auto-close open sync PRs if the event is already present in events.yaml
+    if github_token and repo:
+        for pr_key, pr_info in open_sync_prs.items():
+            pr_id = pr_info.get("id")
+            if pr_key in yaml_keys or (pr_id and pr_id in yaml_ids):
+                pr_number = pr_info.get("number")
+                print(
+                    f"Event for PR #{pr_number} is already in YAML. Auto-closing stale PR..."
+                )
+                try:
+                    close_url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}"
+                    close_req = urllib.request.Request(
+                        close_url,
+                        data=json.dumps({"state": "closed"}).encode("utf-8"),
+                        headers={
+                            "Authorization": f"Bearer {github_token}",
+                            "Accept": "application/vnd.github+json",
+                            "X-GitHub-Api-Version": "2022-11-28",
+                        },
+                        method="PATCH",
+                    )
+                    urllib.request.urlopen(close_req)
+                except Exception as e:
+                    print(f"Note: Could not close PR #{pr_number}: {e}")
 
     # Identify events in sheet but deleted from YAML
     deleted_events = []
@@ -716,27 +743,15 @@ def main() -> None:
         s_ev = None
         if e_id and e_id in sheet_events_by_id:
             s_ev = sheet_events_by_id[e_id]
+        elif (title, date) in sheet_events_by_title_date:
+            s_ev = sheet_events_by_title_date[(title, date)]
         else:
             key = (title, date, end_date, location)
             if key in existing_keys:
                 s_ev = sheet_events_by_key[key]
-            else:
-                for s_key in existing_keys:
-                    if s_key[0] == title and s_key[1] == date:
-                        fallback_key = s_key
-                        break
-
-                if fallback_key:
-                    s_ev = sheet_events_by_key[fallback_key]
 
         if not s_ev:
-            pr_key = (title, date)
-            if e_id in pending_syncs_ids or pr_key in pending_syncs:
-                print(
-                    f"Skipping sync to sheet for '{title}' because an open PR is currently syncing it to the repo."
-                )
-            else:
-                missing_events.append(event)
+            missing_events.append(event)
             continue
 
         needs_update = False
@@ -810,13 +825,7 @@ def main() -> None:
                         needs_update = True
                         break
         if needs_update:
-            pr_key = (title, date)
-            if e_id in pending_syncs_ids or pr_key in pending_syncs:
-                print(
-                    f"Skipping update for '{title}' because an open PR is currently syncing it to the repo."
-                )
-            else:
-                events_needing_update.append(event)
+            events_needing_update.append(event)
 
     if not missing_events and not deleted_events and not events_needing_update:
         print(
