@@ -2,6 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "../App";
 
+vi.mock("../data/events.json", async () => {
+  const mockEvents = await vi.importActual("./mockEvents.json");
+  return { default: mockEvents.default || mockEvents };
+});
+
 import events from "../data/events.json";
 
 describe("App", () => {
