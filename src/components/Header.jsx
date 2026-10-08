@@ -1,22 +1,33 @@
-export default function Header({ theme, onToggleTheme, onNavigate }) {
+export default function Header({
+  theme,
+  onToggleTheme,
+  onNavigate,
+  currentPage = "events",
+}) {
   return (
     <header className="header" id="header">
       <div className="header__controls">
-        <button
-          onClick={() =>
-            onNavigate ? onNavigate("events") : (window.location.href = "/")
-          }
-          className="header__nav-btn"
-        >
-          Events
-        </button>
+        <nav aria-label="Primary">
+          <button
+            type="button"
+            onClick={() =>
+              onNavigate ? onNavigate("events") : (window.location.href = "/")
+            }
+            className="header__nav-btn"
+            aria-current={currentPage === "events" ? "page" : undefined}
+          >
+            Events
+          </button>
+        </nav>
 
         <button
+          type="button"
           className="theme-toggle"
           onClick={onToggleTheme}
           aria-label="Toggle Theme"
+          aria-pressed={theme === "light"}
         >
-          {theme === "dark" ? "☀️" : "🌙"}
+          <span aria-hidden="true">{theme === "dark" ? "☀️" : "🌙"}</span>
         </button>
       </div>
 

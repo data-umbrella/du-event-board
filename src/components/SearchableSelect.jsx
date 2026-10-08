@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useId } from "react";
 
 export default function SearchableSelect({
   options,
@@ -6,13 +6,15 @@ export default function SearchableSelect({
   onChange,
   placeholder,
   id,
+  label,
   clearable = true,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value || "");
   const wrapperRef = useRef(null);
+  const listboxId = useId();
+  const clearLabel = `Clear ${label || placeholder || "selection"}`;
 
-  // Sync state if it changes from outside
   useEffect(() => {
     setInputValue(value || "");
   }, [value]);
@@ -41,6 +43,11 @@ export default function SearchableSelect({
         className="searchable-select__input-wrapper"
         style={{ position: "relative", width: "100%" }}
       >
+        {label && (
+          <label className="visually-hidden" htmlFor={id}>
+            {label}
+          </label>
+        )}
         <input
           id={id}
           type="text"
@@ -52,13 +59,21 @@ export default function SearchableSelect({
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
+              e.preventDefault();
               onChange(inputValue);
               setIsOpen(false);
+            } else if (e.key === "Escape") {
+              setIsOpen(false);
+              setInputValue(value || "");
             }
           }}
           onClick={() => setIsOpen(true)}
           onFocus={(e) => e.target.select()}
           placeholder={placeholder}
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-controls={listboxId}
+          aria-autocomplete="list"
           autoComplete="off"
         />
         {value && clearable && (
@@ -72,13 +87,19 @@ export default function SearchableSelect({
               setIsOpen(false);
             }}
             title="Clear selection"
+            aria-label={clearLabel}
           >
-            ✕
+            <span aria-hidden="true">✕</span>
           </button>
         )}
       </div>
       {isOpen && (
-        <ul className="searchable-select__dropdown" role="listbox">
+        <ul
+          className="searchable-select__dropdown"
+          role="listbox"
+          id={listboxId}
+          aria-label={label || placeholder}
+        >
           {inputValue && clearable && (
             <li
               className="searchable-select__option searchable-select__option--clear"
@@ -89,6 +110,7 @@ export default function SearchableSelect({
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
                   setInputValue("");
                   onChange("");
                   setIsOpen(false);

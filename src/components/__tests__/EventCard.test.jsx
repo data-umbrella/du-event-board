@@ -65,7 +65,7 @@ describe("EventCard Component", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls onSelectEvent when clicked (grid view)", () => {
+  it("exposes the card as a single link rather than a click handler on the article", () => {
     const handleSelect = vi.fn();
     render(
       <EventCard
@@ -75,10 +75,28 @@ describe("EventCard Component", () => {
       />,
     );
 
-    // The article is clickable
-    const card = screen.getByRole("article");
-    fireEvent.click(card);
+    expect(screen.getByRole("article")).not.toHaveAttribute("onclick");
+
+    const link = screen.getByRole("link", { name: "Test Meetup" });
+    expect(link).toHaveAttribute("href", "?page=event-details&eventId=123");
+
+    fireEvent.click(link);
     expect(handleSelect).toHaveBeenCalledWith("123");
+  });
+
+  it("lets a keyboard user open the card with Enter on the title link", () => {
+    const handleSelect = vi.fn();
+    render(
+      <EventCard
+        event={mockEvent}
+        viewMode="grid"
+        onSelectEvent={handleSelect}
+      />,
+    );
+
+    const link = screen.getByRole("link", { name: "Test Meetup" });
+    fireEvent.click(link);
+    expect(handleSelect).toHaveBeenCalledTimes(1);
   });
 
   it("calls onSelectEvent when title link is clicked (list view)", () => {

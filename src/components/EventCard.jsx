@@ -51,16 +51,19 @@ export default function EventCard({
     ended: "status-badge--ended",
   };
 
+  const detailsHref = `?page=event-details&eventId=${event.id}`;
+  const handleDetailsClick = (e) => {
+    e.preventDefault();
+    onSelectEvent(event.id);
+  };
+
   if (viewMode === "list") {
     return (
       <article className="event-list-row" id={`event-${event.id}`}>
         <div className="event-list-row__title-wrap">
           <a
-            href={`?page=event-details&eventId=${event.id}`}
-            onClick={(e) => {
-              e.preventDefault();
-              onSelectEvent(event.id);
-            }}
+            href={detailsHref}
+            onClick={handleDetailsClick}
             className="event-list-row__title"
           >
             {event.title}
@@ -84,13 +87,7 @@ export default function EventCard({
 
   // Grid view (default)
   return (
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
-    <article
-      className="event-card"
-      id={`event-${event.id}`}
-      onClick={() => onSelectEvent(event.id)}
-      style={{ cursor: "pointer" }}
-    >
+    <article className="event-card" id={`event-${event.id}`}>
       <div className="event-card__header">
         <span className="event-card__category">{event.category}</span>
 
@@ -104,13 +101,9 @@ export default function EventCard({
 
       <h2 className="event-card__title">
         <a
-          href={`?page=event-details&eventId=${event.id}`}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onSelectEvent(event.id);
-          }}
-          style={{ color: "inherit", textDecoration: "none" }}
+          className="event-card__link"
+          href={detailsHref}
+          onClick={handleDetailsClick}
         >
           {event.title}
         </a>

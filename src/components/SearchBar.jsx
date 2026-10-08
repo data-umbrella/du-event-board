@@ -111,7 +111,12 @@ export default function SearchBar({
     selectedCost !== "";
 
   return (
-    <div className="search" id="search">
+    <div
+      className="search"
+      id="search"
+      role="search"
+      aria-label="Filter events"
+    >
       <div className="search__container">
         {/* ROW 1: Search, Categories, Format, Cost */}
         <div
@@ -125,7 +130,12 @@ export default function SearchBar({
           }}
         >
           <div className="search__input-wrapper" style={{ flex: "2 1 250px" }}>
-            <span className="search__icon">🔍</span>
+            <span className="search__icon" aria-hidden="true">
+              🔍
+            </span>
+            <label className="visually-hidden" htmlFor="search-input">
+              Search events
+            </label>
             <input
               id="search-input"
               type="text"
@@ -142,6 +152,7 @@ export default function SearchBar({
           >
             <SearchableSelect
               id="category-select"
+              label="Category"
               options={categories || []}
               value={selectedCategory}
               onChange={onCategoryChange}
@@ -155,6 +166,7 @@ export default function SearchBar({
           >
             <SearchableSelect
               id="format-select"
+              label="Format"
               options={formatOptions}
               value={formatValueToLabel[selectedFormat] || ""}
               onChange={(label) =>
@@ -170,6 +182,7 @@ export default function SearchBar({
           >
             <SearchableSelect
               id="cost-select"
+              label="Event Cost"
               options={costOptions}
               value={costValueToLabel[selectedCost] || ""}
               onChange={(label) => onCostChange(costLabelToValue[label] || "")}
@@ -207,6 +220,7 @@ export default function SearchBar({
           >
             <SearchableSelect
               id="city-input"
+              label="City"
               options={cities || []}
               value={selectedCity}
               onChange={onCityChange}
@@ -220,6 +234,7 @@ export default function SearchBar({
           >
             <SearchableSelect
               id="state-input"
+              label="State or Province"
               options={states || []}
               value={selectedState}
               onChange={onStateChange}
@@ -233,6 +248,7 @@ export default function SearchBar({
           >
             <SearchableSelect
               id="country-input"
+              label="Country"
               options={countries || []}
               value={selectedCountry}
               onChange={onCountryChange}
@@ -246,6 +262,7 @@ export default function SearchBar({
           >
             <SearchableSelect
               id="region-input"
+              label="Region"
               options={regions || []}
               value={selectedRegion}
               onChange={onRegionChange}
@@ -259,6 +276,7 @@ export default function SearchBar({
           >
             <SearchableSelect
               id="date-filter-select"
+              label="Date"
               options={dateTypeOptions}
               value={dateTypeValueToLabel[dateFilterType] || ""}
               onChange={(label) =>
@@ -312,11 +330,13 @@ export default function SearchBar({
                   onRangeStartChange(e.target.value);
                 }}
                 aria-label="Range start date"
+                aria-invalid={isInvalidRange}
                 style={{ width: "100%", minWidth: "110px" }}
               />
               <span
                 className="search__date-separator"
                 style={{ color: "var(--text-muted)" }}
+                aria-hidden="true"
               >
                 —
               </span>
@@ -339,10 +359,11 @@ export default function SearchBar({
                   onRangeEndChange(e.target.value);
                 }}
                 aria-label="Range end date"
+                aria-invalid={isInvalidRange}
                 style={{ width: "100%", minWidth: "110px" }}
               />
               {isInvalidRange && (
-                <div className="search__error-message">
+                <div className="search__error-message" role="alert">
                   <span>Start date cannot be after end date</span>
                 </div>
               )}

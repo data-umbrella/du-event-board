@@ -11,6 +11,16 @@ import EventDetails from "./components/EventDetails";
 import events from "./data/events.json";
 import { useUrlState } from "./hooks/useUrlState";
 import BackToTop from "./components/BackToTop";
+import SkipToContent from "./components/a11y/SkipToContent";
+import LiveRegion from "./components/a11y/LiveRegion";
+import Seo from "./components/seo/Seo";
+import {
+  buildEventJsonLd,
+  buildEventListJsonLd,
+  buildWebSiteJsonLd,
+  resolvePageMeta,
+} from "./utils/seoHelpers";
+import { persistTheme, readStoredTheme } from "./utils/themeStorage";
 
 const fuseOptions = {
   keys: [
@@ -122,55 +132,40 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [currentPage]);
 
-    // 1. Update Document Title dynamically for any page added now or in the future
-    let newTitle = "DU Event Board - Discover Events Near You";
+  const pageMeta = useMemo(
+    () => resolvePageMeta({ currentPage, selectedEvent }),
+    [currentPage, selectedEvent],
+  );
 
+  const structuredData = useMemo(() => {
     if (currentPage === "event-details" && selectedEvent) {
-      newTitle = `${selectedEvent.title} | DU Event Board`;
-    } else if (currentPage && currentPage !== "events") {
-      // Auto-formats "about-us" to "About Us" or "sponsors" to "Sponsors"
-      const formattedPage = currentPage
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-      newTitle = `${formattedPage} | DU Event Board`;
+      return {
+        "@context": "https://schema.org",
+        ...buildEventJsonLd(selectedEvent),
+      };
     }
-
-    document.title = newTitle;
-
-    // 2. Explicitly tell Google Analytics that the page has changed
-    if (typeof window !== "undefined" && typeof window.gtag === "function") {
-      window.gtag("event", "page_view", {
-        page_location: window.location.href,
-        page_title: document.title,
-      });
-    }
+    if (currentPage !== "events") return null;
+    return {
+      "@context": "https://schema.org",
+      "@graph": [buildWebSiteJsonLd(), buildEventListJsonLd(events)],
+    };
   }, [currentPage, selectedEvent]);
 
-  const [theme, setTheme] = useState(() => {
-    // Check if we are in a browser and if localStorage.getItem actually exists
-    if (
-      typeof window !== "undefined" &&
-      window.localStorage &&
-      typeof window.localStorage.getItem === "function"
-    ) {
-      return localStorage.getItem("theme") || "dark";
-    }
-    return "dark";
-  });
+  useEffect(() => {
+    if (typeof window.gtag !== "function") return;
+    window.gtag("event", "page_view", {
+      page_location: window.location.href,
+      page_title: document.title,
+    });
+  }, [currentPage, selectedEvent]);
+
+  const [theme, setTheme] = useState(readStoredTheme);
 
   useEffect(() => {
-    if (theme === "light") {
-      document.body.classList.add("light-theme");
-    } else {
-      document.body.classList.remove("light-theme");
-    }
-
-    // This line "records" the choice in the browser
-    if (typeof localStorage !== "undefined" && localStorage.setItem) {
-      localStorage.setItem("theme", theme);
-    }
+    document.body.classList.toggle("light-theme", theme === "light");
+    persistTheme(theme);
   }, [theme]);
 
   const toggleTheme = () =>
@@ -522,8 +517,20 @@ export default function App() {
     return groups;
   }, [filteredEvents, viewMode]);
 
+  const resultAnnouncement = `${filteredEvents.length} ${
+    filteredEvents.length === 1 ? "event" : "events"
+  } match the current filters`;
+
   return (
     <>
+      <Seo
+        title={pageMeta.title}
+        description={pageMeta.description}
+        path={pageMeta.path}
+        type={pageMeta.type}
+        jsonLd={structuredData}
+      />
+      <SkipToContent />
       <Header
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -562,7 +569,8 @@ export default function App() {
             states={states}
             countries={countries}
           />
-          <main className="main" id="main-content">
+          <main className="main" id="main-content" tabIndex={-1}>
+            <LiveRegion message={resultAnnouncement} />
             <div
               className="view-header"
               style={{
