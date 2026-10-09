@@ -5,7 +5,7 @@ export default function EventCard({
   viewMode = "grid",
   onSelectEvent,
 }) {
-  const status = getEventStatus(event.date);
+  const status = getEventStatus(event.date, event.end_date);
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     try {

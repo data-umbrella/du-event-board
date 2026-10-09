@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import EventCard from "../EventCard";
+import { getEventStatus } from "../../utils/eventHelpers";
 
 // Mock getEventStatus since it relies on current dates which might change
 vi.mock("../../utils/eventHelpers", () => ({
@@ -161,5 +162,33 @@ describe("EventCard Component", () => {
     // Should be called only once
     expect(handleSelect).toHaveBeenCalledTimes(1);
     expect(handleSelect).toHaveBeenCalledWith("123");
+  });
+
+  it("does not show 'Ended' badge for multi-day event currently in progress", async () => {
+    const { getEventStatus: actualGetEventStatus } = await vi.importActual(
+      "../../utils/eventHelpers",
+    );
+    getEventStatus.mockImplementation(actualGetEventStatus);
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-26T12:00:00"));
+
+    const multiDayEvent = {
+      ...mockEvent,
+      date: "2026-07-25",
+      end_date: "2026-07-26",
+    };
+
+    render(
+      <EventCard
+        event={multiDayEvent}
+        viewMode="grid"
+        onSelectEvent={() => {}}
+      />,
+    );
+
+    expect(screen.queryByText(/ended/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/live/i)).toBeInTheDocument();
+
+    vi.useRealTimers();
   });
 });
