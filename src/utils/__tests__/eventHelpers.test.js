@@ -66,7 +66,7 @@ describe("eventHelpers - getEventStatus", () => {
   });
 
   describe("single-day and edge cases", () => {
-    it('treats null or empty string end_date as single-day event', () => {
+    it("treats null or empty string end_date as single-day event", () => {
       expect(getEventStatus("2025-10-15", null)).toBe("live");
       expect(getEventStatus("2025-10-15", "")).toBe("live");
       expect(getEventStatus("2025-10-14", null)).toBe("ended");
