@@ -20,3 +20,23 @@ export const getEventStatus = (eventDate) => {
 
   return "none";
 };
+
+/**
+ * Transforms github.com blob URLs into raw.githubusercontent.com URLs
+ * to prevent third-party cookie warnings in Chrome for public assets.
+ */
+export const formatImageUrl = (url) => {
+  if (!url) return url;
+
+  if (
+    url.includes("github.com") &&
+    (url.includes("/blob/") || url.includes("?raw=true"))
+  ) {
+    return url
+      .replace("github.com", "raw.githubusercontent.com")
+      .replace("/blob/", "/")
+      .replace("?raw=true", "");
+  }
+
+  return url;
+};

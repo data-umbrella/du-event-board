@@ -31,6 +31,7 @@ export default function Footer({ onNavigate, theme }) {
             }
             alt="Data <Umbrella> Logo"
             className="footer__logo"
+            loading="lazy"
           />
           <span className="footer__company-name">Data Umbrella</span>
           <span className="footer__tagline">
@@ -57,6 +58,7 @@ export default function Footer({ onNavigate, theme }) {
                 src={`${import.meta.env.BASE_URL}Bluesky.png`}
                 alt="Bluesky"
                 style={{ width: "20px", height: "auto" }}
+                loading="lazy"
               />
             </a>
             <a

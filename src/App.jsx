@@ -669,12 +669,13 @@ export default function App() {
               >
                 <button
                   onClick={() => setViewMode("grid")}
+                  aria-pressed={viewMode === "grid"}
                   style={{
                     padding: "0.5rem 1rem",
                     borderRadius: "8px",
                     background:
                       viewMode === "grid"
-                        ? "var(--accent-primary)"
+                        ? "var(--accent-solid)"
                         : "transparent",
                     color: viewMode === "grid" ? "#fff" : "var(--text-muted)",
                     border: "none",
@@ -707,12 +708,13 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
+                  aria-pressed={viewMode === "list"}
                   style={{
                     padding: "0.5rem 1rem",
                     borderRadius: "8px",
                     background:
                       viewMode === "list"
-                        ? "var(--accent-primary)"
+                        ? "var(--accent-solid)"
                         : "transparent",
                     color: viewMode === "list" ? "#fff" : "var(--text-muted)",
                     border: "none",
@@ -747,12 +749,13 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => setViewMode("map")}
+                  aria-pressed={viewMode === "map"}
                   style={{
                     padding: "0.5rem 1rem",
                     borderRadius: "8px",
                     background:
                       viewMode === "map"
-                        ? "var(--accent-primary)"
+                        ? "var(--accent-solid)"
                         : "transparent",
                     color: viewMode === "map" ? "#fff" : "var(--text-muted)",
                     border: "none",
@@ -825,9 +828,9 @@ export default function App() {
                       key={group.month}
                       className="events-list__month-group"
                     >
-                      <h3 className="events-list__month-heading">
+                      <h2 className="events-list__month-heading">
                         {group.month}
-                      </h3>
+                      </h2>
                       <div className="events-list__month-rows">
                         {group.events.map((event) => (
                           <EventCard

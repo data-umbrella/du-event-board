@@ -15,14 +15,14 @@ export default function Sponsors() {
       <section className="sponsors__hero">
         <h2 className="sponsors__title">Thank you to our Sponsors!</h2>
         <p className="sponsors__description">
-          If you would like to sponsor this Event Board, please submit a form{" "}
+          If you would like to sponsor this Event Board, please submit a{" "}
           <a
             href="https://www.dataumbrella.org/about/sponsors"
             className="sponsors__form-link"
             target="_blank"
             rel="noopener noreferrer"
           >
-            here
+            sponsorship form
           </a>
           .
         </p>
@@ -37,8 +37,9 @@ export default function Sponsors() {
               )}
               <img
                 src={sponsor.logo}
-                alt={sponsor.fullName}
+                alt={`${sponsor.fullName} logo`}
                 className="sponsor-card__logo"
+                loading="lazy"
               />
             </div>
             <h3 className="sponsor-card__name">{sponsor.name}</h3>

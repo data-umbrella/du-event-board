@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, ExternalLink, Locate } from "lucide-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { createCustomMarkerIcon } from "../utils/mapIcon";
 
 // Fix for default marker icons in React Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -156,7 +157,11 @@ export default function EventMap({ events, onSelectEvent, theme }) {
             });
 
             return Object.values(groupedEvents).map((group, index) => (
-              <Marker key={index} position={[group[0].lat, group[0].lng]}>
+              <Marker
+                key={index}
+                position={[group[0].lat, group[0].lng]}
+                icon={createCustomMarkerIcon()}
+              >
                 <Popup className="premium-popup">
                   <div
                     style={{

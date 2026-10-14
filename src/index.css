@@ -19,9 +19,10 @@
 
   --text-primary: #f0f0f8;
   --text-secondary: #a0a0c0;
-  --text-muted: #6a6a90;
+  --text-muted: #8b8ba5;
 
-  --accent-primary: #7c5cfc;
+  --accent-primary: #8a6dfc;
+  --accent-solid: #5b3ce6;
   --accent-secondary: #c084fc;
   --accent-glow: rgba(124, 92, 252, 0.25);
 
@@ -167,11 +168,13 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 body {
   font-family: var(--font-family);
-  background: var(--bg-primary);
+  background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
@@ -183,6 +186,11 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
 }
 
 /* ===================================
@@ -892,6 +900,13 @@ span.event-list-row__title {
   letter-spacing: -0.01em;
 }
 
+.event-card__title-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
 .event-card__description {
   font-size: 0.9rem;
   color: var(--text-secondary);
@@ -1159,8 +1174,8 @@ span.event-list-row__title {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 36px;
-  height: 36px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
@@ -1299,6 +1314,15 @@ span.event-list-row__title {
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
   font-weight: bold !important;
+}
+
+.leaflet-control-attribution {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--accent-secondary) !important;
 }
 
 .premium-popup .leaflet-popup-content-wrapper {
@@ -1515,7 +1539,7 @@ span.event-list-row__title {
 
 .about-us__card-text a {
   color: var(--accent-primary);
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: 500;
 }
 
@@ -1531,6 +1555,11 @@ span.event-list-row__title {
 }
 
 .about-us__card-socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
   color: var(--text-muted);
   transition: all var(--transition-fast);
 }
@@ -2014,24 +2043,24 @@ span.event-list-row__title {
   gap: 0.5rem;
   width: 100%;
   padding: 0.8rem 1.5rem;
-  background: var(--accent-primary);
+  background: var(--accent-solid);
   color: #ffffff;
   border-radius: var(--radius-md);
   text-decoration: none;
   font-weight: 700;
   font-size: 0.95rem;
   transition: all var(--transition-base);
-  box-shadow: 0 4px 14px rgba(124, 92, 252, 0.3);
+  box-shadow: 0 4px 14px rgba(91, 60, 230, 0.3);
   margin-top: 1.5rem;
   border: none;
   cursor: pointer;
 }
 
 .event-details__cta-btn:hover {
-  background: #6c4af2;
+  background: #4f32c9;
   transform: translateY(-2px);
   box-shadow:
-    0 6px 20px rgba(124, 92, 252, 0.4),
+    0 6px 20px rgba(91, 60, 230, 0.4),
     var(--shadow-glow);
 }
 
@@ -2264,7 +2293,7 @@ body.light-theme .searchable-select__clear-btn:hover {
 
 .contact-us-description a {
   color: var(--accent-secondary);
-  text-decoration: none;
+  text-decoration: underline;
   word-break: break-all;
   font-weight: 500;
   transition: color var(--transition-fast);
@@ -2352,7 +2381,7 @@ body.light-theme .searchable-select__clear-btn:hover {
 
 .checkbox-group a {
   color: var(--accent-secondary);
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: 500;
 }
 
@@ -2478,7 +2507,7 @@ body.light-theme .searchable-select__clear-btn:hover {
 .faq-answer a,
 .faq-link {
   color: var(--accent-secondary);
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: 500;
   transition: color var(--transition-fast);
 }
@@ -2521,7 +2550,8 @@ body.light-theme .searchable-select__clear-btn:hover {
   .search__clear-btn,
   .btn-back,
   .event-card__read-more {
-    min-height: 44px;
+    min-height: 48px;
+    min-width: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2644,4 +2674,45 @@ body.light-theme .searchable-select__clear-btn:hover {
       transform: translateY(0);
     }
   }
+}
+
+/* Custom Map Marker for Accessibility */
+.custom-touch-marker {
+  background: transparent;
+  border: none;
+}
+.marker-hitbox {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.marker-visual {
+  width: 18px;
+  height: 18px;
+  background: var(--accent-primary);
+  border: 3px solid var(--bg-card);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px rgba(124, 92, 252, 0.3),
+    var(--shadow-sm);
+  transition: transform 0.2s;
+}
+.marker-hitbox:hover .marker-visual {
+  transform: scale(1.2);
+}
+
+/* Visually hidden text for SEO & Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
