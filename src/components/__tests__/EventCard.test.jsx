@@ -99,35 +99,38 @@ describe("EventCard Component", () => {
   it.each([
     ["grid", { metaKey: true }],
     ["list", { ctrlKey: true }],
-  ])("lets the browser handle modified clicks in %s view", (viewMode, keys) => {
-    const handleSelect = vi.fn();
-    render(
-      <EventCard
-        event={mockEvent}
-        viewMode={viewMode}
-        onSelectEvent={handleSelect}
-      />,
-    );
+  ])(
+    "lets the browser handle modified clicks in %s view",
+    (viewMode, keys) => {
+      const handleSelect = vi.fn();
+      render(
+        <EventCard
+          event={mockEvent}
+          viewMode={viewMode}
+          onSelectEvent={handleSelect}
+        />,
+      );
 
-    const click = new MouseEvent("click", {
-      bubbles: true,
-      cancelable: true,
-      ...keys,
-    });
-    let preventedByComponent;
-    document.body.addEventListener(
-      "click",
-      (event) => {
-        preventedByComponent = event.defaultPrevented;
-        event.preventDefault(); // Keep jsdom from trying to navigate.
-      },
-      { once: true },
-    );
-    fireEvent(screen.getByRole("link", { name: "Test Meetup" }), click);
+      const click = new MouseEvent("click", {
+        bubbles: true,
+        cancelable: true,
+        ...keys,
+      });
+      let preventedByComponent;
+      document.body.addEventListener(
+        "click",
+        (event) => {
+          preventedByComponent = event.defaultPrevented;
+          event.preventDefault(); // Keep jsdom from trying to navigate.
+        },
+        { once: true },
+      );
+      fireEvent(screen.getByRole("link", { name: "Test Meetup" }), click);
 
-    expect(preventedByComponent).toBe(false);
-    expect(handleSelect).not.toHaveBeenCalled();
-  });
+      expect(preventedByComponent).toBe(false);
+      expect(handleSelect).not.toHaveBeenCalled();
+    },
+  );
 
   it("renders gracefully when tags and paid_or_free are missing", () => {
     const sparseEvent = {
