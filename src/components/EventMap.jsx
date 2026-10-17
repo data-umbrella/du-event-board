@@ -279,6 +279,15 @@ export default function EventMap({ events, onSelectEvent, theme }) {
                         <a
                           href={`?page=event-details&eventId=${event.id}`}
                           onClick={(e) => {
+                            if (
+                              e.button !== 0 ||
+                              e.metaKey ||
+                              e.ctrlKey ||
+                              e.shiftKey ||
+                              e.altKey
+                            ) {
+                              return;
+                            }
                             e.preventDefault();
                             onSelectEvent(event.id);
                           }}
