@@ -51,16 +51,21 @@ export default function EventCard({
     ended: "status-badge--ended",
   };
 
+  const handleDetailsClick = (e) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+      return;
+    }
+    e.preventDefault();
+    onSelectEvent(event.id);
+  };
+
   if (viewMode === "list") {
     return (
       <article className="event-list-row" id={`event-${event.id}`}>
         <div className="event-list-row__title-wrap">
           <a
             href={`?page=event-details&eventId=${event.id}`}
-            onClick={(e) => {
-              e.preventDefault();
-              onSelectEvent(event.id);
-            }}
+            onClick={handleDetailsClick}
             className="event-list-row__title"
           >
             {event.title}
@@ -99,10 +104,7 @@ export default function EventCard({
       <h2 className="event-card__title">
         <a
           href={`?page=event-details&eventId=${event.id}`}
-          onClick={(e) => {
-            e.preventDefault();
-            onSelectEvent(event.id);
-          }}
+          onClick={handleDetailsClick}
           className="event-card__title-link"
           style={{ color: "inherit", textDecoration: "none" }}
         >
